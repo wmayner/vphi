@@ -1,0 +1,64 @@
+edge_color = #444
+node_off_color = rgb(136, 136, 136)
+node_on_color = rgb(42, 161, 152)
+node_label_color = rgb(238, 238, 238)
+node_radius = 18
+
+body
+  background #ccc
+
+#vphi
+  text-align center
+
+svg
+  cursor default
+  -webkit-user-select none
+  -moz-user-select none
+  -ms-user-select none
+  -o-user-select none
+  user-select none
+  background-color #eee
+  border-radius 5px
+  &:not(.active):not(.shiftkey)
+    cursor crosshair
+    path
+      &.link
+        cursor pointer
+
+path.link
+  fill none
+  stroke edge_color
+  stroke-width 4px
+  cursor default
+  &.selected
+    stroke-dasharray 10, 3
+  &.dragline
+    pointer-events none
+  &.hidden
+    stroke-width 0
+
+.arrow-head
+  fill edge_color
+
+circle.node
+  stroke-width 1.5px
+  cursor pointer
+  &.reflexive
+    stroke #444 !important
+    stroke-width 2.5px
+  &.on
+    fill node_on_color
+  &.off
+    fill node_off_color
+  &.selected
+    &.on
+      fill lighten(node_on_color, 10)
+    &.off
+      fill lighten(node_off_color, 10)
+
+text
+  font 12px sans-serif
+  pointer-events none
+  &.id
+    text-anchor middle
+    font-weight bold

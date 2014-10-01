@@ -1,0 +1,5 @@
+node_modules
+components
+lib
+build/*
+!build/index.html

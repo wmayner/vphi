@@ -1,0 +1,17 @@
+{
+  "name": "vphi",
+  "version": "0.0.1",
+  "scripts": "index.js",
+  "styles": "vphi.css",
+  "description": "A visual interface to CyPhi.",
+  "repository": "wmayner/vphi",
+  "dependencies": {
+    "wmayner/data-structures": "^1.4.3",
+    "mbostock/d3": "3.x"
+  }
+  "development": {
+    "dependencies": {
+    }
+  }
+  "license": "GPLv3"
+}

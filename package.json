@@ -1,0 +1,25 @@
+{
+  "name": "vphi",
+  "version": "0.0.1",
+  "author": "Will Mayner <wmayner@gmail.com> (http://willmayner.com/)",
+  "description": "Visual interface to CyPhi.",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/wmayner/vphi"
+  },
+  "scripts": {
+    "start": "cd build && nodefront serve -l"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "coffee-script": "^1.8.0",
+    "duo": "^0.8.4",
+    "gulp": "^3.8.8",
+    "gulp-coffee": "^2.2.0",
+    "gulp-rimraf": "^0.1.0",
+    "gulp-stylus": "^1.3.3",
+    "gulp-util": "^3.0.1",
+    "gulp-watch": "^1.0.5",
+    "mocha": "^1.21.4"
+  }
+}
