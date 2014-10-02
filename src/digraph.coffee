@@ -132,15 +132,15 @@ class Graph
     the two nodes.
     ###
     if @getEdge source, target then return
-    fromNode = @_nodes[target]
-    toNode = @_nodes[target]
-    if not fromNode or not toNode then return
+    sourceNode = @_nodes[target]
+    targetNode = @_nodes[target]
+    if not sourceNode or not targetNode then return
     edgeToAdd =
       weight: weight
       source: source
       target: target
-    fromNode._outEdges[target] = edgeToAdd
-    toNode._inEdges[source] = edgeToAdd
+    sourceNode._outEdges[target] = edgeToAdd
+    targetNode._inEdges[source] = edgeToAdd
     @edgeSize++
     return edgeToAdd
 
@@ -149,21 +149,21 @@ class Graph
     _Returns:_ the edge object, or undefined if the nodes of id `source` or
     `target` aren't found.
     ###
-    fromNode = @_nodes[source]
-    toNode = @_nodes[target]
-    if not fromNode or not toNode then return
-    else fromNode._outEdges[target]
+    sourceNode = @_nodes[source]
+    targetNode = @_nodes[target]
+    if not sourceNode or not targetNode then return
+    else sourceNode._outEdges[target]
 
   removeEdge: (source, target) ->
     ###
     _Returns:_ the edge object removed, or undefined of edge wasn't found.
     ###
-    fromNode = @_nodes[source]
-    toNode = @_nodes[target]
+    sourceNode = @_nodes[source]
+    targetNode = @_nodes[target]
     edgeToDelete = @getEdge source, target
     if not edgeToDelete then return
-    delete fromNode._outEdges[target]
-    delete toNode._inEdges[source]
+    delete sourceNode._outEdges[target]
+    delete targetNode._inEdges[source]
     @edgeSize--
     return edgeToDelete
 
@@ -172,9 +172,9 @@ class Graph
     _Returns:_ an array of edge objects that are directed toward the node, or
     empty array if no such edge or node exists.
     ###
-    toNode = @_nodes[nodeId]
+    targetNode = @_nodes[nodeId]
     inEdges = []
-    for own source of toNode?._inEdges
+    for own source of targetNode?._inEdges
       inEdges.push(@getEdge source, nodeId)
     return inEdges
 
@@ -183,9 +183,9 @@ class Graph
     _Returns:_ an array of edge objects that go out of the node, or empty array
     if no such edge or node exists.
     ###
-    fromNode = @_nodes[nodeId]
+    sourceNode = @_nodes[nodeId]
     outEdges = []
-    for own target of fromNode?._outEdges
+    for own target of sourceNode?._outEdges
       outEdges.push(@getEdge nodeId, target)
     return outEdges
 
@@ -245,6 +245,6 @@ class Graph
     return cm
 
   getNodes: ->
-    return (node for id, node of @_nodes)
+    return
 
 module.exports = Graph
