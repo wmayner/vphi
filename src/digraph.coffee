@@ -65,6 +65,7 @@ class Graph
         # an object which, by default, only contains a weight property defaulted
         # to 1. Using objects to represent nodes and edges allow additional
         # attributes to be attached. Same applies to inEdges.
+        _id: id
         _outEdges: {}
         _inEdges: {}
         # Nodes have integer labels, distinct from their internal `id`, which
