@@ -8,7 +8,8 @@
     "url": "http://github.com/wmayner/vphi"
   },
   "scripts": {
-    "start": "cd build && nodefront serve -l"
+    "start": "cd build && nodefront serve -l",
+    "test": "mocha -w -R spec"
   },
   "dependencies": {},
   "devDependencies": {
