@@ -132,7 +132,7 @@ class Graph
     the two nodes.
     ###
     if @getEdge source, target then return
-    sourceNode = @_nodes[target]
+    sourceNode = @_nodes[source]
     targetNode = @_nodes[target]
     if not sourceNode or not targetNode then return
     edgeToAdd =
