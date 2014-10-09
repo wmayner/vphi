@@ -3,3 +3,5 @@ components
 lib
 build/*
 !build/index.html
+test/tests.js
+test/js

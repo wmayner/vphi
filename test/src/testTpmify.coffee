@@ -1,26 +1,19 @@
-assert = require 'assert'
-Graph = require "../src/digraph.coffee"
-mechanism = require '../src/mechanism.coffee'
-
-tpmify = require '../src/tpmify.coffee'
+Graph = require '../../lib/digraph'
+mechanism = require '../../lib/mechanism'
+tpmify = require '../../lib/tpmify'
 
 describe 'tpmify', ->
 
   # Standard Matlab 3-node example
   graph = new Graph()
-  graph.addNode('0', 1)
-    .mechanism = mechanism["OR"]
-  graph.addNode('1', 0)
-    .mechanism = mechanism["COPY"]
-  graph.addNode('2', 0)
-    .mechanism = mechanism["XOR"]
+  graph.addNode({mechanism: mechanism["OR"]})
+  graph.addNode({mechanism: mechanism["COPY"]})
+  graph.addNode({mechanism: mechanism["XOR"]})
   graph.addEdge(0, 2)
   graph.addEdge(1, 0)
   graph.addEdge(1, 2)
   graph.addEdge(2, 0)
   graph.addEdge(2, 1)
-
-  console.log graph.getInEdgesOf('0')
 
   it 'should convert the graph to the correct TPM', ->
     answer = {
@@ -33,4 +26,4 @@ describe 'tpmify', ->
       '0,1,1': {0: 1, 1: 1, 2: 1}
       '1,1,1': {0: 1, 1: 1, 2: 0}
     }
-    assert.deepEqual answer, tpmify(graph)
+    tpmify(graph).should.eql answer

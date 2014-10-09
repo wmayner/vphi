@@ -1,88 +1,113 @@
-exec = require("child_process").exec
-path = require "path"
-gulp = require "gulp"
-gutil = require "gulp-util"
-stylus = require "gulp-stylus"
-coffee = require "gulp-coffee"
-watch = require "gulp-watch"
-rimraf = require "gulp-rimraf"
-Duo = require "duo"
+exec = require('child_process').exec
+path = require 'path'
+gulp = require 'gulp'
+gutil = require 'gulp-util'
+stylus = require 'gulp-stylus'
+coffee = require 'gulp-coffee'
+watch = require 'gulp-watch'
+rimraf = require 'gulp-rimraf'
+mochaPhantomJS = require 'gulp-mocha-phantomjs'
+Duo = require 'duo'
 
-SRC_DIR = "src"
-LIB_DIR = "lib"
-BUILD_DIR = "build"
-ENTRY = "./index.js"
+SRC_DIR = 'src'
+LIB_DIR = 'lib'
+BUILD_DIR = 'build'
+ENTRYPOINT = './index.js'
 STYLUS = "#{SRC_DIR}/*.styl"
 COFFEE = "#{SRC_DIR}/*.coffee"
 SRC_FILES = [STYLUS, COFFEE]
-TEST_FILES = "test/*"
 
-compileStylus = (outputDir, cb = ->) ->
-  output = path.join outputDir, "index.css"
+TEST_DIR = 'test'
+TEST_SRC_FILES = "#{TEST_DIR}/src/*.coffee"
+TEST_JS_DIR = "#{TEST_DIR}/js"
+
+###
+Helpers
+###
+
+compileStylus = (outputDir, input, cb = ->) ->
+  output = path.join outputDir, 'index.css'
   gulp.src(STYLUS)
-    .pipe(stylus({linenos: true})).on("error", gutil.log)
+    .pipe(stylus({linenos: true})).on('error', gutil.log)
     .pipe(gulp.dest(outputDir))
-    .on "finish", (err) ->
+    .on 'finish', (err) ->
       gutil.log err if err
       gutil.log "  [stylus] Compiled #{STYLUS} to #{output}"
       cb()
 
-compileCoffee = (outputDir, cb = ->) ->
-  gulp.src(COFFEE)
-    .pipe(coffee({bare: true})).on("error", gutil.log)
+compileCoffee = (outputDir, input, cb = ->) ->
+  gulp.src(input)
+    .pipe(coffee({bare: true})).on('error', gutil.log)
     .pipe(gulp.dest(outputDir))
-    .on "finish", (err) ->
+    .on 'finish', (err) ->
       gutil.log err if err
-      gutil.log "  [coffee] Compiled #{COFFEE} to #{outputDir}/"
+      gutil.log "  [coffee] Compiled #{input} to #{outputDir}/"
       cb()
 
-runDuo = (buildDir, development = false, cb = ->) ->
-  cmd = exec "duo #{ENTRY} --build #{BUILD_DIR} --no-cache > #{path.join(BUILD_DIR, "build.js")}", (err, stdout, stderr) ->
+runDuo = (input, output, development = false, cb = ->) ->
+  cmd = exec "duo #{input} --no-cache > #{output}", (err, stdout, stderr) ->
     gutil.log err if err
     gutil.log stdout if stdout
     gutil.log stderr if stderr
 
-# Compile Coffeescript to the build directory
-gulp.task "coffee", -> compileCoffee LIB_DIR
+###
+Build the app
+###
 
 # Compile stylus to the build directory
-gulp.task "stylus", -> compileStylus BUILD_DIR
+gulp.task 'stylus', -> compileStylus BUILD_DIR, STYLUS
 
-# Build Javascript deps with Duo
-gulp.task "duo", ["coffee"], -> runDuo BUILD_DIR, false
+# Compile Coffeescript to the build directory
+gulp.task 'coffee', -> compileCoffee LIB_DIR, COFFEE
 
 # Compile CoffeeScript and Stylus
-gulp.task "build", ["duo", "stylus"]
+gulp.task 'build', ['duo', 'stylus']
+
+# Build source with Duo
+gulp.task 'duo', ['coffee'], ->
+  runDuo ENTRYPOINT, "#{BUILD_DIR}/build.js", false
 
 # Clean built files
-gulp.task "clean", ->
+gulp.task 'clean', ->
   gulp.src(["#{BUILD_DIR}/build.js", "#{BUILD_DIR}/index.css"], {read: false})
     .pipe(rimraf())
 
-# Run tests
-gulp.task "run-tests", ->
-  cmd = exec "mocha", (err, stdout, stderr) ->
-    gutil.log err if err
-    gutil.log stdout if stdout
-    gutil.log stderr if stderr
-
-# Watch test directory for changes and run tests
-gulp.task "test", ["run-tests"], ->
-  gulp.watch([SRC_FILES, TEST_FILES], ["run-tests"])
-    .on("error", gutil.log)
+# Watch source directory for changes and build to the test directory
+gulp.task 'watch-stylus', ['stylus'], ->
+  gulp.watch(STYLUS, ['stylus'])
+    .on('error', gutil.log)
 
 # Watch source directory for changes and build to the test directory
-gulp.task "watch-stylus", ["stylus"], ->
-  gulp.watch(STYLUS, ["stylus"])
-    .on("error", gutil.log)
+gulp.task 'watch-coffee', ['duo'], ->
+  gulp.watch(COFFEE, ['duo'])
+    .on('error', gutil.log)
 
 # Watch source directory for changes and build to the test directory
-gulp.task "watch-coffee", ["duo"], ->
-  gulp.watch(COFFEE, ["duo"])
-    .on("error", gutil.log)
-
-# Watch source directory for changes and build to the test directory
-gulp.task "watch", ["watch-stylus", "watch-coffee"], ->
+gulp.task 'watch', ['watch-stylus', 'watch-coffee'], ->
 
 # Watch by default
-gulp.task "default", ["watch"]
+gulp.task 'default', ['watch']
+
+###
+Testing
+###
+
+# Compile test source
+gulp.task 'coffee-test', ->
+  compileCoffee TEST_JS_DIR, TEST_SRC_FILES
+
+# Build tests with Duo
+gulp.task 'duo-test', ['coffee-test'], ->
+  runDuo "#{TEST_DIR}/js/tests.js", "#{TEST_DIR}/tests.js", false
+
+# Run tests
+gulp.task 'run-tests', [], ->
+    gulp
+      .src("#{TEST_DIR}/index.html")
+      .pipe(mochaPhantomJS({reporter: 'spec'}))
+      .on('error', gutil.log)
+
+# Watch test directory for changes and run tests
+gulp.task 'test', ['run-tests'], ->
+  gulp.watch([SRC_FILES, TEST_SRC_FILES], ['run-tests'])
+    .on('error', gutil.log)
