@@ -129,15 +129,15 @@ class Graph
     the two nodes.
     ###
     if @getEdge source, target then return
-    sourceNode = @_nodes[source]
-    targetNode = @_nodes[target]
-    if not sourceNode or not targetNode then return
+    fromNode = @_nodes[source]
+    toNode = @_nodes[target]
+    if not fromNode or not toNode then return
     edgeToAdd =
       weight: weight
       source: source
       target: target
-    sourceNode._outEdges[target] = edgeToAdd
-    targetNode._inEdges[source] = edgeToAdd
+    fromNode._outEdges[target] = edgeToAdd
+    toNode._inEdges[source] = edgeToAdd
     # Set the node's reflexive bit to true if the edge is a self-loop.
     if source is target
       fromNode.reflexive = true
@@ -149,21 +149,21 @@ class Graph
     _Returns:_ the edge object, or undefined if the nodes of id `source` or
     `target` aren't found.
     ###
-    sourceNode = @_nodes[source]
-    targetNode = @_nodes[target]
-    if not sourceNode or not targetNode then return
-    else sourceNode._outEdges[target]
+    fromNode = @_nodes[source]
+    toNode = @_nodes[target]
+    if not fromNode or not toNode then return
+    else return fromNode._outEdges[target]
 
   removeEdge: (source, target) ->
     ###
     _Returns:_ the edge object removed, or undefined of edge wasn't found.
     ###
-    sourceNode = @_nodes[source]
-    targetNode = @_nodes[target]
+    fromNode = @_nodes[source]
+    toNode = @_nodes[target]
     edgeToDelete = @getEdge source, target
     if not edgeToDelete then return
-    delete sourceNode._outEdges[target]
-    delete targetNode._inEdges[source]
+    delete fromNode._outEdges[target]
+    delete toNode._inEdges[source]
     # Set the node's reflexive bit to false if the edge was a self-loop.
     if source is target
       fromNode.reflexive = false
@@ -175,9 +175,9 @@ class Graph
     _Returns:_ an array of edge objects that are directed toward the node, or
     empty array if no such edge or node exists.
     ###
-    targetNode = @_nodes[nodeId]
+    toNode = @_nodes[nodeId]
     inEdges = []
-    for own source of targetNode?._inEdges
+    for own source of toNode?._inEdges
       inEdges.push(@getEdge source, nodeId)
     return inEdges
 
@@ -186,9 +186,9 @@ class Graph
     _Returns:_ an array of edge objects that go out of the node, or empty array
     if no such edge or node exists.
     ###
-    sourceNode = @_nodes[nodeId]
+    fromNode = @_nodes[nodeId]
     outEdges = []
-    for own target of sourceNode?._outEdges
+    for own target of fromNode?._outEdges
       outEdges.push(@getEdge nodeId, target)
     return outEdges
 
