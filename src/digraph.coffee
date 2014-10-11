@@ -42,8 +42,14 @@ class Graph
     @_nodes = {}
     @nodeSize = 0
     @edgeSize = 0
+    @_newNodeId = 0
 
-  addNode: (id, state) ->
+  getNewNodeId: ->
+    id = @_newNodeId
+    @_newNodeId++
+    return id
+
+  addNode: (nodeData = {}) ->
     ###
     The `id` is a unique identifier for the node, and should **not** change
     after it's added. It will be used for adding, retrieving and deleting
@@ -57,22 +63,17 @@ class Graph
     on it for graph algorithms' needs. **Undefined if node id already exists**,
     as to avoid accidental overrides.
     ###
-    if not @_nodes[id]
-      @nodeSize++
-      @_nodes[id] =
-        # outEdges is a collection of (target, edge) pair, where the target key is
-        # the node id toward which the edge's directed. The value edge is itself
-        # an object which, by default, only contains a weight property defaulted
-        # to 1. Using objects to represent nodes and edges allow additional
-        # attributes to be attached. Same applies to inEdges.
-        _id: id
-        _outEdges: {}
-        _inEdges: {}
-        # Nodes have integer labels, distinct from their internal `id`, which
-        # will be updated whenever nodes are removed so that labels are always
-        # consecutive integers from 0 to N-1.
-        label: @nodeSize - 1
-        state: state
+    node =
+      _id: @getNewNodeId()
+      _outEdges: {}
+      _inEdges: {}
+    for key, value of nodeData
+      node[key] = value
+    # This attribute will be set to true if the node aquires a self-loop.
+    node.reflexive = false
+    @nodeSize++
+    @_nodes[node._id] = node
+    return node
 
   getNode: (id) ->
     ###
@@ -95,11 +96,6 @@ class Graph
         @removeEdge inEdgeId, id
       @nodeSize--
       delete @_nodes[id]
-      # Decrement the labels that are greater than the removed node's label so
-      # that labels are always consecutive integers from 0 to N-1.
-      for id, node of @_nodes
-        if node.label > nodeToRemove.label
-          node.label--
     return nodeToRemove
 
   getNodeState: (id) ->
