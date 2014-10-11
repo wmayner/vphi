@@ -138,6 +138,9 @@ class Graph
       target: target
     sourceNode._outEdges[target] = edgeToAdd
     targetNode._inEdges[source] = edgeToAdd
+    # Set the node's reflexive bit to true if the edge is a self-loop.
+    if source is target
+      fromNode.reflexive = true
     @edgeSize++
     return edgeToAdd
 
@@ -161,6 +164,9 @@ class Graph
     if not edgeToDelete then return
     delete sourceNode._outEdges[target]
     delete targetNode._inEdges[source]
+    # Set the node's reflexive bit to false if the edge was a self-loop.
+    if source is target
+      fromNode.reflexive = false
     @edgeSize--
     return edgeToDelete
 
