@@ -241,13 +241,35 @@ class Graph
     # Manual return, check forEachNode for reason.
     return
 
-  getConnectivity: ->
-    cm = {}
-    @forEachEdge (edge) ->
-      cm[edge.source] = edge.target
-    return cm
+  getDrawableNodes: ->
+    ###
+    Return an array of nodes suitable for drawing on a plane, sorted by `id`.
+    ###
+    return _.sortBy((node for id, node of @_nodes), 'id')
 
-  getNodes: ->
-    return
+  getDrawableEdges: ->
+    ###
+    _Returns:_ An array of edges suitable for drawing on a plane. Bidirectional
+    edges are merged into a single object with the `bidirectional` attribute
+    set to true, and reflexive edges (self-loops) are not included.
+    ###
+    drawableEdges = {}
+    @forEachEdge (edge) ->
+      key = "#{edge.source},#{edge.target}"
+      # Don't add self-loops (these are recorded as attributes on the node).
+      if edge.source is edge.target
+        return
+      # If this edge is the reverse of a previously seen edge, don't add a
+      # second edge object; update the first to indicate that it's
+      # bidirectional.
+      reverseKey = "#{edge.target},#{edge.source}"
+      if drawableEdges[reverseKey]
+        drawableEdges[reverseKey].bidirectional = true
+        return
+      # Store the edge object.
+      drawableEdges[key] = edge
+    # Return an array of edges.
+    return (edge for key, edge of drawableEdges)
+
 
 module.exports = Graph
