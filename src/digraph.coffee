@@ -200,7 +200,7 @@ class Graph
 
     _Returns:_ an array of edge objects linked to the node, no matter if they're
     outgoing or coming. Duplicate edge created by self-pointing nodes are
-    removed. Only one copy stays. Empty array if node has no edge.
+    removed. Only one copy stays. Empty array if node has no edges.
     ###
     inEdges = @getInEdgesOf nodeId
     outEdges = @getOutEdgesOf nodeId
@@ -208,7 +208,7 @@ class Graph
     selfEdge = @getEdge nodeId, nodeId
     for i in [0...inEdges.length]
       if inEdges[i] is selfEdge
-        # Place that repleated in edge at the end and pop it.
+        # Place that repeated in edge at the end and pop it.
         [inEdges[i], inEdges[inEdges.length - 1]] =
         [inEdges[inEdges.length - 1], inEdges[i]]
         inEdges.pop()
