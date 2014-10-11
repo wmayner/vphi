@@ -1,6 +1,6 @@
 d3 = require 'mbostock/d3'
 
-# TODO figure out why Duo fails to pull this in properly from wmayner/data-structures
+
 Graph = require './digraph'
 tpmify = require './tpmify'
 mechanism = require './mechanism'
@@ -298,7 +298,6 @@ restart = ->
   # set the graph in motion
   force.start()
 
-
 # end of restart()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -474,9 +473,8 @@ force = d3.layout.force()
     .links(links)
     .size([width, height])
     .linkDistance(150)
-    .charge(-500)
+    .charge(-700)
     .on('tick', tick)
-
 
 # app starts here
 svg
