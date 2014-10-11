@@ -101,7 +101,7 @@ gulp.task 'duo-test', ['coffee-test'], ->
   runDuo "#{TEST_DIR}/js/tests.js", "#{TEST_DIR}/tests.js", false
 
 # Run tests
-gulp.task 'run-tests', [], ->
+gulp.task 'run-tests', ['duo-test'], ->
     gulp
       .src("#{TEST_DIR}/index.html")
       .pipe(mochaPhantomJS({reporter: 'spec'}))
