@@ -108,8 +108,8 @@ tick = ->
     dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
     normX = deltaX / dist
     normY = deltaY / dist
-    sourcePadding = (if d.left then node_radius + 5 else node_radius)
-    targetPadding = (if d.right then node_radius + 5 else node_radius)
+    sourcePadding = (if d.bidirectional then node_radius + 5 else node_radius)
+    targetPadding = node_radius + 5
     sourceX = d.source.x + (sourcePadding * normX)
     sourceY = d.source.y + (sourcePadding * normY)
     targetX = d.target.x - (targetPadding * normX)
@@ -133,9 +133,9 @@ restart = ->
       .classed('selected', (d) ->
         d is selected_link
       ).style('marker-start', (d) ->
-        (if d.left then 'url(#start-arrow)' else "")
+        (if d.bidirectional then 'url(#start-arrow)' else "")
       ).style('marker-end', (d) ->
-        (if d.right then 'url(#end-arrow)' else "")
+        'url(#end-arrow)'
       )
 
   # add new links
@@ -145,9 +145,9 @@ restart = ->
       .classed("selected", (d) ->
         d is selected_link
       ).style('marker-start', (d) ->
-        (if d.left then 'url(#start-arrow)' else '')
+        (if d.bidirectional then 'url(#start-arrow)' else '')
       ).style('marker-end', (d) ->
-        (if d.right then 'url(#end-arrow)' else '')
+        'url(#end-arrow)'
       ).on('mousedown', (d) ->
         return if d3.event.shiftKey
 
