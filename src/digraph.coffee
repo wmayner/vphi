@@ -51,14 +51,6 @@ class Graph
 
   addNode: (nodeData = {}) ->
     ###
-    The `id` is a unique identifier for the node, and should **not** change
-    after it's added. It will be used for adding, retrieving and deleting
-    related edges too.
-
-    **Note** that, internally, the ids are kept in an object. JavaScript's
-    object hashes the id `'2'` and `2` to the same key, so please stick to a
-    simple id data type such as number or string.
-
     _Returns:_ the node object. Feel free to attach additional custom properties
     on it for graph algorithms' needs. **Undefined if node id already exists**,
     as to avoid accidental overrides.
