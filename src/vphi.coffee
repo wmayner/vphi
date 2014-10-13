@@ -287,10 +287,6 @@ restart = ->
   # remove old nodes
   circle.exit().remove()
 
-  # update node IDs so we always start numbering at 0
-  for i in [0...nodes.length]
-    nodes[i].id = i
-
   d3.selectAll('.id')
     .data(nodes)
     .text((d) -> d.id)
