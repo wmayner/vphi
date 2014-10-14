@@ -340,17 +340,10 @@ describe "Get drawable edges", ->
     for edge in edges when ([edge.source, edge.target] is [1, 0] or [edge.source, edge.target] is [0, 1])
       edge.bidirectional.should.be.true
 
-# describe "Get node array", ->
-#   graph = new Graph()
-#   it "should return an empty array for an empty graph", ->
-#     graph.getNodeArray().should.eql []
-#   it "should return a list of nodes a non-empty graph, sorted by label", ->
-#     addNodesTo graph
-#     nodeLables = (node.label for node in graph.getNodeArray())
-#     nodeLables.should.eql [0, 1, 2, 3, 4, 5]
-#   it "should be sorted by label, and not care about the internal `_id`", ->
-#     graph.removeNode('3')
-#     graph.addNode('8')
-#     graph.addNode('7')
-#     nodeLables = (node.label for node in graph.getNodeArray())
-#     nodeLables.should.eql [0, 1, 2, 3, 4, 5, 6]
+describe "Get node array", ->
+  graph = new Graph()
+  it "should return an empty array for an empty graph", ->
+    graph.getNodes().should.eql []
+  it "should get all the nodes for a non-empty graph", ->
+    addNodesTo graph
+    (node._id for node in graph.getNodes()).should.eql [0, 1, 2, 3, 4, 5]
