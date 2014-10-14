@@ -1,4 +1,4 @@
-exec = require('child_process').exec
+sh = require 'execSync'
 path = require 'path'
 gulp = require 'gulp'
 gutil = require 'gulp-util'
@@ -25,7 +25,7 @@ TEST_JS_DIR = "#{TEST_DIR}/js"
 Helpers
 ###
 
-compileStylus = (outputDir, input, cb = ->) ->
+compileStylus = (outputDir, input) ->
   output = path.join outputDir, 'index.css'
   gulp.src(STYLUS)
     .pipe(stylus({linenos: true})).on('error', gutil.log)
@@ -33,22 +33,18 @@ compileStylus = (outputDir, input, cb = ->) ->
     .on 'finish', (err) ->
       gutil.log err if err
       gutil.log "  [stylus] Compiled #{STYLUS} to #{output}"
-      cb()
 
-compileCoffee = (outputDir, input, cb = ->) ->
+compileCoffee = (outputDir, input) ->
   gulp.src(input)
     .pipe(coffee({bare: true})).on('error', gutil.log)
     .pipe(gulp.dest(outputDir))
     .on 'finish', (err) ->
       gutil.log err if err
       gutil.log "  [coffee] Compiled #{input} to #{outputDir}/"
-      cb()
 
-runDuo = (input, output, development = false, cb = ->) ->
-  cmd = exec "duo #{input} --no-cache > #{output}", (err, stdout, stderr) ->
-    gutil.log err if err
-    gutil.log stdout if stdout
-    gutil.log stderr if stderr
+runDuo = (input, output, development = false) ->
+  cmd = sh.exec "duo #{input} --no-cache > #{output}"
+  gutil.log cmd.stdout
 
 ###
 Build the app
@@ -65,7 +61,7 @@ gulp.task 'build', ['duo', 'stylus']
 
 # Build source with Duo
 gulp.task 'duo', ['coffee'], ->
-  runDuo ENTRYPOINT, "#{BUILD_DIR}/build.js", false
+  runDuo ENTRYPOINT, "#{BUILD_DIR}/build.js",
 
 # Clean built files
 gulp.task 'clean', ->
@@ -102,10 +98,9 @@ gulp.task 'duo-test', ['coffee-test'], ->
 
 # Run tests
 gulp.task 'run-tests', ['duo-test'], ->
-    gulp
-      .src("#{TEST_DIR}/index.html")
-      .pipe(mochaPhantomJS({reporter: 'spec'}))
-      .on('error', gutil.log)
+  gulp.src("#{TEST_DIR}/index.html")
+    .pipe(mochaPhantomJS({reporter: 'min'}))
+    .on 'error', (err) -> this.emit('end')
 
 # Watch test directory for changes and run tests
 gulp.task 'test', ['run-tests'], ->
