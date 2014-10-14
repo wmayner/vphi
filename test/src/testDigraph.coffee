@@ -49,9 +49,9 @@ describe 'Add node', ->
 describe "Get node", ->
   graph = new Graph()
   it "should return undefined if the node's not found", ->
-    should.not.exist graph.getNode(null)
-    should.not.exist graph.getNode(undefined)
-    should.not.exist graph.getNode(2)
+    Should.not.exist graph.getNode(null)
+    Should.not.exist graph.getNode(undefined)
+    Should.not.exist graph.getNode(2)
     return
   it "should return the added node", ->
     addNodesTo graph
@@ -64,8 +64,8 @@ describe "Get node", ->
 describe "Remove node", ->
   graph = new Graph()
   it "should return undefined if the node doesn't exist in the first place", ->
-    should.not.exist graph.removeNode(null)
-    should.not.exist graph.removeNode(2)
+    Should.not.exist graph.removeNode(null)
+    Should.not.exist graph.removeNode(2)
   it "should have kept the node size constant", ->
     graph.nodeSize.should.eql 0
   it "should return the value of node removed", ->
@@ -76,20 +76,20 @@ describe "Remove node", ->
   it "should have updated the node size", ->
     graph.nodeSize.should.be.exactly 3
   it "should have removed the node", ->
-    should.not.exist graph.getNode('0')
-    should.not.exist graph.getNode('2')
-    should.not.exist graph.getNode('5')
+    Should.not.exist graph.getNode('0')
+    Should.not.exist graph.getNode('2')
+    Should.not.exist graph.getNode('5')
 
 describe "Add edge", ->
   graph = new Graph()
   it "should return undefined if either/both nodes don't exist in the graph", ->
-    should.not.exist graph.addEdge('6', '7')
-    should.not.exist graph.addEdge('0', '7')
-    should.not.exist graph.addEdge('99', '0')
+    Should.not.exist graph.addEdge('6', '7')
+    Should.not.exist graph.addEdge('0', '7')
+    Should.not.exist graph.addEdge('99', '0')
     addNodesTo graph
-    should.not.exist graph.addEdge('6', '7')
-    should.not.exist graph.addEdge('0', '7')
-    should.not.exist graph.addEdge('99', '0')
+    Should.not.exist graph.addEdge('6', '7')
+    Should.not.exist graph.addEdge('0', '7')
+    Should.not.exist graph.addEdge('99', '0')
   it "should add the edge and return the edge object", ->
     graph.addEdge('0', '1').should.be.type 'object'
     graph.addEdge('1', '0').should.be.type 'object'
@@ -106,18 +106,18 @@ describe "Add edge", ->
   it "should count a self-directing edge as a single one", ->
     graph.edgeSize.should.be.exactly 8
   it "should return undefined if the edge already exists", ->
-    should.not.exist graph.addEdge('0', '1')
-    should.not.exist graph.addEdge('1', '1')
-    should.not.exist graph.addEdge('1', '0')
+    Should.not.exist graph.addEdge('0', '1')
+    Should.not.exist graph.addEdge('1', '1')
+    Should.not.exist graph.addEdge('1', '0')
 
 describe "Get edge", ->
   graph = new Graph()
   it "should return undefined if the nodes aren't found", ->
-    should.not.exist graph.getEdge('0', '1')
+    Should.not.exist graph.getEdge('0', '1')
   it "should return undefined if the edge isn't found", ->
     addNodesTo graph, yes
-    should.not.exist graph.getEdge('2', '4')
-    should.not.exist graph.getEdge('0', '1')
+    Should.not.exist graph.getEdge('2', '4')
+    Should.not.exist graph.getEdge('0', '1')
   it "should return the edge found", ->
     graph.getEdge('0', '3').should.be.type 'object'
     graph.getEdge('1', '0').should.be.type 'object'
@@ -131,8 +131,8 @@ describe "Get edge", ->
 describe "Remove edge", ->
   graph = new Graph()
   it "should return undefined if either node's not found", ->
-    should.not.exist graph.removeEdge(0, 1)
-    should.not.exist graph.removeEdge(undefined, undefined)
+    Should.not.exist graph.removeEdge(0, 1)
+    Should.not.exist graph.removeEdge(undefined, undefined)
   it "should have kept the edge count at 0", ->
     graph.edgeSize.should.be.exactly 0
   it "should return undefined if the edge doesn't exist", ->
@@ -156,14 +156,14 @@ describe "Remove edge", ->
     graph.removeEdge('5', '5').weight.should.be.exactly 9
     graph.edgeSize.should.be.exactly 0
   it "should leave an empty graph after removing all the edges", ->
-    should.not.exist graph.removeEdge('0', '3')
-    should.not.exist graph.removeEdge('1', '0')
-    should.not.exist graph.removeEdge('1', '2')
-    should.not.exist graph.removeEdge('2', '1')
-    should.not.exist graph.removeEdge('4', '0')
-    should.not.exist graph.removeEdge('4', '1')
-    should.not.exist graph.removeEdge('5', '2')
-    should.not.exist graph.removeEdge('5', '5')
+    Should.not.exist graph.removeEdge('0', '3')
+    Should.not.exist graph.removeEdge('1', '0')
+    Should.not.exist graph.removeEdge('1', '2')
+    Should.not.exist graph.removeEdge('2', '1')
+    Should.not.exist graph.removeEdge('4', '0')
+    Should.not.exist graph.removeEdge('4', '1')
+    Should.not.exist graph.removeEdge('5', '2')
+    Should.not.exist graph.removeEdge('5', '5')
 
 describe "Get all in edges", ->
   graph = new Graph()
