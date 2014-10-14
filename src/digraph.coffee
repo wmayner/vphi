@@ -113,7 +113,7 @@ class Graph
     node.state = newState
     return node.state
 
-  addEdge: (source, target, weight = 1) ->
+  addEdge: (sourceId, targetId, weight = 1) ->
     ###
     `source` and `target` are the node id specified when it was created using
     `addNode()`. `weight` is optional and defaults to 1. Ignoring it effectively
@@ -125,44 +125,44 @@ class Graph
     of id `source` or `target` aren't found, or if an edge already exists between
     the two nodes.
     ###
-    if @getEdge source, target then return
-    fromNode = @_nodes[source]
-    toNode = @_nodes[target]
+    if @getEdge sourceId, targetId then return
+    fromNode = @_nodes[sourceId]
+    toNode = @_nodes[targetId]
     if not fromNode or not toNode then return
     edgeToAdd =
       weight: weight
-      source: source
-      target: target
-    fromNode._outEdges[target] = edgeToAdd
-    toNode._inEdges[source] = edgeToAdd
+      source: fromNode
+      target: toNode
+    fromNode._outEdges[targetId] = edgeToAdd
+    toNode._inEdges[sourceId] = edgeToAdd
     # Set the node's reflexive bit to true if the edge is a self-loop.
-    if source is target
+    if sourceId is targetId
       fromNode.reflexive = true
     @edgeSize++
     return edgeToAdd
 
-  getEdge: (source, target) ->
+  getEdge: (sourceId, targetId) ->
     ###
-    _Returns:_ the edge object, or undefined if the nodes of id `source` or
+    _Returns:_ the edge object, or undefined if either of the nodes `source` or
     `target` aren't found.
     ###
-    fromNode = @_nodes[source]
-    toNode = @_nodes[target]
+    fromNode = @_nodes[sourceId]
+    toNode = @_nodes[targetId]
     if not fromNode or not toNode then return
-    else return fromNode._outEdges[target]
+    else return fromNode._outEdges[targetId]
 
-  removeEdge: (source, target) ->
+  removeEdge: (sourceId, targetId) ->
     ###
     _Returns:_ the edge object removed, or undefined of edge wasn't found.
     ###
-    fromNode = @_nodes[source]
-    toNode = @_nodes[target]
-    edgeToDelete = @getEdge source, target
+    fromNode = @_nodes[sourceId]
+    toNode = @_nodes[targetId]
+    edgeToDelete = @getEdge sourceId, targetId
     if not edgeToDelete then return
-    delete fromNode._outEdges[target]
-    delete toNode._inEdges[source]
+    delete fromNode._outEdges[targetId]
+    delete toNode._inEdges[sourceId]
     # Set the node's reflexive bit to false if the edge was a self-loop.
-    if source is target
+    if sourceId is targetId
       fromNode.reflexive = false
     @edgeSize--
     return edgeToDelete
@@ -174,8 +174,8 @@ class Graph
     ###
     toNode = @_nodes[nodeId]
     inEdges = []
-    for own source of toNode?._inEdges
-      inEdges.push(@getEdge source, nodeId)
+    for own sourceId of toNode?._inEdges
+      inEdges.push(@getEdge sourceId, nodeId)
     return inEdges
 
   getOutEdgesOf: (nodeId) ->
@@ -185,8 +185,8 @@ class Graph
     ###
     fromNode = @_nodes[nodeId]
     outEdges = []
-    for own target of fromNode?._outEdges
-      outEdges.push(@getEdge nodeId, target)
+    for own targetId of fromNode?._outEdges
+      outEdges.push(@getEdge nodeId, targetId)
     return outEdges
 
   getAllEdgesOf: (nodeId) ->
@@ -252,14 +252,14 @@ class Graph
     ###
     drawableEdges = {}
     @forEachEdge (edge) ->
-      key = "#{edge.source},#{edge.target}"
+      key = "#{edge.source._id},#{edge.target._id}"
       # Don't add self-loops (these are recorded as attributes on the node).
-      if edge.source is edge.target
+      if edge.source._id is edge.target._id
         return
       # If this edge is the reverse of a previously seen edge, don't add a
       # second edge object; update the first to indicate that it's
       # bidirectional.
-      reverseKey = "#{edge.target},#{edge.source}"
+      reverseKey = "#{edge.target._id},#{edge.source._id}"
       if drawableEdges[reverseKey]
         drawableEdges[reverseKey].bidirectional = true
         return

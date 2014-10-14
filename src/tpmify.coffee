@@ -15,7 +15,7 @@ getNewNodeState = (graph, id, state) ->
   # Grab the node.
   node = graph.getNode(id)
   # Get the IDs of nodes that are inputs to this one.
-  inputNodeIds = (edge.source for edge in graph.getInEdgesOf(id))
+  inputNodeIds = (edge.source._id for edge in graph.getInEdgesOf(id))
   # Get an array of their states.
   inputs = (state[inputNodeId] for inputNodeId in inputNodeIds)
   # Compute the new state of the node by plugging-in the inputs to its
