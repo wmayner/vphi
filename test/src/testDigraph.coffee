@@ -317,8 +317,8 @@ describe "Traverse through each edge", ->
     graph.forEachEdge callback
     callback.callCount.should.be.exactly 8
   it "should reach the isolated node with an edge toward itself", ->
-    graph.addNode "99"
-    graph.addEdge "99", "99", 999
+    newNode = graph.addNode()._id
+    graph.addEdge(newNode, newNode, 999)
     callback = sinon.spy()
     graph.forEachEdge callback
     callback.callCount.should.be.exactly 9
