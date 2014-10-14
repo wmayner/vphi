@@ -1,6 +1,7 @@
 node_modules
 components
 lib
+!test/lib
 build/*
 !build/index.html
 test/tests.js
