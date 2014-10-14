@@ -38,8 +38,8 @@ describe 'Add node', ->
     graph.edgeSize.should.be.exactly 0
     return
   it 'should return the node object added', ->
-    graph.addNode().should.be.type 'object'
-    graph.addNode({label: 'A'}).should.be.type 'object'
+    graph.addNode().should.be.an.Object
+    graph.addNode({label: 'A'}).should.be.an.Object
     return
   it "should have kept the node size constant with non-insertions", ->
     graph.nodeSize.should.eql 2
@@ -55,9 +55,9 @@ describe "Get node", ->
     return
   it "should return the added node", ->
     addNodesTo graph
-    graph.getNode('0').should.be.type 'object'
-    graph.getNode('1').should.be.type 'object'
-    graph.getNode('5').should.be.type 'object'
+    graph.getNode('0').should.be.an.Object
+    graph.getNode('1').should.be.an.Object
+    graph.getNode('5').should.be.an.Object
     return
   return
 
@@ -70,9 +70,9 @@ describe "Remove node", ->
     graph.nodeSize.should.eql 0
   it "should return the value of node removed", ->
     addNodesTo graph
-    graph.removeNode('0').should.be.type 'object'
-    graph.removeNode('2').should.be.type 'object'
-    graph.removeNode('5').should.be.type 'object'
+    graph.removeNode('0').should.be.an.Object
+    graph.removeNode('2').should.be.an.Object
+    graph.removeNode('5').should.be.an.Object
   it "should have updated the node size", ->
     graph.nodeSize.should.be.exactly 3
   it "should have removed the node", ->
@@ -91,9 +91,9 @@ describe "Add edge", ->
     Should.not.exist graph.addEdge('0', '7')
     Should.not.exist graph.addEdge('99', '0')
   it "should add the edge and return the edge object", ->
-    graph.addEdge('0', '1').should.be.type 'object'
-    graph.addEdge('1', '0').should.be.type 'object'
-    graph.addEdge('2', '1').should.be.type 'object'
+    graph.addEdge('0', '1').should.be.an.Object
+    graph.addEdge('1', '0').should.be.an.Object
+    graph.addEdge('2', '1').should.be.an.Object
   it "should have updated the edge size", ->
     graph.edgeSize.should.be.exactly 3
   it "should have initiated the edge weight to 1", ->
@@ -101,8 +101,8 @@ describe "Add edge", ->
     graph.addEdge('4', '5').weight.should.be.exactly 1
     graph.addEdge('2', '5').weight.should.be.exactly 1
   it "should allow the node to add an edge to itself", ->
-    graph.addEdge('1', '1').should.be.type 'object'
-    graph.addEdge('5', '5').should.be.type 'object'
+    graph.addEdge('1', '1').should.be.an.Object
+    graph.addEdge('5', '5').should.be.an.Object
   it "should count a self-directing edge as a single one", ->
     graph.edgeSize.should.be.exactly 8
   it "should return undefined if the edge already exists", ->
@@ -119,14 +119,14 @@ describe "Get edge", ->
     Should.not.exist graph.getEdge('2', '4')
     Should.not.exist graph.getEdge('0', '1')
   it "should return the edge found", ->
-    graph.getEdge('0', '3').should.be.type 'object'
-    graph.getEdge('1', '0').should.be.type 'object'
-    graph.getEdge('1', '2').should.be.type 'object'
-    graph.getEdge('2', '1').should.be.type 'object'
-    graph.getEdge('4', '0').should.be.type 'object'
-    graph.getEdge('4', '1').should.be.type 'object'
-    graph.getEdge('5', '2').should.be.type 'object'
-    graph.getEdge('5', '5').should.be.type 'object'
+    graph.getEdge('0', '3').should.be.an.Object
+    graph.getEdge('1', '0').should.be.an.Object
+    graph.getEdge('1', '2').should.be.an.Object
+    graph.getEdge('2', '1').should.be.an.Object
+    graph.getEdge('4', '0').should.be.an.Object
+    graph.getEdge('4', '1').should.be.an.Object
+    graph.getEdge('5', '2').should.be.an.Object
+    graph.getEdge('5', '5').should.be.an.Object
 
 describe "Remove edge", ->
   graph = new Graph()
@@ -167,7 +167,7 @@ describe "Remove edge", ->
 
 describe "Get all in edges", ->
   graph = new Graph()
-  it "should return empty array for a non-existant node", ->
+  it "should return empty array for a non-existent node", ->
     graph.getOutEdgesOf('5').should.eql []
     graph.getOutEdgesOf(undefined).should.eql []
   it "should return empty array for no edges", ->
@@ -205,7 +205,7 @@ describe "Get all in edges", ->
 
 describe "Get all out edges", ->
   graph = new Graph()
-  it "should return empty array for a non-existant node", ->
+  it "should return empty array for a non-existent node", ->
     graph.getOutEdgesOf('5').should.eql []
     graph.getOutEdgesOf(undefined).should.eql []
   it "should return empty array for no edges", ->
@@ -302,7 +302,7 @@ describe "Traverse through each node", ->
     callback = sinon.spy()
     graph.forEachNode callback
     lastCallArgs = callback.args[callback.callCount - 1]
-    lastCallArgs[0].should.be.type 'object'
+    lastCallArgs[0].should.be.an.Object
     lastCallArgs[1].should.be.exactly '5'
 
 describe "Traverse through each edge", ->
