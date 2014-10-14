@@ -109,6 +109,10 @@ describe "Add edge", ->
     Should.not.exist graph.addEdge('0', '1')
     Should.not.exist graph.addEdge('1', '1')
     Should.not.exist graph.addEdge('1', '0')
+  it "should add edges with the node objects as source and target", ->
+    edge = graph.addEdge('1', '5')
+    edge.target.should.be.an.Object
+    edge.source.should.be.an.Object
 
 describe "Get edge", ->
   graph = new Graph()
@@ -328,6 +332,10 @@ describe "Get drawable edges", ->
   addNodesTo graph, yes
   it "should return an array", ->
     graph.getDrawableEdges().should.be.an.Array
+  it "should return edges with references to the node objects", ->
+    for edge in graph.getDrawableEdges()
+      edge.source.should.be.an.Object
+      edge.target.should.be.an.Object
   it "should not count reflexive edges", ->
     graph.addEdge(0, 0)
     graph.getDrawableEdges().length.should.be.exactly 6
