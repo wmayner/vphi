@@ -36,11 +36,10 @@ compileStylus = (outputDir, input) ->
 
 compileCoffee = (outputDir, input) ->
   gulp.src(input)
-    .pipe(coffee({bare: true})).on('error', gutil.log)
-    .pipe(gulp.dest(outputDir))
-    .on 'finish', (err) ->
+    .pipe(coffee({bare: true})).on('error', (err) ->
       gutil.log err if err
-      gutil.log "  [coffee] Compiled #{input} to #{outputDir}/"
+      this.emit('end')
+    ).pipe(gulp.dest(outputDir))
 
 runDuo = (input, output, development = false) ->
   cmd = sh.exec "duo #{input} --no-cache > #{output}"
