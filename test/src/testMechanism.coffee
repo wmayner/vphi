@@ -18,11 +18,11 @@ testLogicGate = (gate, singleZero, singleOne, allZero, allOne, halfOne, oddMajor
 
 testThresholdUnit = (type) ->
   f = mechanism['THRESHOLD'][type]
-  v = (if type is 'ABOVE' then true else false )
-  it 'should return false if the threshold is 2 and there are two 1s', ->
-    f(2, [1, 1, 0]).should.be.false
-  it 'should return false if the threshold is 1 and there is a single 1', ->
-    f(1, [1]).should.be.false
+  v = (if type is 'ABOVE' then 1 else 0 )
+  it 'should return 0 if the threshold is 2 and there are two 1s', ->
+    f(2, [1, 1, 0]).should.eql 0
+  it 'should return 0 if the threshold is 1 and there is a single 1', ->
+    f(1, [1]).should.eql 0
   it "should return #{v} if the threshold is 3 and there are four 1s", ->
     v.should.eql f(3, [0, 1, 1, 0, 1, 1])
   it "should return #{v} if the threshold is 1 and there are two 1s", ->
@@ -34,30 +34,30 @@ testThresholdUnit = (type) ->
 describe 'mechanism', ->
 
   describe 'AND', ->
-    testLogicGate('AND', false, true, false, true, false, false, false)
+    testLogicGate('AND', 0, 1, 0, 1, 0, 0, 0)
 
   describe 'OR', ->
-    testLogicGate('OR', false, true, false, true, true, true, true)
+    testLogicGate('OR', 0, 1, 0, 1, 1, 1, 1)
 
   describe 'XOR', ->
-    testLogicGate('XOR', false, true, false, true, false, true, false)
+    testLogicGate('XOR', 0, 1, 0, 1, 0, 1, 0)
 
   # TODO
   # describe 'COPY', ->
-  #   testLogicGate('COPY', true, false, false, true, false, false, false)
+  #   testLogicGate('COPY', 1, 0, 0, 1, 0, 0, 0)
 
   # TODO
   # describe 'NOT', ->
-  #   testLogicGate('NOT', true, false, false, true, false, false, false)
+  #   testLogicGate('NOT', 1, 0, 0, 1, 0, 0, 0)
 
   describe 'MAJORITY', ->
-    testLogicGate('MAJORITY', false, true, false, true, false, true, false)
+    testLogicGate('MAJORITY', 0, 1, 0, 1, 0, 1, 0)
 
   describe 'MINORITY', ->
-    testLogicGate('MINORITY', true, false, true, false, true, false, true)
+    testLogicGate('MINORITY', 1, 0, 1, 0, 1, 0, 1)
 
   describe 'PARITY', ->
-    testLogicGate('PARITY', true, false, true, false, true, false, true)
+    testLogicGate('PARITY', 1, 0, 1, 0, 1, 0, 1)
 
   describe 'THRESHOLD', ->
     describe 'ABOVE', -> testThresholdUnit('ABOVE')
