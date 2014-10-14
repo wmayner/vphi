@@ -14,10 +14,10 @@ addNodesTo = (graph, addEdges = no) ->
   graph.nodeSize.should.be.exactly initNodeSize + 6
   if addEdges
     ###
-    1 <- 2 <-> 3
+    0 <- 1 <-> 2
     |^   ^     ^
     v \  |     |
-    4   \5     6 <->
+    3   \4     5 <->
     ###
     initEdgeSize = graph.edgeSize
     initEdgeSize.should.be.exactly 0
@@ -323,7 +323,23 @@ describe "Traverse through each edge", ->
     graph.forEachEdge callback
     callback.callCount.should.be.exactly 9
 
-# TODO test getDrawableEdges
+describe "Get drawable edges", ->
+  graph = new Graph()
+  addNodesTo graph, yes
+  it "should return an array", ->
+    graph.getDrawableEdges().should.be.an.Array
+  it "should not count reflexive edges", ->
+    graph.addEdge(0, 0)
+    graph.getDrawableEdges().length.should.be.exactly 6
+  it "should merge bidirectional edges into a single object", ->
+    graph.addEdge(0, 1)
+    graph.addEdge(1, 0)
+    graph.getDrawableEdges().length.should.be.exactly 6
+  it "should record that bidirectional edges are bidirectional", ->
+    edges = graph.getDrawableEdges()
+    for edge in edges when ([edge.source, edge.target] is [1, 0] or [edge.source, edge.target] is [0, 1])
+      edge.bidirectional.should.be.true
+
 # describe "Get node array", ->
 #   graph = new Graph()
 #   it "should return an empty array for an empty graph", ->
