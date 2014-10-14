@@ -69,10 +69,15 @@ class Graph
 
   getNode: (id) ->
     ###
-    _Returns:_ the node object. Feel free to attach additional custom properties
-    on it for graph algorithms' needs.
+    _Returns:_ the node object.
     ###
     @_nodes[id]
+
+  getNodes: ->
+    ###
+    _Returns:_ an array of all node objects.
+    ###
+    (@_nodes[id] for id in Object.keys(@_nodes))
 
   removeNode: (id) ->
     ###
