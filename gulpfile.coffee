@@ -40,6 +40,11 @@ compileCoffee = (outputDir, input) ->
       gutil.log err if err
       this.emit('end')
     ).pipe(gulp.dest(outputDir))
+    .on 'finish', (err) ->
+      if err
+        gutil.log err
+      else
+        gutil.log "  [coffee] Compiled #{input} to #{outputDir}/"
 
 runDuo = (input, output, development = false) ->
   cmd = sh.exec "duo #{input} --no-cache > #{output}"
