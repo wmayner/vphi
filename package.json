@@ -2,7 +2,7 @@
   "name": "vphi",
   "version": "0.0.1",
   "author": "Will Mayner <wmayner@gmail.com> (http://willmayner.com/)",
-  "description": "Visual interface to CyPhi.",
+  "description": "Visual interface to PyPhi.",
   "repository": {
     "type": "git",
     "url": "http://github.com/wmayner/vphi"

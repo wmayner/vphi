@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": "index.js",
   "styles": "vphi.css",
-  "description": "A visual interface to CyPhi.",
+  "description": "A visual interface to PyPhi.",
   "repository": "wmayner/vphi",
   "dependencies": {
     "wmayner/data-structures": "^1.4.3",
