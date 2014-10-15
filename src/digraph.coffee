@@ -166,6 +166,10 @@ class Graph
     # Set the node's reflexive bit to false if the edge was a self-loop.
     if sourceId is targetId
       fromNode.reflexive = false
+    # Unset the bidirectional bit of the reverse edge if it exists
+    reverseEdge = @getEdge(targetId, sourceId)
+    if reverseEdge
+      delete reverseEdge.bidirectional
     @edgeSize--
     return edgeToDelete
 
