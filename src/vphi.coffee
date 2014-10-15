@@ -7,7 +7,7 @@ mechanism = require './mechanism'
 
 # set up SVG for D3
 width = 688
-height = 500
+height = 400
 
 node_off_color = d3.rgb 136, 136, 136
 node_on_color = d3.rgb 42, 161, 152
@@ -160,42 +160,42 @@ restart = ->
 
   # update existing nodes (reflexive & selected visual states)
   circle.selectAll('circle')
-      .style('fill', (d) ->
-        if (d is selected_node)
-          return node_color(d).brighter()
+      .style('fill', (node) ->
+        if (node is selected_node)
+          return node_color(node).brighter()
         else
-          return node_color(d)
-      ).attr('transform', (d) ->
-        if (d is selected_node)
+          return node_color(node)
+      ).attr('transform', (node) ->
+        if (node is selected_node)
           return 'scale(1.1)'
-      ).classed('reflexive', (d) ->
-        d.reflexive
+      ).classed('reflexive', (node) ->
+        node.reflexive
       )
 
   g.append('svg:circle')
       .attr('class', 'node')
       .attr('r', node_radius)
-      .style('fill', (d) ->
-        if (d is selected_node)
-          node_color(d).brighter().toString()
+      .style('fill', (node) ->
+        if (node is selected_node)
+          node_color(node).brighter().toString()
         else
-          node_color(d)
-      ).classed('reflexive', (d) ->
-        d.reflexive
+          node_color(node)
+      ).classed('reflexive', (node) ->
+        node.reflexive
         # TODO mouseover/mouseout
-      ).on('mouseover', (d) ->
-        return if not mousedown_node or d is mousedown_node
+      ).on('mouseover', (node) ->
+        return if not mousedown_node or node is mousedown_node
         # enlarge target node
         d3.select(this).attr('transform', 'scale(1.1)')
-      ).on('mouseout', (d) ->
-        return if not mousedown_node or d is mousedown_node
+      ).on('mouseout', (node) ->
+        return if not mousedown_node or node is mousedown_node
         # unenlarge target node
         d3.select(this).attr('transform', '')
-      ).on('mousedown', (d) ->
+      ).on('mousedown', (node) ->
         return if d3.event.shiftKey
 
         # select/deselect node
-        mousedown_node = d
+        mousedown_node = node
         if mousedown_node is selected_node then selected_node = null
         else selected_node = mousedown_node
         selected_link = null
@@ -207,7 +207,7 @@ restart = ->
             .attr('d', "M#{mousedown_node.x},#{mousedown_node.y}L#{mousedown_node.x},#{mousedown_node.y}")
 
         restart()
-      ).on('mouseup', (d) ->
+      ).on('mouseup', (node) ->
         return if not mousedown_node
 
         # needed by FF
@@ -216,7 +216,7 @@ restart = ->
           .style('marker-end', '')
 
         # check for drag-to-self
-        mouseup_node = d
+        mouseup_node = node
         if mouseup_node is mousedown_node
           resetMouseVars()
           return
@@ -271,11 +271,12 @@ dblclick = ->
   return if d3.event.shiftKey or mousedown_node or mousedown_link
   # insert new node at point
   point = d3.mouse(this)
-  node =
+  nodeProperties =
     x: point[0]
     y: point[1]
     reflexive: false
-  graph.addNode(node)
+  node = graph.addNode(nodeProperties)
+  selected_node = node
   restart()
 
 
