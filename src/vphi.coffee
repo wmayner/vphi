@@ -242,16 +242,14 @@ restart = ->
       .attr('y', 4)
       .attr('class', 'id')
       .attr('fill', node_label_color)
-      .text((d) ->
-        d._id
-      )
+      .text((node) -> node.label)
 
   # remove old nodes
   circle.exit().remove()
 
   d3.selectAll('.id')
     .data(nodes)
-    .text((d) -> d._id)
+      .text((node) -> node.label)
 
   # Rebind the nodes and links.
   force
@@ -334,6 +332,10 @@ keydown = ->
     when 8, 46
       if selected_node
         removed = graph.removeNode(selected_node._id)
+        # Reassign labels so they're always consecutive integers
+        graph.forEachNode (node) ->
+          if node.label > removed.label
+            node.label--
       else if selected_link
         graph.removeEdge(selected_link[0], selected_link[1])
       selected_link = null
