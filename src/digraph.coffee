@@ -59,6 +59,7 @@ class Graph
       _id: @getNewNodeId()
       _outEdges: {}
       _inEdges: {}
+      label: @nodeSize
     for key, value of nodeData
       node[key] = value
     # This attribute will be set to true if the node aquires a self-loop.
