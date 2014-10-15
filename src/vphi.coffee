@@ -84,7 +84,6 @@ resetMouseVars = ->
 
 # update force layout (called automatically each iteration)
 tick = ->
-
   # draw directed edges with proper padding from node centers
   path.attr "d", (edge) ->
     deltaX = edge.target.x - edge.source.x
@@ -99,10 +98,8 @@ tick = ->
     targetX = edge.target.x - (targetPadding * normX)
     targetY = edge.target.y - (targetPadding * normY)
     return "M#{sourceX},#{sourceY}L#{targetX},#{targetY}"
-
   circle.attr 'transform', (node) ->
     "translate(#{node.x},#{node.y})"
-
   return
 
 # update graph (called when needed)
@@ -193,11 +190,11 @@ restart = ->
       ).on('mouseout', (d) ->
         return if not mousedown_node or d is mousedown_node
         # unenlarge target node
-        d3.select(this).attr("transform", "")
+        d3.select(this).attr('transform', '')
       ).on('mousedown', (d) ->
         return if d3.event.shiftKey
 
-        # select node
+        # select/deselect node
         mousedown_node = d
         if mousedown_node is selected_node then selected_node = null
         else selected_node = mousedown_node
@@ -228,6 +225,9 @@ restart = ->
         d3.select(this).attr('transform', '')
 
         edge = graph.addEdge(mousedown_node._id, mouseup_node._id)
+
+        if not edge?
+          edge = graph.getEdge(mousedown_node._id, mouseup_node._id)
 
         # select new link
         selected_link = edge.key
@@ -264,69 +264,70 @@ restart = ->
 
 
 dblclick = ->
-
   # prevent I-bar on drag
   #d3.event.preventDefault();
-
   # because :active only works in WebKit?
   svg.classed('active', true)
   return if d3.event.shiftKey or mousedown_node or mousedown_link
-
   # insert new node at point
   point = d3.mouse(this)
-
   node =
     x: point[0]
     y: point[1]
     reflexive: false
-
   graph.addNode(node)
-
   restart()
 
 
 mousemove = ->
   return unless mousedown_node
-
   # update drag line
   drag_line.attr('d', "M#{mousedown_node.x},#{mousedown_node.y}L#{d3.mouse(this)[0]},#{d3.mouse(this)[1]}")
-
   restart()
 
 
 mouseup = ->
-
   if mousedown_node
     # hide drag line
     drag_line
       .classed('hidden', true)
       .style('marker-end', '')
-
   # because :active only works in WebKit?
   svg.classed('active', false)
-
   # clear mouse event vars
   resetMouseVars()
 
 
 mousedown = ->
   selected_node = null unless mousedown_node
+  selected_link = null unless mousedown_link
   restart()
+
 
 # only respond once per keydown
 lastKeyDown = -1
+
 
 keydown = ->
   return unless lastKeyDown is -1
   d3.event.preventDefault()
   lastKeyDown = d3.event.keyCode
 
-  # shift
-  if d3.event.keyCode is 16
-    circle.call(force.drag)
-    svg.classed('shiftkey', true)
+  switch d3.event.keyCode
+    # shift
+    when 16
+      circle.call(force.drag)
+      svg.classed('shiftkey', true)
+      break
 
   return if not selected_node and not selected_link
+  # Node or link is selected:
+
+  # Grab selected link source and target ids
+  if selected_link
+    ids = selected_link.split(',')
+    sourceId = ids[0]
+    targetId = ids[1]
   switch d3.event.keyCode
     # backspace, delete
     when 8, 46
@@ -337,60 +338,39 @@ keydown = ->
           if node.label > removed.label
             node.label--
       else if selected_link
-        graph.removeEdge(selected_link[0], selected_link[1])
+        #XXX forget keys, need to reference actual limks
+        graph.removeEdge(sourceId, targetId)
       selected_link = null
       selected_node = null
       restart()
       break
-    # D
-    # TODO use graph
+    # d
     when 68
       if selected_link
         # cycle through link directions:
-        # both -> right
-        if selected_link.left is true and selected_link.right is true
-          selected_link.left = false
-        # right -> left
-        else if selected_link.left is false and selected_link.right is true
-          selected_link.left = true
-          selected_link.right = false
-        # left -> both
-        else if selected_link.left is true and selected_link.right is false
-          selected_link.right = true
+        # faithful selected_link -> switch
+        if (graph.getEdge(sourceId, targetId) and
+            not graph.getEdge(targetId, sourceId))
+          graph.removeEdge(sourceId, targetId)
+          graph.addEdge(targetId, sourceId)
+        # switched selected_link -> bidirectional
+        else if (graph.getEdge(targetId, sourceId) and
+                 not graph.getEdge(sourceId, targetId))
+          graph.addEdge(sourceId, targetId)
+        # bidirectional -> faithful selected_link
+        else if (graph.getEdge(sourceId, targetId) and
+                 graph.getEdge(targetId, sourceId))
+          graph.removeEdge(targetId, sourceId)
       restart()
       break
-    # B
-    # TODO use graph
+    # b
     when 66
       if selected_link
-        # set link direction to both left and right
-        selected_link.left = true
-        selected_link.right = true
-      restart()
-      break
-    # L
-    # TODO use graph
-    when 76
-      if selected_link
-        # set link direction to left only
-        selected_link.left = true
-        selected_link.right = false
-      restart()
-      break
-    # R
-    # TODO use graph
-    when 82
-      if selected_node
-        # toggle node reflexivity
-        selected_node.reflexive = not selected_node.reflexive
-      else if selected_link
-        # set link direction to right only
-        selected_link.left = false
-        selected_link.right = true
+        graph.addEdge(sourceId, targetId)
+        graph.addEdge(targetId, sourceId)
       restart()
       break
     # space
-    # TODO use graph
     when 32
       if selected_node
         # toggle node on/off
@@ -398,15 +378,16 @@ keydown = ->
       restart()
       break
 
+
 keyup = ->
   lastKeyDown = -1
-
   # shift
   if d3.event.keyCode is 16
     circle
         .on('mousedown.drag', null)
         .on('touchstart.drag', null)
     svg.classed('shiftkey', false)
+
 
 # set up initial nodes and links
 #  - nodes are known by 'id', not by index in array.
@@ -418,15 +399,15 @@ graph = new Graph()
 
 graph.addNode(
   on: true
-  mechanism: 'OR'
+  mechanism: mechanism['OR']
 )
 graph.addNode(
   on: true
-  mechanism: 'COPY'
+  mechanism: mechanism['COPY']
 )
 graph.addNode(
   on: true
-  mechanism: 'XOR'
+  mechanism: mechanism['XOR']
 )
 
 graph.addEdge(0, 2)
@@ -434,8 +415,6 @@ graph.addEdge(1, 0)
 graph.addEdge(1, 2)
 graph.addEdge(2, 0)
 graph.addEdge(2, 1)
-
-lastNodeId = 3
 
 nodes = graph.getNodes()
 links = graph.getDrawableEdges()
