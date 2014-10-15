@@ -133,6 +133,7 @@ class Graph
       weight: weight
       source: fromNode
       target: toNode
+      key: "#{sourceId},#{targetId}"
     fromNode._outEdges[targetId] = edgeToAdd
     toNode._inEdges[sourceId] = edgeToAdd
     # Set the node's reflexive bit to true if the edge is a self-loop.
@@ -244,6 +245,15 @@ class Graph
     ###
     return _.sortBy((node for id, node of @_nodes), 'id')
 
+  isSameLink: (key, other) ->
+    return (key is other or key is @reverseKey(other))
+
+  reverseKey: (key) ->
+    if not key?
+      return null
+    ids = key.split(',')
+    return ids[1] + ',' + ids[0]
+
   getDrawableEdges: ->
     ###
     _Returns:_ An array of edges suitable for drawing on a plane. Bidirectional
@@ -252,7 +262,7 @@ class Graph
     ###
     drawableEdges = {}
     @forEachEdge (edge) ->
-      key = "#{edge.source._id},#{edge.target._id}"
+      # XXX
       # Don't add self-loops (these are recorded as attributes on the node).
       if edge.source._id is edge.target._id
         return
@@ -264,9 +274,8 @@ class Graph
         drawableEdges[reverseKey].bidirectional = true
         return
       # Store the edge object.
-      drawableEdges[key] = edge
+      drawableEdges[edge.key] = edge
     # Return an array of edges.
     return (edge for key, edge of drawableEdges)
-
 
 module.exports = Graph

@@ -1,24 +1,8 @@
 d3 = require 'mbostock/d3'
 
-
 Graph = require './digraph'
 tpmify = require './tpmify'
 mechanism = require './mechanism'
-
-graph = new Graph()
-
-graph.addNode('0', 1)
-  .mechanism = mechanism["OR"]
-graph.addNode('1', 0)
-  .mechanism = mechanism["COPY"]
-graph.addNode('2', 0)
-  .mechanism = mechanism["XOR"]
-
-graph.addEdge(0, 2)
-graph.addEdge(1, 0)
-graph.addEdge(1, 2)
-graph.addEdge(2, 0)
-graph.addEdge(2, 1)
 
 
 # set up SVG for D3
@@ -102,22 +86,22 @@ resetMouseVars = ->
 tick = ->
 
   # draw directed edges with proper padding from node centers
-  path.attr "d", (d) ->
-    deltaX = d.target.x - d.source.x
-    deltaY = d.target.y - d.source.y
+  path.attr "d", (edge) ->
+    deltaX = edge.target.x - edge.source.x
+    deltaY = edge.target.y - edge.source.y
     dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
     normX = deltaX / dist
     normY = deltaY / dist
-    sourcePadding = (if d.bidirectional then node_radius + 5 else node_radius)
+    sourcePadding = (if edge.bidirectional then node_radius + 5 else node_radius)
     targetPadding = node_radius + 5
-    sourceX = d.source.x + (sourcePadding * normX)
-    sourceY = d.source.y + (sourcePadding * normY)
-    targetX = d.target.x - (targetPadding * normX)
-    targetY = d.target.y - (targetPadding * normY)
+    sourceX = edge.source.x + (sourcePadding * normX)
+    sourceY = edge.source.y + (sourcePadding * normY)
+    targetX = edge.target.x - (targetPadding * normX)
+    targetY = edge.target.y - (targetPadding * normY)
     return "M#{sourceX},#{sourceY}L#{targetX},#{targetY}"
 
-  circle.attr 'transform', (d) ->
-    "translate(#{d.x},#{d.y})"
+  circle.attr 'transform', (node) ->
+    "translate(#{node.x},#{node.y})"
 
   return
 
@@ -125,16 +109,20 @@ tick = ->
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 restart = ->
 
+  # Update the node and edge list
+  nodes = graph.getNodes()
+  links = graph.getDrawableEdges()
+
   # path (link) group
   path = path.data(links)
 
   # update existing links
   path
-      .classed('selected', (d) ->
-        d is selected_link
-      ).style('marker-start', (d) ->
-        (if d.bidirectional then 'url(#start-arrow)' else "")
-      ).style('marker-end', (d) ->
+      .classed('selected', (edge) ->
+        graph.isSameLink(edge.key, selected_link)
+      ).style('marker-start', (edge) ->
+        (if edge.bidirectional then 'url(#start-arrow)' else "")
+      ).style('marker-end', (edge) ->
         'url(#end-arrow)'
       )
 
@@ -142,17 +130,17 @@ restart = ->
   path.enter()
     .append('svg:path')
       .attr('class', 'link')
-      .classed("selected", (d) ->
-        d is selected_link
-      ).style('marker-start', (d) ->
-        (if d.bidirectional then 'url(#start-arrow)' else '')
-      ).style('marker-end', (d) ->
+      .classed("selected", (edge) ->
+        edge.key is selected_link
+      ).style('marker-start', (edge) ->
+        (if edge.bidirectional then 'url(#start-arrow)' else '')
+      ).style('marker-end', (edge) ->
         'url(#end-arrow)'
-      ).on('mousedown', (d) ->
+      ).on('mousedown', (edge) ->
         return if d3.event.shiftKey
 
         # select link
-        mousedown_link = d
+        mousedown_link = edge.key
         if mousedown_link is selected_link
           selected_link = null
         else
@@ -167,7 +155,7 @@ restart = ->
   # circle (node) group
   # NB: the function arg is crucial here! nodes are known by id, not by index!
   circle = circle.data(nodes, (d) ->
-    return d.id
+    return d._id
   )
 
   # add new nodes
@@ -239,38 +227,12 @@ restart = ->
         # unenlarge target node
         d3.select(this).attr('transform', '')
 
-        # add link to graph (update if exists)
-        # NB: links are strictly source < target; arrows separately specified by
-        # booleans
-        if mousedown_node.id < mouseup_node.id
-          source = mousedown_node
-          target = mouseup_node
-          direction = 'right'
-        else
-          source = mouseup_node
-          target = mousedown_node
-          direction = 'left'
-
-        link = links.filter(
-          (l) ->
-            return (l.source is source and l.target is target)
-        )[0]
-
-        if link
-          link[direction] = true
-        else
-          link =
-            source: source
-            target: target
-            left: false
-            right: false
-
-          link[direction] = true
-          links.push link
+        edge = graph.addEdge(mousedown_node._id, mouseup_node._id)
 
         # select new link
-        selected_link = link
+        selected_link = edge.key
         selected_node = null
+
         restart()
       )
 
@@ -281,7 +243,7 @@ restart = ->
       .attr('class', 'id')
       .attr('fill', node_label_color)
       .text((d) ->
-        d.id
+        d._id
       )
 
   # remove old nodes
@@ -289,7 +251,12 @@ restart = ->
 
   d3.selectAll('.id')
     .data(nodes)
-    .text((d) -> d.id)
+    .text((d) -> d._id)
+
+  # Rebind the nodes and links.
+  force
+    .nodes(nodes)
+    .links(links)
 
   # set the graph in motion
   force.start()
@@ -309,13 +276,13 @@ dblclick = ->
 
   # insert new node at point
   point = d3.mouse(this)
+
   node =
-    id: ++lastNodeId
+    x: point[0]
+    y: point[1]
     reflexive: false
 
-  node.x = point[0]
-  node.y = point[1]
-  nodes.push(node)
+  graph.addNode(node)
 
   restart()
 
@@ -348,13 +315,6 @@ mousedown = ->
   selected_node = null unless mousedown_node
   restart()
 
-
-spliceLinksForNode = (node) ->
-  toSplice = links.filter (l) ->
-    l.source is node or l.target is node
-  toSplice.map (l) ->
-    links.splice(links.indexOf(l), 1)
-
 # only respond once per keydown
 lastKeyDown = -1
 
@@ -373,15 +333,15 @@ keydown = ->
     # backspace, delete
     when 8, 46
       if selected_node
-        nodes.splice(nodes.indexOf(selected_node), 1)
-        spliceLinksForNode(selected_node)
+        removed = graph.removeNode(selected_node._id)
       else if selected_link
-        links.splice(links.indexOf(selected_link), 1)
+        graph.removeEdge(selected_link[0], selected_link[1])
       selected_link = null
       selected_node = null
       restart()
       break
     # D
+    # TODO use graph
     when 68
       if selected_link
         # cycle through link directions:
@@ -398,6 +358,7 @@ keydown = ->
       restart()
       break
     # B
+    # TODO use graph
     when 66
       if selected_link
         # set link direction to both left and right
@@ -406,6 +367,7 @@ keydown = ->
       restart()
       break
     # L
+    # TODO use graph
     when 76
       if selected_link
         # set link direction to left only
@@ -414,6 +376,7 @@ keydown = ->
       restart()
       break
     # R
+    # TODO use graph
     when 82
       if selected_node
         # toggle node reflexivity
@@ -425,6 +388,7 @@ keydown = ->
       restart()
       break
     # space
+    # TODO use graph
     when 32
       if selected_node
         # toggle node on/off
@@ -447,21 +411,32 @@ keyup = ->
 #  - reflexive edges are indicated on the node (as a bold black circle).
 #  - links are always source < target; edge directions are set by 'left' and
 #    'right'.
-nodes = [
-  {id: 0, on: true, reflexive: false, mechanism: 'AND'}
-  {id: 1, on: false, reflexive: true, mechanism: 'AND'}
-  {id: 2, on: true, reflexive: false, mechanism: 'COPY'}
-  {id: 3, on: false, reflexive: false, mechanism: 'OR'}
-]
+
+graph = new Graph()
+
+graph.addNode(
+  on: true
+  mechanism: 'OR'
+)
+graph.addNode(
+  on: true
+  mechanism: 'COPY'
+)
+graph.addNode(
+  on: true
+  mechanism: 'XOR'
+)
+
+graph.addEdge(0, 2)
+graph.addEdge(1, 0)
+graph.addEdge(1, 2)
+graph.addEdge(2, 0)
+graph.addEdge(2, 1)
+
 lastNodeId = 3
-links = [
-  {source: nodes[0], target: nodes[1], left: false, right: true}
-  {source: nodes[0], target: nodes[2], left: true, right: false}
-  {source: nodes[0], target: nodes[3], left: false, right: true}
-  {source: nodes[1], target: nodes[2], left: false, right: true}
-  {source: nodes[1], target: nodes[3], left: true, right: false}
-  {source: nodes[2], target: nodes[3], left: true, right: true}
-]
+
+nodes = graph.getNodes()
+links = graph.getDrawableEdges()
 
 # init D3 force layout
 force = d3.layout.force()
