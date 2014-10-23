@@ -94,25 +94,11 @@ class Graph
         @removeEdge inEdgeId, id
       @nodeSize--
       delete @_nodes[id]
+    # Reassign labels so they're always consecutive integers
+    @forEachNode (node) ->
+      if node.label > nodeToRemove.label
+        node.label--
     return nodeToRemove
-
-  getNodeState: (id) ->
-    ###
-    _Returns:_ the state of the given node, or undefined if the node doesn't
-    exist.
-    ###
-    return @getNode(id).state
-
-  setNodeState: (id, newState) ->
-    ###
-    _Returns:_ the state that was just set, or undefined if the node doesn't
-    exist.
-    exist in the first place.
-    ###
-    node = @getNode(id)
-    if not node then return
-    node.state = newState
-    return node.state
 
   addEdge: (sourceId, targetId, weight = 1) ->
     ###

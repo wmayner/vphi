@@ -334,10 +334,6 @@ keydown = ->
     when 8, 46
       if selected_node
         removed = graph.removeNode(selected_node._id)
-        # Reassign labels so they're always consecutive integers
-        graph.forEachNode (node) ->
-          if node.label > removed.label
-            node.label--
       else if selected_link
         #XXX forget keys, need to reference actual limks
         graph.removeEdge(sourceId, targetId)
@@ -407,7 +403,7 @@ graph.addNode(
   mechanism: mechanism['COPY']
 )
 graph.addNode(
-  on: true
+  on: false
   mechanism: mechanism['XOR']
 )
 
