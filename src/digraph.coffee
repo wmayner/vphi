@@ -80,6 +80,13 @@ class Graph
     ###
     (@_nodes[id] for id in Object.keys(@_nodes))
 
+  getNodeByLabel: (label) ->
+    result = null
+    @forEachNode (node, id) ->
+      if node.label is label
+        result = node
+    return result
+
   removeNode: (id) ->
     ###
     _Returns:_ the node object removed, or undefined if it didn't exist in the
@@ -217,6 +224,12 @@ class Graph
     # expression, unneeded and wastful (array) in this case.
     return
 
+  getNodesByLabel: ->
+    return (@getNodeByLabel(label) for label in [0...@nodeSize])
+
+  mapByLabel: (operation) ->
+    return (operation(node) for node in @getNodesByLabel())
+
   forEachEdge: (operation) ->
     ###
     Traverse through the graph in an arbitrary manner, visiting each edge once.
@@ -229,12 +242,6 @@ class Graph
         operation edgeObject
     # Manual return, check forEachNode for reason.
     return
-
-  getDrawableNodes: ->
-    ###
-    Return an array of nodes suitable for drawing on a plane, sorted by `id`.
-    ###
-    return _.sortBy((node for id, node of @_nodes), 'id')
 
   isSameLink: (key, other) ->
     return (key is other or key is @reverseKey(other))
