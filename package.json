@@ -8,7 +8,7 @@
     "url": "http://github.com/wmayner/vphi"
   },
   "scripts": {
-    "start": "cd build && nodefront serve 3000-l",
+    "start": "cd build && nodefront serve 3000 -l",
     "test": "cd test && nodefront serve 3001 -l"
   },
   "dependencies": {},
