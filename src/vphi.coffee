@@ -395,15 +395,15 @@ keyup = ->
 graph = new Graph()
 
 graph.addNode(
-  on: true
+  on: 1
   mechanism: mechanism['OR']
 )
 graph.addNode(
-  on: true
+  on: 0
   mechanism: mechanism['COPY']
 )
 graph.addNode(
-  on: false
+  on: 0
   mechanism: mechanism['XOR']
 )
 
