@@ -5,6 +5,7 @@ states.
 
 Unless otherwise noted, a `state` is a object mapping node IDs to a state (either 0 or 1).
 ###
+mechanism = require './mechanism'
 
 # Convert a decimal index into an array of binary node states.
 index2state = (i, numberOfNodes) ->
@@ -20,7 +21,7 @@ getNewNodeState = (graph, label, state) ->
   inputs = (state[inputNodeId] for inputNodeId in inputNodeIds)
   # Compute the new state of the node by plugging-in the inputs to its
   # mechanism.
-  return node.mechanism(inputs)
+  return mechanism.functions[node.mechanism](inputs)
 
 # Get a map from nodes to their next states.
 getNextNetworkState = (graph, state) ->

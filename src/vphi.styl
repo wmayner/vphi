@@ -1,23 +1,46 @@
-edge_color = #444
+sol_cyan = rgb(42, 161, 152)
+sol_background = #fffdf9
+
+edge_color = #000
 node_off_color = rgb(136, 136, 136)
-node_on_color = rgb(42, 161, 152)
+node_on_color = sol_cyan
 node_label_color = rgb(238, 238, 238)
 node_radius = 18
 
 body
-  background #ccc
+  padding-top 50px
+  background sol_background
 
-#vphi
+#vphi-canvas
+  margin-bottom 25px
   text-align center
 
+.btn-default
+  background #ccc
+
+.btn-primary
+  background sol_cyan
+
+#vphi-controls
+  margin-bottom 25px
+  #vphi-btn-calculate
+    width 150px
+
+#vphi-output-phi
+  font-size 130%
+  font-weight bold
+  width 150px
+  letter-spacing .25ex
+
 svg
+  background sol_background
+  border 1px solid #ccc
   cursor default
   -webkit-user-select none
   -moz-user-select none
   -ms-user-select none
   -o-user-select none
   user-select none
-  background-color #eee
   border-radius 5px
   &:not(.active):not(.shiftkey)
     cursor crosshair
@@ -28,8 +51,9 @@ svg
 path.link
   fill none
   stroke edge_color
-  stroke-width 4px
+  stroke-width 5px
   cursor default
+  opacity 0.75
   &.selected
     stroke-dasharray 10, 3
   &.dragline
@@ -45,11 +69,7 @@ circle.node
   cursor pointer
   &.reflexive
     stroke #444 !important
-    stroke-width 2.5px
-  &.on
-    fill node_on_color
-  &.off
-    fill node_off_color
+    stroke-width 3.5px
   &.selected
     &.on
       fill lighten(node_on_color, 10)
@@ -59,6 +79,7 @@ circle.node
 text
   font 12px sans-serif
   pointer-events none
-  &.id
+  &.node-label
     text-anchor middle
-    font-weight bold
+    &.id
+      font-weight bold

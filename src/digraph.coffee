@@ -101,7 +101,7 @@ class Graph
         @removeEdge inEdgeId, id
       @nodeSize--
       delete @_nodes[id]
-    # Reassign labels so they're always consecutive integers
+    # Reassign labels so they're always consecutive integers.
     @forEachNode (node) ->
       if node.label > nodeToRemove.label
         node.label--

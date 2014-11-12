@@ -1,9 +1,10 @@
 d3 = require 'mbostock/d3'
 
 Graph = require './digraph'
-tpmify = require './tpmify'
 mechanism = require './mechanism'
+pyphi = require './pyphi'
 
+PRECISION = 6
 
 # set up SVG for D3
 width = 688
@@ -11,16 +12,23 @@ height = 400
 
 node_off_color = d3.rgb 136, 136, 136
 node_on_color = d3.rgb 42, 161, 152
-node_label_color = d3.rgb 238, 238, 238
-node_radius = 18
+NODE_LABEL_COLOR = d3.rgb 238, 238, 238
+node_radius = 25
 
-node_color = (node) ->
+
+# Helpers
+# =====================================================================
+
+nodeColor = (node) ->
   return (if node.on then node_on_color else node_off_color)
+
+# =====================================================================
+
 
 end_arrow_fill_color = d3.rgb()
 start_arrow_fill_color = node_off_color.darker
 
-svg = d3.select('#vphi')
+svg = d3.select('#vphi-canvas')
   .append('svg')
     .attr('width', width)
     .attr('height', height)
@@ -127,7 +135,7 @@ restart = ->
   path.enter()
     .append('svg:path')
       .attr('class', 'link')
-      .classed("selected", (edge) ->
+      .classed('selected', (edge) ->
         edge.key is selected_link
       ).style('marker-start', (edge) ->
         (if edge.bidirectional then 'url(#start-arrow)' else '')
@@ -143,6 +151,7 @@ restart = ->
         else
           selected_link = mousedown_link
         selected_node = null
+
         restart()
       )
 
@@ -155,16 +164,13 @@ restart = ->
     return d._id
   )
 
-  # add new nodes
-  g = circle.enter().append('svg:g')
-
   # update existing nodes (reflexive & selected visual states)
   circle.selectAll('circle')
       .style('fill', (node) ->
         if (node is selected_node)
-          return node_color(node).brighter()
+          return nodeColor(node).brighter()
         else
-          return node_color(node)
+          return nodeColor(node)
       ).attr('transform', (node) ->
         if (node is selected_node)
           return 'scale(1.1)'
@@ -172,14 +178,18 @@ restart = ->
         node.reflexive
       )
 
+
+  # add new nodes
+  g = circle.enter().append('svg:g')
+
   g.append('svg:circle')
       .attr('class', 'node')
       .attr('r', node_radius)
       .style('fill', (node) ->
         if (node is selected_node)
-          node_color(node).brighter().toString()
+          nodeColor(node).brighter().toString()
         else
-          node_color(node)
+          nodeColor(node)
       ).classed('reflexive', (node) ->
         node.reflexive
         # TODO mouseover/mouseout
@@ -236,27 +246,35 @@ restart = ->
         restart()
       )
 
-  # show node IDs
+  # Show node IDs.
   g.append('svg:text')
       .attr('x', 0)
-      .attr('y', 4)
-      .attr('class', 'id')
-      .attr('fill', node_label_color)
-      .text((node) -> node.label)
+      .attr('y', -4)
+      .classed('node-label', true)
+      .classed('id', true)
+      .attr('fill', NODE_LABEL_COLOR)
+
+  # Show node mechanisms.
+  g.append('svg:text')
+      .attr('x', 0)
+      .attr('y', 10)
+      .classed('node-label', true)
+      .classed('mechanism', true)
+      .attr('fill', NODE_LABEL_COLOR)
+
+  # Update displayed mechanisms and IDs.
+  circle.select('.node-label.id').text((node) -> node.label)
+  circle.select('.node-label.mechanism').text((node) -> node.mechanism)
 
   # remove old nodes
   circle.exit().remove()
-
-  d3.selectAll('.id')
-    .data(nodes)
-      .text((node) -> node.label)
 
   # Rebind the nodes and links.
   force
     .nodes(nodes)
     .links(links)
 
-  # set the graph in motion
+  # Set the graph in motion.
   force.start()
 
 # end of restart()
@@ -275,6 +293,8 @@ dblclick = ->
     x: point[0]
     y: point[1]
     reflexive: false
+    mechanism: 'MAJ'
+    on: 0
   node = graph.addNode(nodeProperties)
   selected_node = node
   restart()
@@ -320,6 +340,26 @@ keydown = ->
       circle.call(force.drag)
       svg.classed('shiftkey', true)
       break
+    # left arrow
+    when 37
+      selectPreviousNode()
+      restart()
+      break
+    # up arrow
+    when 38
+      selectPreviousNode()
+      restart()
+      break
+    # right arrow
+    when 39
+      selectNextNode()
+      restart()
+      break
+    # down arrow
+    when 40
+      selectNextNode()
+      restart()
+      break
 
   return if not selected_node and not selected_link
   # Node or link is selected:
@@ -333,10 +373,11 @@ keydown = ->
     # backspace, delete
     when 8, 46
       if selected_node
+        console.log "removing node"
         removed = graph.removeNode(selected_node._id)
       else if selected_link
-        #XXX forget keys, need to reference actual limks
         graph.removeEdge(sourceId, targetId)
+        graph.removeEdge(targetId, sourceId)
       selected_link = null
       selected_node = null
       restart()
@@ -374,6 +415,41 @@ keydown = ->
         selected_node.on = not selected_node.on
       restart()
       break
+    # m
+    when 77
+      if selected_node
+        # cycle through mechanisms.
+        selectNextMechanism(selected_node)
+        restart()
+        break
+    # r
+    when 82
+      if selected_node
+        # toggle reflexivity
+        selected_node.reflexive = not selected_node.reflexive
+        graph.addEdge(selected_node._id, selected_node._id)
+        restart()
+        break
+
+
+selectNextMechanism = (node) ->
+  next_index = mechanism.names.indexOf(selected_node.mechanism) + 1
+  if next_index is mechanism.names.length then next_index = 0
+  node.mechanism = mechanism.names[next_index]
+
+
+selectNextNode = ->
+  if not selected_node or selected_node.label is graph.nodeSize - 1
+    selected_node = graph.getNodeByLabel(0)
+  else
+    selected_node = graph.getNodeByLabel(selected_node.label + 1)
+
+
+selectPreviousNode = ->
+  if not selected_node or selected_node.label is 0
+    selected_node = graph.getNodeByLabel(graph.nodeSize - 1)
+  else
+    selected_node = graph.getNodeByLabel(selected_node.label - 1)
 
 
 keyup = ->
@@ -386,6 +462,21 @@ keyup = ->
     svg.classed('shiftkey', false)
 
 
+nearestNeighbor = (node, nodes) ->
+  nearest = selected_node
+  minDistance = Infinity
+  for n in nodes
+    d = dist([node.x, node.y], [n.x, n.y])
+    if d <= minDistance
+      minDistance = d
+      nearest = n
+  return nearest
+
+
+dist = (p0, p1) ->
+  Math.sqrt(Math.pow(p1[0] - p0[0], 2) + Math.pow(p1[1] - p0[1], 2))
+
+
 # set up initial nodes and links
 #  - nodes are known by 'id', not by index in array.
 #  - reflexive edges are indicated on the node (as a bold black circle).
@@ -396,15 +487,17 @@ graph = new Graph()
 
 graph.addNode(
   on: 1
-  mechanism: mechanism['OR']
+  mechanism: 'OR'
 )
 graph.addNode(
   on: 0
-  mechanism: mechanism['COPY']
+  mechanism: 'OR'
+  reflexive: true
 )
 graph.addNode(
   on: 0
-  mechanism: mechanism['XOR']
+  mechanism: 'XOR'
+  reflexive: true
 )
 
 graph.addEdge(0, 2)
@@ -421,7 +514,7 @@ force = d3.layout.force()
     .nodes(nodes)
     .links(links)
     .size([width, height])
-    .linkDistance(150)
+    .linkDistance(175)
     .charge(-700)
     .on('tick', tick)
 
@@ -437,6 +530,28 @@ d3.select(window)
     .on('keyup', keyup)
 
 restart()
+
+
+#################
+# Control panel #
+#################
+
+
+control = d3.select('#vphi-btn-calculate')
+    .on('mouseup', ->
+      btn = $(this)
+      btn.button 'loading'
+      d3.select('#vphi-output-phi').html('···')
+      try
+        pyphi.bigMip(graph, (response) ->
+          # Round to PRECISION
+          phi = Number(response.phi).toFixed(PRECISION)
+          # Display the result
+          d3.select('#vphi-output-phi').html(phi)
+        ).always -> btn.button 'reset'
+      catch
+        btn.button 'reset'
+    )
 
 
 # Copyright (c) 2013-2014 Ross Kirsling
