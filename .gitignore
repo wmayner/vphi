@@ -3,6 +3,6 @@ components
 lib
 !test/lib
 build/*
-!build/index.html
+!build/index.jade
 test/tests.js
 test/js
