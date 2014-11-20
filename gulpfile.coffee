@@ -9,15 +9,16 @@ rimraf = require 'gulp-rimraf'
 mochaPhantomJS = require 'gulp-mocha-phantomjs'
 Duo = require 'duo'
 
-SRC_DIR = 'src'
-LIB_DIR = 'lib'
-BUILD_DIR = 'build'
+SRC_DIR = './src'
+LIB_DIR = './lib'
+BUILD_DIR = './build'
 ENTRYPOINT = './index.js'
 STYLUS = "#{SRC_DIR}/*.styl"
-COFFEE = "#{SRC_DIR}/*.coffee"
+COFFEE_DIR = "#{SRC_DIR}"
+COFFEE = "#{COFFEE_DIR}/**/*.coffee"
 SRC_FILES = [STYLUS, COFFEE]
 
-TEST_DIR = 'test'
+TEST_DIR = './test'
 TEST_SRC_FILES = "#{TEST_DIR}/src/*.coffee"
 TEST_JS_DIR = "#{TEST_DIR}/js"
 
@@ -35,16 +36,9 @@ compileStylus = (outputDir, input) ->
       gutil.log "  [stylus] Compiled #{STYLUS} to #{output}"
 
 compileCoffee = (outputDir, input) ->
-  gulp.src(input)
-    .pipe(coffee({bare: true})).on('error', (err) ->
-      gutil.log err if err
-      this.emit('end')
-    ).pipe(gulp.dest(outputDir))
-    .on 'finish', (err) ->
-      if err
-        gutil.log err
-      else
-        gutil.log "  [coffee] Compiled #{input} to #{outputDir}/"
+  cmd = sh.exec "coffee -co #{outputDir} #{input}"
+  gutil.log cmd.stdout
+  gutil.log "  [coffee] Compiled #{input} to #{outputDir}"
 
 runDuo = (input, output, development = false) ->
   cmd = sh.exec "duo #{input} --no-cache > #{output}"
@@ -58,7 +52,7 @@ Build the app
 gulp.task 'stylus', -> compileStylus BUILD_DIR, STYLUS
 
 # Compile Coffeescript to the build directory
-gulp.task 'coffee', -> compileCoffee LIB_DIR, COFFEE
+gulp.task 'coffee', -> compileCoffee LIB_DIR, COFFEE_DIR
 
 # Compile CoffeeScript and Stylus
 gulp.task 'build', ['duo', 'stylus']
