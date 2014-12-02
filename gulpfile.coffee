@@ -9,10 +9,13 @@ rimraf = require 'gulp-rimraf'
 mochaPhantomJS = require 'gulp-mocha-phantomjs'
 Duo = require 'duo'
 
+ONLINE = true
+
 SRC_DIR = './src'
 LIB_DIR = './lib'
 BUILD_DIR = './build'
 ENTRYPOINT = './index.js'
+# TODO watch stylus
 STYLUS = "#{SRC_DIR}/*.styl"
 COFFEE_DIR = "#{SRC_DIR}"
 COFFEE = "#{COFFEE_DIR}/**/*.coffee"
@@ -41,7 +44,10 @@ compileCoffee = (outputDir, input) ->
   gutil.log "  [coffee] Compiled #{input} to #{outputDir}"
 
 runDuo = (input, output, development = false) ->
-  cmd = sh.exec "duo #{input} --no-cache > #{output}"
+  if ONLINE
+    cmd = sh.exec "duo #{input} --no-cache > #{output}"
+  else
+    cmd = sh.exec "browserify -o build/build.js #{input} --no-cache > #{output}"
   gutil.log cmd.stdout
 
 ###
@@ -63,8 +69,11 @@ gulp.task 'duo', ['coffee'], ->
 
 # Clean built files
 gulp.task 'clean', ->
-  gulp.src(["#{BUILD_DIR}/build.js", "#{BUILD_DIR}/index.css"], {read: false})
-    .pipe(rimraf())
+  gulp.src([
+      "#{BUILD_DIR}/build.js"
+      "#{BUILD_DIR}/index.css"
+      "#{LIB_DIR}/*"
+    ], {read: false}).pipe(rimraf())
 
 # Watch source directory for changes and build to the test directory
 gulp.task 'watch-stylus', ['stylus'], ->
