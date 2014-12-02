@@ -1,28 +1,76 @@
 html(lang='en')
 head
-    meta(charset='utf-8')
-    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
-    meta(name='viewport', content='width=device-width')
-    title vphi
-    link(href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css', rel='stylesheet', type='text/css')
-    link(href='/vphi.css', rel='stylesheet', type='text/css')
-  body
-    .container
-      .row.clearfix
-        .col-md-12.column
-          #vphi-canvas
-      .row.clearfix
-        .col-xs-12.column
-          #vphi-controls.btn-toolbar(role='toolbar')
-            .btn-group.pull-right
-              button#vphi-btn-calculate.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…')
-                | Calculate Φ
-              button#vphi-output-phi.btn.btn-lg.btn-default.disabled
-                | ···
-      .row.clearfix
-        .col-xs-12.column
-          #vphi-output
-    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
-    script(src='/lib/jquery.jsonrpcclient.js')
-    script(src='/build.js')
-    script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')
+  meta(charset='utf-8')
+  meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+  meta(name='viewport', content='width=device-width')
+  title vphi
+
+  // Online/Offline
+  // link(href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css', rel='stylesheet', type='text/css')
+  link(href='/lib/bootstrap.css', rel='stylesheet', type='text/css')
+
+  link(href='/vphi.css', rel='stylesheet', type='text/css')
+body
+  .container
+    .row.clearfix
+      .col-sm-6.column
+        h1 Network
+      .col-sm-6.column
+        h1 Conceptual structure
+    .row.clearfix
+      .col-sm-6.column
+        .row.clearfix
+          .col-xs-12.column
+        #network-container
+      .col-sm-6.column
+        .row.clearfix
+          .col-xs-12.column
+            #concept-space-container
+              #concept-space-overlay.hidden &nbsp;
+            #concept-space-loading-spinner.hidden
+              .tetrominos
+                .tetromino.box1
+                .tetromino.box2
+                .tetromino.box3
+                .tetromino.box4
+        .row.clearfix
+          .col-xs-12.column
+            .control-panel.btn-toolbar(role='toolbar')
+              .btn-group.pull-right
+                button#reset-camera.btn.btn-primary(type='button')
+                  | Reset Camera
+                button#switch-view.btn.btn-primary(type='button')
+                  | Switch View
+                button#toggle-grids.btn.btn-primary(type='button')
+                  | Toggle Grids
+    .row.clearfix
+      .col-xs-12.column
+        .control-panel.btn-toolbar(role='toolbar')
+          .btn-group.pull-right
+            button#btn-calculate.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…')
+              | Calculate Φ
+            button#output-phi.btn.btn-lg.btn-default.disabled
+              | ···
+        
+  // Online/Offline
+  // script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+  script(src='/lib/jquery.js')
+
+  // Online/Offline
+  script(src='/lib/d3.js')
+
+  // Online/Offline
+  // script(src='//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js')
+  script(src='/lib/three.min.js')
+
+  script(src='/lib/TrackballControls.js')
+  script(src='/lib/OrthographicTrackballControls.js')
+  script(src='/lib/PointerLockControls.js')
+  script(src='/lib/Detector.js')
+  script(src='/lib/jquery.jsonrpcclient.js')
+
+  script(src='/build.js')
+
+  // Online/Offline
+  // script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')
+  script(src='/lib/bootstrap.js')
