@@ -5,11 +5,8 @@ states.
 
 Unless otherwise noted, a `state` is a object mapping node IDs to a state (either 0 or 1).
 ###
+utils = require './utils'
 mechanism = require './mechanism'
-
-# Convert a decimal index into an array of binary node states.
-index2state = (i, numberOfNodes) ->
-  return ((i >> n) & 1 for n in [0...numberOfNodes])
 
 # Get the state of a node in the next timestep, given the current state of the graph.
 getNewNodeState = (graph, label, state) ->
@@ -31,6 +28,6 @@ getNextNetworkState = (graph, state) ->
 module.exports = (graph) ->
   tpm = []
   for i in [0...Math.pow(2, graph.nodeSize)]
-    state = index2state(i, graph.nodeSize)
+    state = utils.indexToState(i, graph.nodeSize)
     tpm.push getNextNetworkState(graph, state)
   return tpm

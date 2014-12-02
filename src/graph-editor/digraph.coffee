@@ -38,11 +38,15 @@ graph.removeEdge('A', 'B'); // => the edge object removed
 - edgeSize: total number of edges.
 ###
 class Graph
+
   constructor: ->
     @_nodes = {}
     @nodeSize = 0
     @edgeSize = 0
     @_newNodeId = 0
+
+  # User will select a past state
+  pastState: undefined
 
   getNewNodeId: ->
     id = @_newNodeId
@@ -59,13 +63,14 @@ class Graph
       _id: @getNewNodeId()
       _outEdges: {}
       _inEdges: {}
+      reflexive: false
       label: @nodeSize
     for key, value of nodeData
       node[key] = value
-    # This attribute will be set to true if the node aquires a self-loop.
-    node.reflexive = false
     @nodeSize++
     @_nodes[node._id] = node
+    # Invalidate the old past state.
+    @pastState = false
     return node
 
   getNode: (id) ->
@@ -105,6 +110,8 @@ class Graph
     @forEachNode (node) ->
       if node.label > nodeToRemove.label
         node.label--
+    # Invalidate the old past state.
+    @pastState = false
     return nodeToRemove
 
   addEdge: (sourceId, targetId, weight = 1) ->
@@ -134,6 +141,8 @@ class Graph
     if sourceId is targetId
       fromNode.reflexive = true
     @edgeSize++
+    # Invalidate the old past state.
+    @pastState = false
     return edgeToAdd
 
   getEdge: (sourceId, targetId) ->
@@ -164,6 +173,8 @@ class Graph
     if reverseEdge
       delete reverseEdge.bidirectional
     @edgeSize--
+    # Invalidate the old past state.
+    @pastState = false
     return edgeToDelete
 
   getInEdgesOf: (nodeId) ->
