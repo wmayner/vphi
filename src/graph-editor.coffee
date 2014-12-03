@@ -1,14 +1,11 @@
 # d3 = require 'mbostock/d3'
 
 Graph = require './graph-editor/digraph'
-mechanism = require './graph-editor/mechanism'
+controls = require './graph-editor/controls'
 
 # XXX attach past state to graph
 
 
-ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-            'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-            'W', 'X', 'Y', 'Z']
 MAXIMUM_NODES = 5
 CONTAINER_SELECTOR = '#network-container'
 
@@ -285,7 +282,7 @@ restart = ->
       .attr('fill', NODE_LABEL_COLOR)
 
   # Update displayed mechanisms and IDs.
-  circle.select('.node-label.id').text((node) -> ALPHABET[node.label])
+  circle.select('.node-label.id').text((node) -> node.label)
   circle.select('.node-label.mechanism').text((node) -> node.mechanism)
 
   # remove old nodes
@@ -311,17 +308,13 @@ dblclick = (properties) ->
             mousedown_node or
             mousedown_link or
             graph.nodeSize >= MAXIMUM_NODES
-  # Insert new node at point.
+  # Insert new node at this point.
   point = d3.mouse(this)
-  # Default new node properties.
-  properties =
+  # Add the node and start with it selected.
+  selected_node = graph.addNode(
     x: point[0]
     y: point[1]
-    reflexive: false
-    mechanism: 'MAJ'
-    on: 0
-  # Add the node and start with it selected.
-  selected_node = graph.addNode(properties)
+  )
   restart()
 
 
@@ -438,48 +431,35 @@ keydown = ->
     when 32
       d3.event.preventDefault()
       if selected_node
-        # Toggle node on/off.
-        selected_node.on = not selected_node.on
+        graph.toggleState(selected_node)
         restart()
       break
     # m
     when 77
       if selected_node
-        # Cycle through mechanisms.
-        selectNextMechanism(selected_node)
+        graph.cycleMechanism(selected_node)
         restart()
       break
     # r
     when 82
       if selected_node
-        toggleReflexivity(selected_node)
+        graph.toggleReflexivity(selected_node)
         restart()
       break
 
 
-toggleReflexivity = (node) ->
-  node.reflexive = not node.reflexive
-  graph.addEdge(selected_node._id, selected_node._id)
-
-
-selectNextMechanism = (node) ->
-  next_index = mechanism.names.indexOf(selected_node.mechanism) + 1
-  if next_index is mechanism.names.length then next_index = 0
-  node.mechanism = mechanism.names[next_index]
-
-
 selectNextNode = ->
-  if not selected_node or selected_node.label is graph.nodeSize - 1
-    selected_node = graph.getNodeByLabel(0)
+  if not selected_node or selected_node.index is graph.nodeSize - 1
+    selected_node = graph.getNodeByIndex(0)
   else
-    selected_node = graph.getNodeByLabel(selected_node.label + 1)
+    selected_node = graph.getNodeByIndex(selected_node.index + 1)
 
 
 selectPreviousNode = ->
-  if not selected_node or selected_node.label is 0
-    selected_node = graph.getNodeByLabel(graph.nodeSize - 1)
+  if not selected_node or selected_node.index is 0
+    selected_node = graph.getNodeByIndex(graph.nodeSize - 1)
   else
-    selected_node = graph.getNodeByLabel(selected_node.label - 1)
+    selected_node = graph.getNodeByIndex(selected_node.index - 1)
 
 
 keyup = ->
@@ -508,10 +488,12 @@ dist = (p0, p1) ->
 
 
 # Set up initial graph.
-
+# =============================================================================
+#
 graph = new Graph()
 
-graph.pastState = [1, 1, 0]
+# Bind the controls to the graph.
+graph.controls = controls
 
 graph.addNode(
   on: 1
@@ -535,6 +517,10 @@ graph.addEdge(1, 0)
 graph.addEdge(1, 2)
 graph.addEdge(2, 0)
 graph.addEdge(2, 1)
+
+graph.setPastState([1, 1, 0])
+
+# =============================================================================
 
 nodes = graph.getNodes()
 links = graph.getDrawableEdges()

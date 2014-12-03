@@ -21,7 +21,19 @@ body
       .col-sm-6.column
         .row.clearfix
           .col-xs-12.column
-        #network-container
+            #network-container
+        .row.clearfix
+          .col-xs-12.column
+            .control-panel.btn-toolbar(role='toolbar')
+              .btn-group
+                button#choose-past-state.btn.btn-lg.btn-primary.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                  | Past State &nbsp;
+                  span.caret
+                ul#possible-past-states.dropdown-menu(role='menu')
+                  li
+                    strong A, B, C
+              button#selected-past-state.btn.btn-lg.btn-default.disabled
+                | 1, 1, 0
       .col-sm-6.column
         .row.clearfix
           .col-xs-12.column

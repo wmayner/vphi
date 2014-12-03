@@ -37,6 +37,30 @@ graph.removeEdge('A', 'B'); // => the edge object removed
 - nodeSize: total number of nodes.
 - edgeSize: total number of edges.
 ###
+
+tpmify = require './tpmify'
+utils = require './utils'
+mechanism = require './mechanism'
+
+# Alphabet for letter labels of nodes.
+ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
+            'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+            'W', 'X', 'Y', 'Z']
+
+# Helpers
+
+getAllStates = (numNodes) ->
+  return (utils.indexToState(i, numNodes) for i in [0...Math.pow(2, numNodes)])
+
+checkPossiblePastState = (tpm, pastStateIndex, currentState) ->
+  row = tpm[pastStateIndex]
+  for i in [0...currentState.length]
+    if ((currentState[i] > 0 and row[i] is 0) or
+        (currentState[i] is 0 and row[i] isnt 0))
+      return false
+  return true
+
+
 class Graph
 
   constructor: ->
@@ -44,9 +68,12 @@ class Graph
     @nodeSize = 0
     @edgeSize = 0
     @_newNodeId = 0
+    @pastState = undefined
+    @currentState = undefined
+    @tpm = undefined
+    @controls = undefined
 
   # User will select a past state
-  pastState: undefined
 
   getNewNodeId: ->
     id = @_newNodeId
@@ -63,14 +90,16 @@ class Graph
       _id: @getNewNodeId()
       _outEdges: {}
       _inEdges: {}
+      index: @nodeSize
+      label: ALPHABET[@nodeSize]
+      on: 0
+      mechanism: 'MAJ'
       reflexive: false
-      label: @nodeSize
     for key, value of nodeData
       node[key] = value
     @nodeSize++
     @_nodes[node._id] = node
-    # Invalidate the old past state.
-    @pastState = false
+    @update()
     return node
 
   getNode: (id) ->
@@ -85,10 +114,10 @@ class Graph
     ###
     (@_nodes[id] for id in Object.keys(@_nodes))
 
-  getNodeByLabel: (label) ->
+  getNodeByIndex: (index) ->
     result = null
     @forEachNode (node, id) ->
-      if node.label is label
+      if node.index is index
         result = node
     return result
 
@@ -106,12 +135,11 @@ class Graph
         @removeEdge inEdgeId, id
       @nodeSize--
       delete @_nodes[id]
-    # Reassign labels so they're always consecutive integers.
+    # Reassign indices so they're always consecutive integers.
     @forEachNode (node) ->
-      if node.label > nodeToRemove.label
-        node.label--
-    # Invalidate the old past state.
-    @pastState = false
+      if node.index > nodeToRemove.index
+        node.index--
+    @update()
     return nodeToRemove
 
   addEdge: (sourceId, targetId, weight = 1) ->
@@ -141,8 +169,7 @@ class Graph
     if sourceId is targetId
       fromNode.reflexive = true
     @edgeSize++
-    # Invalidate the old past state.
-    @pastState = false
+    @update()
     return edgeToAdd
 
   getEdge: (sourceId, targetId) ->
@@ -173,8 +200,7 @@ class Graph
     if reverseEdge
       delete reverseEdge.bidirectional
     @edgeSize--
-    # Invalidate the old past state.
-    @pastState = false
+    @update()
     return edgeToDelete
 
   getInEdgesOf: (nodeId) ->
@@ -235,11 +261,11 @@ class Graph
     # expression, unneeded and wastful (array) in this case.
     return
 
-  getNodesByLabel: ->
-    return (@getNodeByLabel(label) for label in [0...@nodeSize])
+  getNodesByIndex: ->
+    return (@getNodeByIndex(index) for index in [0...@nodeSize])
 
-  mapByLabel: (operation) ->
-    return (operation(node) for node in @getNodesByLabel())
+  mapByIndex: (operation) ->
+    return (operation(node) for node in @getNodesByIndex())
 
   forEachEdge: (operation) ->
     ###
@@ -286,5 +312,76 @@ class Graph
       drawableEdges[edge.key] = edge
     # Return an array of edges.
     return (edge for key, edge of drawableEdges)
+
+  # Return the given property for each node, in order of node indices.
+  getNodeProperties: (property, node_indices) ->
+    if node_indices?
+      return (node[property] for node in @getNodesByIndex() when node.index in node_indices)
+    else
+      return (node[property] for node in @getNodesByIndex())
+
+  cycleMechanism: (node) ->
+    next_index = mechanism.names.indexOf(node.mechanism) + 1
+    if next_index is mechanism.names.length then next_index = 0
+    node.mechanism = mechanism.names[next_index]
+    @update()
+
+  toggleState: (node) ->
+    node.on = utils.negate(node.on)
+    @update()
+
+  toggleReflexivity: (node) ->
+    node.reflexive = not node.reflexive
+    if node.reflexive
+      @addEdge(node._id, node._id)
+    else
+      @removeEdge(node._id, node._id)
+    @update()
+
+  getCurrentState: (node_indices) ->
+    return @getNodeProperties('on', node_indices)
+
+  getPastState: (node_indices) ->
+    if not @pastState
+      return false
+    return (@pastState[i] for i in node_indices)
+
+  # TODO test
+  getConnectivityMatrix: ->
+    (((if @getEdge(sourceId, targetId) then 1 else 0) \
+      for targetId in [0...@nodeSize]) for sourceId in [0...@nodeSize])
+
+  # TODO just take graph, keep a tpm in graph?
+  getPossiblePastStates: ->
+    numStates = Math.pow(2, @nodeSize)
+    result = (utils.indexToState(pastStateIndex, @nodeSize) \
+      for pastStateIndex in [0...numStates] \
+      when checkPossiblePastState(@tpm, pastStateIndex, @currentState))
+    if result.length is 0
+      return false
+    return result
+
+  setPastState: (state) ->
+    @pastState = state
+    @update()
+
+  updatePastState: ->
+    possiblePastStates = @getPossiblePastStates()
+    if not possiblePastStates
+      @pastState = false
+    else
+      @pastState = possiblePastStates[0]
+
+  updateCurrentState: ->
+    @currentState = @getNodeProperties('on', [0...@nodeSize])
+
+  updateTpm: =>
+    @tpm = tpmify(this)
+
+  update: =>
+    @updateCurrentState()
+    @updateTpm()
+    @updatePastState()
+    @controls.update(this)
 
 module.exports = Graph

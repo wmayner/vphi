@@ -9,9 +9,9 @@ utils = require './utils'
 mechanism = require './mechanism'
 
 # Get the state of a node in the next timestep, given the current state of the graph.
-getNewNodeState = (graph, label, state) ->
+getNewNodeState = (graph, index, state) ->
   # Grab the node.
-  node = graph.getNodeByLabel(label)
+  node = graph.getNodeByIndex(index)
   # Get the IDs of nodes that are inputs to this one.
   inputNodeIds = (edge.source._id for edge in graph.getInEdgesOf(node._id))
   # Get an array of their states.
@@ -22,7 +22,7 @@ getNewNodeState = (graph, label, state) ->
 
 # Get a map from nodes to their next states.
 getNextNetworkState = (graph, state) ->
-  return graph.mapByLabel (node) -> getNewNodeState(graph, node.label, state)
+  return graph.mapByIndex (node) -> getNewNodeState(graph, node.index, state)
 
 # TPMify!
 module.exports = (graph) ->
