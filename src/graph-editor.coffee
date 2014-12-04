@@ -7,29 +7,29 @@ controls = require './graph-editor/controls'
 
 
 MAXIMUM_NODES = 5
-CONTAINER_SELECTOR = '#network-container'
+CONTAINER_SELECTOR = '#graph-editor-container'
 
 $container = $(CONTAINER_SELECTOR)
 height = 500
 width = $container.width()
 
-node_off_color = d3.rgb 136, 136, 136
-node_on_color = d3.rgb 42, 161, 152
-NODE_LABEL_COLOR = d3.rgb 238, 238, 238
-node_radius = 25
+NODE_OFF_COLOR = d3.rgb 116, 116, 116
+NODE_ON_COLOR = d3.rgb 42, 161, 152, 0.5
+NODE_LABEL_COLOR = d3.rgb 255, 255, 255
+NODE_RADIUS = 30
 
 
 # Helpers
 # =================================================================
 
 nodeColor = (node) ->
-  return (if node.on then node_on_color else node_off_color)
+  return (if node.on then NODE_ON_COLOR else NODE_OFF_COLOR)
 
 # =================================================================
 
 
 end_arrow_fill_color = d3.rgb()
-start_arrow_fill_color = node_off_color.darker
+start_arrow_fill_color = NODE_OFF_COLOR.darker
 
 svg = d3.select(CONTAINER_SELECTOR)
   .append('svg')
@@ -118,8 +118,8 @@ tick = ->
     dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
     normX = deltaX / dist
     normY = deltaY / dist
-    sourcePadding = (if edge.bidirectional then node_radius + 5 else node_radius)
-    targetPadding = node_radius + 5
+    sourcePadding = (if edge.bidirectional then NODE_RADIUS + 5 else NODE_RADIUS)
+    targetPadding = NODE_RADIUS + 5
     sourceX = edge.source.x + (sourcePadding * normX)
     sourceY = edge.source.y + (sourcePadding * normY)
     targetX = edge.target.x - (targetPadding * normX)
@@ -203,7 +203,7 @@ restart = ->
 
   g.append('svg:circle')
       .attr('class', 'node')
-      .attr('r', node_radius)
+      .attr('r', NODE_RADIUS)
       .style('fill', (node) ->
         if (node is selected_node)
           nodeColor(node).brighter().toString()
@@ -268,7 +268,7 @@ restart = ->
   # Show node IDs.
   g.append('svg:text')
       .attr('x', 0)
-      .attr('y', -4)
+      .attr('y', -6)
       .classed('node-label', true)
       .classed('id', true)
       .attr('fill', NODE_LABEL_COLOR)
@@ -276,7 +276,7 @@ restart = ->
   # Show node mechanisms.
   g.append('svg:text')
       .attr('x', 0)
-      .attr('y', 10)
+      .attr('y', 13)
       .classed('node-label', true)
       .classed('mechanism', true)
       .attr('fill', NODE_LABEL_COLOR)
