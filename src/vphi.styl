@@ -1,13 +1,45 @@
+@import url('http://fonts.googleapis.com/css?family=Droid+Sans+Mono|Open+Sans:300,400,700')
+base_font = 'Open Sans', 'Helvetica Neue', 'Helvetica'
+mono_font = 'Droid Sans Mono', 'Monaco', 'Menlo', 'Courier New', monospace
 @import "styles/colors"
 @import "styles/tetromino"
 
 node_radius = 18
 
 body
+  font-family base_font
   padding-top 50px
   background sol_background
 
-#network-container, #concept-space-container
+.module-title
+  margin 0 0 25px 0
+
+.control-panel
+  .control-label
+    font-size 120%
+    padding-top 10px
+    padding-bottom 10px
+
+ul#possible-past-states
+  font-size 120%
+  font-family mono_font
+  text-align center
+
+#past-state-chooser
+  text-align center
+  #selected-past-state
+    font-family mono_font
+  span.caret
+    margin-left 15px
+
+
+#graph-editor-module
+  height 700px
+
+#concept-space-module
+  height 700px
+
+#graph-editor-container, #concept-space-container
   margin-bottom 25px
 
 #concept-space-container
@@ -23,9 +55,6 @@ body
   right 0
   background rgba(255, 255, 255, 0.3)
 
-.btn-default
-  background #ccc
-
 .btn-primary
   background sol_cyan
 
@@ -35,10 +64,8 @@ body
 #btn-calculate
   width 175px
 
-#selected-past-state
-  width 175px
-
 #output-phi
+  opacity 1
   font-size 130%
   font-weight bold
   width 150px
@@ -49,7 +76,7 @@ canvas, svg
   border-radius 5px
 
 svg
-  background sol_background
+  background #000
   cursor default
   -webkit-user-select none
   -moz-user-select none
@@ -67,7 +94,7 @@ path.link
   stroke edge_color
   stroke-width 5px
   cursor default
-  opacity 0.75
+  opacity 0.7
   &.selected
     stroke-dasharray 10, 3
   &.dragline
@@ -84,16 +111,23 @@ circle.node
   &.reflexive
     stroke #444 !important
     stroke-width 3.5px
-  &.selected
-    &.on
-      fill lighten(node_on_color, 10)
-    &.off
-      fill lighten(node_off_color, 10)
 
 text
-  font 12px sans-serif
+  font 14px 'Helvetica Neue', sans-serif
   pointer-events none
   &.node-label
     text-anchor middle
     &.id
+      font 16px 'Helvetica Neue', sans-serif
       font-weight bold
+
+.row-centered
+  text-align center
+
+.col-centered
+  display inline-block
+  float none
+  // reset the text-align
+  text-align left
+  // inline-block space fix
+  margin-right -4px

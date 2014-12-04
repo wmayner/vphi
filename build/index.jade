@@ -13,52 +13,52 @@ head
 body
   .container
     .row.clearfix
-      .col-sm-6.column
-        h1 Network
-      .col-sm-6.column
-        h1 Conceptual structure
-    .row.clearfix
-      .col-sm-6.column
-        .row.clearfix
-          .col-xs-12.column
-            #network-container
-        .row.clearfix
-          .col-xs-12.column
-            .control-panel.btn-toolbar(role='toolbar')
-              .btn-group
-                button#choose-past-state.btn.btn-lg.btn-primary.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
-                  | Past State &nbsp;
-                  span.caret
-                ul#possible-past-states.dropdown-menu(role='menu')
-                  li
-                    strong A, B, C
-              button#selected-past-state.btn.btn-lg.btn-default.disabled
-                | 1, 1, 0
-      .col-sm-6.column
-        .row.clearfix
-          .col-xs-12.column
-            #concept-space-container
-              #concept-space-overlay.hidden &nbsp;
-            #concept-space-loading-spinner.hidden
-              .tetrominos
-                .tetromino.box1
-                .tetromino.box2
-                .tetromino.box3
-                .tetromino.box4
-        .row.clearfix
-          .col-xs-12.column
-            .control-panel.btn-toolbar(role='toolbar')
-              .btn-group.pull-right
-                button#reset-camera.btn.btn-primary(type='button')
-                  | Reset Camera
-                button#switch-view.btn.btn-primary(type='button')
-                  | Switch View
-                button#toggle-grids.btn.btn-primary(type='button')
-                  | Toggle Grids
-    .row.clearfix
-      .col-xs-12.column
+      .col-md-6
+        #graph-editor-module.well
+          h2.module-title Network
+          .row.clearfix
+            .col-md-12
+              #graph-editor-container
+          .row.clearfix
+            .col-md-12
+              form.form-horizontal.control-panel(role="form")
+                .form-group.form-group-lg
+                  label.control-label.col-sm-5(for="past-state-chooser") Past state:
+                  .col-sm-7
+                    button#past-state-chooser.btn.btn-lg.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                      span#selected-past-state 1, 1, 0
+                      span.caret
+                      span.sr-only Toggle past state selection dropdown
+                    ul#possible-past-states.dropdown-menu(role='menu')
+                      li
+                        strong A, B, C
+      .col-md-6
+        #concept-space-module.well
+          h2.module-title Conceptual structure
+          .row.clearfix
+            .col-md-12.column
+              #concept-space-container
+                #concept-space-overlay.hidden &nbsp;
+              #concept-space-loading-spinner.hidden
+                .tetrominos
+                  .tetromino.box1
+                  .tetromino.box2
+                  .tetromino.box3
+                  .tetromino.box4
+          .row.row-centered.clearfix
+            .col-centered
+              .control-panel.btn-toolbar(role='toolbar')
+                .btn-group.pull-right
+                  button#reset-camera.btn.btn-default(type='button')
+                    | Reset Camera
+                  button#switch-view.btn.btn-default(type='button')
+                    | Switch View
+                  button#toggle-grids.btn.btn-default(type='button')
+                    | Toggle Grids
+    .row.row-centered.clearfix
+      .col-centered
         .control-panel.btn-toolbar(role='toolbar')
-          .btn-group.pull-right
+          .btn-group
             button#btn-calculate.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…')
               | Calculate Φ
             button#output-phi.btn.btn-lg.btn-default.disabled

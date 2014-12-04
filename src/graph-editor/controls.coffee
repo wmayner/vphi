@@ -1,5 +1,5 @@
 # Selectors
-PAST_STATE_CHOOSER = '#choose-past-state'
+PAST_STATE_CHOOSER = '#past-state-chooser'
 PAST_STATE_CHOICES = '#possible-past-states'
 SELECTED_PAST_STATE = '#selected-past-state'
 
@@ -13,7 +13,7 @@ makePossiblePastStateElement = (index, state) ->
 
 makeHeadingElement = (graph) ->
   labelString = (node.label for node in graph.getNodesByIndex()).join(', ')
-  return "<li><a id='possible-past-state-header'><strong>#{labelString}</strong></a></li>"
+  return "<li><a id='possible-past-state-header'><strong>#{labelString}</strong></a></li><li class='divider'></li>"
 
 
 makeStateSelectionHandler = (graph, state) ->
@@ -29,7 +29,7 @@ makeStateSelectionHandler = (graph, state) ->
 module.exports =
 
   update: (graph) ->
-    # Update currently selected past state.
+    # Update currently displayed past state.
     if graph.pastState
       pastStateString = graph.pastState.join(', ')
     else
