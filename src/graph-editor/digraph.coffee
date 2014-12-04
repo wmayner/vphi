@@ -135,10 +135,11 @@ class Graph
         @removeEdge inEdgeId, id
       @nodeSize--
       delete @_nodes[id]
-    # Reassign indices so they're always consecutive integers.
+    # Reassign indices/labels so they're always consecutive integers/letters.
     @forEachNode (node) ->
       if node.index > nodeToRemove.index
         node.index--
+        node.label = ALPHABET[node.index]
     @update()
     return nodeToRemove
 
@@ -361,22 +362,30 @@ class Graph
       return false
     return result
 
-  setPastState: (state) ->
+  setPastState: (state) =>
+    old = @pastState
     @pastState = state
-    @update()
+    @updateTpm()
+    @controls.update(this)
+    console.log "GRAPH: Changed past state from [#{old}] to [#{@pastState}]."
 
   updatePastState: ->
+    old = @pastState
     possiblePastStates = @getPossiblePastStates()
     if not possiblePastStates
       @pastState = false
     else
       @pastState = possiblePastStates[0]
+    console.log "GRAPH: Changed past state from [#{old}] to [#{@pastState}]."
 
   updateCurrentState: ->
+    old = @currentState
     @currentState = @getNodeProperties('on', [0...@nodeSize])
+    console.log "GRAPH: Changed current state from [#{old}] to [#{@currentState}]."
 
   updateTpm: =>
     @tpm = tpmify(this)
+    console.log "GRAPH: Updated TPM."
 
   update: =>
     @updateCurrentState()
