@@ -2,6 +2,8 @@
 API for PyPhi's RPC server.
 ###
 
+error = require '../errors'
+
 
 # TODO*** change endpoint
 pyphi = new $.JsonRpcClient({
@@ -21,10 +23,10 @@ module.exports =
     # Get the current state and connectivity matrix.
     if not graph.pastState
       # TODO display error
-      throw Error("Current state cannot be reached by any past state.")
+      throw error.stateUnreachable()
     # Check for too-large networks
     if graph.nodeSize > NETWORK_SIZE_LIMIT
-      throw Error("Network cannot have more than #{NETWORK_SIZE_LIMIT} nodes.")
+      throw error.networkSizeLimit(NETWORK_SIZE_LIMIT)
 
     pyphiNetwork =
       'tpm': graph.tpm

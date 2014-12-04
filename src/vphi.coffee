@@ -1,4 +1,5 @@
 pyphi = require './graph-editor/pyphi'
+error = require './errors'
 
 # Initialize interface components
 graphEditor = require './graph-editor.js'
@@ -43,9 +44,20 @@ pressCalculate = ->
   btn = $('#btn-calculate')
   btn.button 'loading'
   startLoading()
-  pyphi.bigMip(graphEditor.graph, displayBigMip).always ->
+  try
+    pyphi.bigMip(graphEditor.graph, displayBigMip).always ->
+      btn.button 'reset'
+      finishLoading()
+  catch e
     btn.button 'reset'
     finishLoading()
+    switch e.code
+      when 1
+        # TODO display "invalid past state message"
+        console.error(e.message)
+      when 2
+        # TODO display "network size limit exceeded message"
+        console.error(e.message)
 
 
 $(document).ready ->
