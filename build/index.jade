@@ -11,10 +11,10 @@ head
 
   link(href='/vphi.css', rel='stylesheet', type='text/css')
 body
-  .container
+  .container-fluid
     .row.clearfix
       .col-md-6
-        #graph-editor-module.well
+        #graph-editor-module.well.module
           h2.module-title Network
           .row.clearfix
             .col-md-12
@@ -26,14 +26,14 @@ body
                   label.control-label.col-sm-5(for="past-state-chooser") Past state:
                   .col-sm-7
                     button#past-state-chooser.btn.btn-lg.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
-                      span#selected-past-state 1, 1, 0
+                      #selected-past-state 1, 1, 0
                       span.caret
                       span.sr-only Toggle past state selection dropdown
                     ul#possible-past-states.dropdown-menu(role='menu')
                       li
                         strong A, B, C
       .col-md-6
-        #concept-space-module.well
+        #concept-space-module.well.module
           h2.module-title Conceptual structure
           .row.clearfix
             .col-md-12.column
@@ -57,12 +57,18 @@ body
                     | Toggle Grids
     .row.row-centered.clearfix
       .col-centered
-        .control-panel.btn-toolbar(role='toolbar')
-          .btn-group
-            button#btn-calculate.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…')
-              | Calculate Φ
-            button#output-phi.btn.btn-lg.btn-default.disabled
-              | ···
+        #main-control-module.module
+          .control-panel.btn-toolbar(role='toolbar')
+            .btn-group
+              button#btn-calculate.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…')
+                | Calculate Φ
+              button#output-phi.btn.btn-lg.btn-default.disabled
+                | ···
+    .row.clearfix
+      .col-md-12
+        #repertoire-module.well.module
+          .col-md-6#past-repertoires
+          .col-md-6#future-repertoires
         
   // Online/Offline
   // script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
