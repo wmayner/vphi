@@ -28,16 +28,21 @@ module.exports =
 
   drawStar: (scene, radius, position) ->
     # TODO make these actual stars.
-    material = new THREE.MeshPhongMaterial(
-      ambient: 0x404040
-      color: 0xF5F237
-      specular: 0x404040
-      shininess: 20
+    # material = new THREE.MeshPhongMaterial(
+    #   wireframe: false
+    #   ambient: 0x404040
+    #   color: 0xF5F237
+    #   specular: 0x404040
+    #   shininess: 20
+    #   shading: THREE.SmoothShading
+    #   transparent: true
+    # )
+    material = new THREE.MeshNormalMaterial(
+      wireframe: true
+      wireframeLinewidth: 3
       shading: THREE.SmoothShading
-      transparent: true
     )
-    material = new THREE.MeshNormalMaterial()
-    geometry = new THREE.SphereGeometry(radius, 64, 64)
+    geometry = new THREE.SphereGeometry(radius, 1, 1)
     star = new THREE.Mesh(geometry, material)
     star.position.set(position.x, position.y, position.z)
     scene.add(star)
