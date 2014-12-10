@@ -2,8 +2,7 @@
 
 Graph = require './graph-editor/digraph'
 controls = require './graph-editor/controls'
-
-# XXX attach past state to graph
+colors = require './colors/index'
 
 
 MAXIMUM_NODES = 5
@@ -13,88 +12,72 @@ $container = $(CONTAINER_SELECTOR)
 height = 500
 width = $container.width()
 
-NODE_OFF_COLOR = d3.rgb 116, 116, 116
-NODE_ON_COLOR = d3.rgb 42, 161, 152, 0.5
-NODE_LABEL_COLOR = d3.rgb 255, 255, 255
 NODE_RADIUS = 30
 
 
-# Helpers
-# =================================================================
-
-nodeColor = (node) ->
-  return (if node.on then NODE_ON_COLOR else NODE_OFF_COLOR)
-
-# =================================================================
+nodeColor = (node) -> (if node.on then colors.node.on else colors.node.off)
 
 
-end_arrow_fill_color = d3.rgb()
-start_arrow_fill_color = NODE_OFF_COLOR.darker
+# Declare the canvas.
+svg = d3.select CONTAINER_SELECTOR
+  .append 'svg'
+    .attr 'width', width
+    .attr 'height', height
+    .attr 'align', 'center'
 
-svg = d3.select(CONTAINER_SELECTOR)
-  .append('svg')
-    .attr('width', width)
-    .attr('height', height)
-    .attr('align', 'center')
-
-######################################
-# Dynamically resize SVG canvas width
-######################################
+# Dynamically resize SVG canvas width.
 resizeCanvas = ->
   # Update gloval width reference
   width = $container.width()
   # Update SVG dimensions
-  svg.attr('width', width)
+  svg.attr 'width', width
   # Update force layout dimensions
-  force.size([width, height])
+  force.size [width, height]
   # Redraw graph
-  restart()
+  update()
 
-$(window).resize(resizeCanvas)
-######################################
-
-# define arrow markers for graph links
+# Define arrow markers for graph links.
 svg
-  .append('svg:defs')
-  .append('svg:marker')
-    .attr('id', 'end-arrow')
-    .attr('viewBox', '0 -5 10 10')
-    .attr('refX', 6)
-    .attr('markerWidth', 3)
-    .attr('markerHeight', 3)
-    .attr('orient', 'auto')
-  .append('svg:path')
-    .attr('d', 'M0,-5L10,0L0,5')
-    .attr('fill', end_arrow_fill_color)
-    .classed('arrow-head', true)
+  .append 'svg:defs'
+  .append 'svg:marker'
+    .attr 'id', 'end-arrow'
+    .attr 'viewBox', '0 -5 10 10'
+    .attr 'refX', 6
+    .attr 'markerWidth', 3
+    .attr 'markerHeight', 3
+    .attr 'orient', 'auto'
+  .append 'svg:path'
+    .attr 'd', 'M0,-5L10,0L0,5'
+    .attr 'fill', colors.link.endpoint
+    .classed 'arrow-head', true
 
 svg
-  .append('svg:defs')
-  .append('svg:marker')
-    .attr('id', 'start-arrow')
-    .attr('viewBox', '0 -5 10 10')
-    .attr('refX', 4)
-    .attr('markerWidth', 3)
-    .attr('markerHeight', 3)
-    .attr('orient', 'auto')
-  .append('svg:path')
-    .attr('d', 'M10,-5L0,0L10,5')
-    .attr('fill', start_arrow_fill_color)
-    .classed('arrow-head', true)
+  .append 'svg:defs'
+  .append 'svg:marker'
+    .attr 'id', 'start-arrow'
+    .attr 'viewBox', '0 -5 10 10'
+    .attr 'refX', 4
+    .attr 'markerWidth', 3
+    .attr 'markerHeight', 3
+    .attr 'orient', 'auto'
+  .append 'svg:path'
+    .attr 'd', 'M10,-5L0,0L10,5'
+    .attr 'fill', colors.link.endpoint
+    .classed 'arrow-head', true
 
 # line displayed when dragging new nodes
 drag_line = svg
-  .append('svg:path')
-    .attr('class', 'link dragline hidden')
-    .attr('d', 'M0,0L0,0')
+  .append 'svg:path'
+    .attr 'class', 'link dragline hidden'
+    .attr 'd', 'M0,0L0,0'
 
 # handles to link and node element groups
 path = svg
-  .append('svg:g')
-    .selectAll('path')
-circle = svg
-  .append('svg:g')
-    .selectAll('g')
+  .append 'svg:g'
+    .selectAll 'path'
+circleGroup = svg
+  .append 'svg:g'
+    .selectAll 'g'
 
 selected_node = null
 selected_link = null
@@ -109,9 +92,9 @@ resetMouseVars = ->
   mousedown_link = null
   return
 
-# update force layout (called automatically each iteration)
+# Update force layout (called automatically each iteration).
 tick = ->
-  # draw directed edges with proper padding from node centers
+  # Draw directed edges with proper padding from node centers.
   path.attr "d", (edge) ->
     deltaX = edge.target.x - edge.source.x
     deltaY = edge.target.y - edge.source.y
@@ -125,42 +108,40 @@ tick = ->
     targetX = edge.target.x - (targetPadding * normX)
     targetY = edge.target.y - (targetPadding * normY)
     return "M#{sourceX},#{sourceY}L#{targetX},#{targetY}"
-  circle.attr 'transform', (node) ->
+  circleGroup.attr 'transform', (node) ->
     "translate(#{node.x},#{node.y})"
   return
 
-# update graph (called when needed)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-restart = ->
+# Update graph (called when needed).
+# =====================================================================
+update = ->
 
   # Update the node and edge list
   nodes = graph.getNodes()
   links = graph.getDrawableEdges()
 
-  # path (link) group
+
+  # Bind newly-fetched links to path selection.
   path = path.data(links)
-
-  # update existing links
+  # Update existing links.
   path
-      .classed('selected', (edge) ->
+      .classed 'selected', (edge) ->
         graph.isSameLink(edge.key, selected_link)
-      ).style('marker-start', (edge) ->
-        (if edge.bidirectional then 'url(#start-arrow)' else "")
-      ).style('marker-end', (edge) ->
-        'url(#end-arrow)'
-      )
-
-  # add new links
+      .style 'marker-start', (edge) ->
+         (if edge.bidirectional then 'url(#start-arrow)' else "")
+      .style 'marker-end', (edge) ->
+       'url(#end-arrow)'
+  # Add new links.
   path.enter()
-    .append('svg:path')
-      .attr('class', 'link')
-      .classed('selected', (edge) ->
+    .append 'svg:path'
+      .attr 'class', 'link'
+      .classed 'selected', (edge) ->
         edge.key is selected_link
-      ).style('marker-start', (edge) ->
+      .style 'marker-start', (edge) ->
         (if edge.bidirectional then 'url(#start-arrow)' else '')
-      ).style('marker-end', (edge) ->
+      .style 'marker-end', (edge) ->
         'url(#end-arrow)'
-      ).on('mousedown', (edge) ->
+      .on 'mousedown', (edge) ->
         return if d3.event.shiftKey
 
         # select link
@@ -171,139 +152,145 @@ restart = ->
           selected_link = mousedown_link
         selected_node = null
 
-        restart()
-      )
-
-  # remove old links
+        update()
+  # Remove old links.
   path.exit().remove()
 
-  # circle (node) group
-  # NB: the function arg is crucial here! nodes are known by id, not by index!
-  circle = circle.data(nodes, (d) ->
-    return d._id
-  )
+  # Bind newly-fetched nodes to circle selection.
+  # NB: Nodes are known by the graph's internal ID, not by d3 index!
+  circleGroup = circleGroup.data nodes, (d) -> d._id
 
-  # update existing nodes (reflexive & selected visual states)
-  circle.selectAll('circle')
-      .style('fill', (node) ->
-        if (node is selected_node)
-          return nodeColor(node).brighter()
-        else
-          return nodeColor(node)
-      ).attr('transform', (node) ->
-        if (node is selected_node)
-          return 'scale(1.1)'
-      ).classed('reflexive', (node) ->
-        node.reflexive
-      )
+  # Add new nodes.
+  g = circleGroup.enter()
+    .append 'svg:g'
 
-
-  # add new nodes
-  g = circle.enter().append('svg:g')
-
-  g.append('svg:circle')
-      .attr('class', 'node')
-      .attr('r', NODE_RADIUS)
-      .style('fill', (node) ->
+  g.append 'svg:circle'
+      .attr 'class', 'node'
+      .attr 'r', NODE_RADIUS
+      .style 'fill', (node) ->
         if (node is selected_node)
           nodeColor(node).brighter().toString()
         else
           nodeColor(node)
-      ).classed('reflexive', (node) ->
+      .classed 'reflexive', (node) ->
         node.reflexive
         # TODO mouseover/mouseout
-      ).on('mouseover', (node) ->
+      .on 'mouseover', (node) ->
         return if not mousedown_node or node is mousedown_node
-        # enlarge target node
-        d3.select(this).attr('transform', 'scale(1.1)')
-      ).on('mouseout', (node) ->
+        # Enlarge target node.
+        d3.select(this).attr 'transform', 'scale(1.1)'
+      .on 'mouseout', (node) ->
         return if not mousedown_node or node is mousedown_node
-        # unenlarge target node
-        d3.select(this).attr('transform', '')
-      ).on('mousedown', (node) ->
+        # Unenlarge target node.
+        d3.select(this).attr 'transform', ''
+      .on 'mousedown', (node) ->
         return if d3.event.shiftKey
 
-        # select/deselect node
+        # Select/deselect node.
         mousedown_node = node
         if mousedown_node is selected_node then selected_node = null
         else selected_node = mousedown_node
         selected_link = null
 
-        # reposition drag line
+        # Reposition drag line.
         drag_line
-          .style('marker-end', 'url(#end-arrow)')
-            .classed('hidden', false)
-            .attr('d', "M#{mousedown_node.x},#{mousedown_node.y}L#{mousedown_node.x},#{mousedown_node.y}")
+          .style 'marker-end', 'url(#end-arrow)'
+            .classed 'hidden', false
+            .attr 'd', "M#{mousedown_node.x},#{mousedown_node.y}L#{mousedown_node.x},#{mousedown_node.y}"
 
-        restart()
-      ).on('mouseup', (node) ->
+        update()
+      .on 'mouseup', (node) ->
         return if not mousedown_node
 
-        # needed by FF
+        # Needed by FF.
         drag_line
-          .classed('hidden', true)
-          .style('marker-end', '')
+          .classed 'hidden', true
+          .style 'marker-end', ''
 
-        # check for drag-to-self
+        # Check for drag-to-self.
         mouseup_node = node
         if mouseup_node is mousedown_node
           resetMouseVars()
           return
 
-        # unenlarge target node
-        d3.select(this).attr('transform', '')
+        # Unenlarge target node.
+        d3.select(this).attr 'transform', ''
 
-        edge = graph.addEdge(mousedown_node._id, mouseup_node._id)
+        edge = graph.addEdge mousedown_node._id, mouseup_node._id
 
         if not edge?
-          edge = graph.getEdge(mousedown_node._id, mouseup_node._id)
+          edge = graph.getEdge mousedown_node._id, mouseup_node._id
 
-        # select new link
+        # Select new link.
         selected_link = edge.key
         selected_node = null
 
-        restart()
-      )
+        update()
 
   # Show node IDs.
-  g.append('svg:text')
-      .attr('x', 0)
-      .attr('y', -6)
-      .classed('node-label', true)
-      .classed('id', true)
-      .attr('fill', NODE_LABEL_COLOR)
+  g.append 'svg:text'
+      .attr 'x', 0
+      .attr 'y', -6
+      .classed 'node-label', true
+      .classed 'id', true
+      .attr 'fill', colors.node.label
 
   # Show node mechanisms.
-  g.append('svg:text')
-      .attr('x', 0)
-      .attr('y', 13)
-      .classed('node-label', true)
-      .classed('mechanism', true)
-      .attr('fill', NODE_LABEL_COLOR)
+  g.append 'svg:text'
+      .attr 'x', 0
+      .attr 'y', 13
+      .classed 'node-label', true
+      .classed 'mechanism', true
+      .attr 'fill', colors.node.label
 
+  # Bind the data to the actual circle elements.
+  circles = circleGroup.selectAll 'circle'
+    .data nodes, (node) -> node._id
+
+  # Update existing nodes.
+  # Note: since we appended to the enter selection, this will be applied to the
+  # new circle elements we just created.
+  circleGroup.selectAll 'circle'
+      .style 'fill', (node) ->
+        # Brighten the selected node.
+        if (node is selected_node)
+          return nodeColor(node).brighter()
+        else
+          return nodeColor(node)
+      .attr 'transform', (node) ->
+        # Enlarge the selected node.
+        if (node is selected_node)
+          return 'scale(1.1)'
+      .classed 'reflexive', (node) ->
+        # Mark reflexive nodes.
+        node.reflexive
   # Update displayed mechanisms and IDs.
-  circle.select('.node-label.id').text((node) -> node.label)
-  circle.select('.node-label.mechanism').text((node) -> node.mechanism)
+  circleGroup.select '.node-label.id'
+    .text (node) -> node.label
+  circleGroup.select '.node-label.mechanism'
+    .text (node) -> node.mechanism
 
-  # remove old nodes
-  circle.exit().remove()
+  # Remove old nodes.
+  circleGroup.exit().remove()
 
-  # Rebind the nodes and links.
+  # Rebind the nodes and links to the force layout.
   force
-    .nodes(nodes)
-    .links(links)
+    .nodes nodes
+    .links links
 
   # Set the graph in motion.
   force.start()
 
-# end of restart()
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# =====================================================================
+
+# Mouse handlers
+# =====================================================================
 
 dblclick = (properties) ->
   # Prevent I-bar on drag.
   d3.event.preventDefault()
   # Because :active only works in WebKit?
-  svg.classed('active', true)
+  svg.classed 'active', true
   return if d3.event.shiftKey or
             mousedown_node or
             mousedown_link or
@@ -311,64 +298,68 @@ dblclick = (properties) ->
   # Insert new node at this point.
   point = d3.mouse(this)
   # Add the node and start with it selected.
-  selected_node = graph.addNode(
+  selected_node = graph.addNode
     x: point[0]
     y: point[1]
-  )
-  restart()
+  update()
 
 
 mousemove = ->
   return unless mousedown_node
-  # update drag line
-  drag_line.attr('d', "M#{mousedown_node.x},#{mousedown_node.y}L#{d3.mouse(this)[0]},#{d3.mouse(this)[1]}")
-  restart()
+  # Update drag line.
+  drag_line.attr 'd', "M#{mousedown_node.x},#{mousedown_node.y}L#{d3.mouse(this)[0]},#{d3.mouse(this)[1]}"
+  update()
 
 
 mouseup = ->
   if mousedown_node
-    # hide drag line
+    # Hide drag line.
     drag_line
-      .classed('hidden', true)
-      .style('marker-end', '')
-  # because :active only works in WebKit?
-  svg.classed('active', false)
-  # clear mouse event vars
+      .classed 'hidden', true
+      .style 'marker-end', ''
+  # Because :active only works in WebKit?
+  svg.classed 'active', false
+  # Clear mouse event variables.
   resetMouseVars()
 
 
 mousedown = ->
   selected_node = null unless mousedown_node
   selected_link = null unless mousedown_link
-  restart()
+  update()
+
+# =====================================================================
 
 
-# only respond once per keydown
+# Keyboard handlers.
+# =====================================================================
+
+# Only respond once per keydown.
 lastKeyDown = -1
 
 
 keydown = ->
 
   switch d3.event.keyCode
-    # left arrow
+    # Left arrow.
     when 37
       selectPreviousNode()
-      restart()
+      update()
       break
-    # up arrow
+    # Up arrow.
     when 38
       selectPreviousNode()
-      restart()
+      update()
       break
-    # right arrow
+    # Right arrow.
     when 39
       selectNextNode()
-      restart()
+      update()
       break
-    # down arrow
+    # Down arrow.
     when 40
       selectNextNode()
-      restart()
+      update()
       break
 
   return unless lastKeyDown is -1
@@ -376,15 +367,15 @@ keydown = ->
 
   # shift
   if d3.event.keyCode is 16
-    circle.call(force.drag)
-    svg.classed('shiftkey', true)
+    circleGroup.call force.drag
+    svg.classed 'shiftkey', true
 
   return if not selected_node and not selected_link
 
   # Node or link is selected:
   # Grab selected link source and target ids.
   if selected_link
-    ids = selected_link.split(',')
+    ids = selected_link.split ','
     sourceId = ids[0]
     targetId = ids[1]
   switch d3.event.keyCode
@@ -392,65 +383,65 @@ keydown = ->
     when 8, 46
       d3.event.preventDefault()
       if selected_node
-        removed = graph.removeNode(selected_node._id)
+        removed = graph.removeNode selected_node._id
         selected_node = null
-        restart()
+        update()
       else if selected_link
-        graph.removeEdge(sourceId, targetId)
-        graph.removeEdge(targetId, sourceId)
+        graph.removeEdge sourceId, targetId
+        graph.removeEdge targetId, sourceId
         selected_link = null
-        restart()
+        update()
       break
     # d
     when 68
       if selected_link
         # Cycle through link directions:
         # Faithful selected_link -> switch
-        if (graph.getEdge(sourceId, targetId) and
-            not graph.getEdge(targetId, sourceId))
-          graph.removeEdge(sourceId, targetId)
-          graph.addEdge(targetId, sourceId)
+        if (graph.getEdge sourceId, targetId  and
+            not graph.getEdge targetId, sourceId)
+          graph.removeEdge sourceId, targetId
+          graph.addEdge targetId, sourceId
         # Switched selected_link -> bidirectional
-        else if (graph.getEdge(targetId, sourceId) and
-                 not graph.getEdge(sourceId, targetId))
-          graph.addEdge(sourceId, targetId)
+        else if (graph.getEdge targetId, sourceId  and
+                 not graph.getEdge sourceId, targetId )
+          graph.addEdge sourceId, targetId
         # Bidirectional -> faithful selected_link
-        else if (graph.getEdge(sourceId, targetId) and
-                 graph.getEdge(targetId, sourceId))
-          graph.removeEdge(targetId, sourceId)
-        restart()
+        else if (graph.getEdge sourceId, targetId and
+                 graph.getEdge targetId, sourceId)
+          graph.removeEdge targetId, sourceId
+        update()
       break
     # b
     when 66
       if selected_link
-        graph.addEdge(sourceId, targetId)
-        graph.addEdge(targetId, sourceId)
-        restart()
+        graph.addEdge sourceId, targetId
+        graph.addEdge targetId, sourceId
+        update()
       break
     # space
     when 32
       d3.event.preventDefault()
       if selected_node
-        graph.toggleState(selected_node)
-        restart()
+        graph.toggleState selected_node
+        update()
       break
     # m
     when 77
       if selected_node
-        graph.cycleMechanism(selected_node)
-        restart()
+        graph.cycleMechanism selected_node
+        update()
       break
     # r
     when 82
       if selected_node
-        graph.toggleReflexivity(selected_node)
-        restart()
+        graph.toggleReflexivity selected_node
+        update()
       break
 
 
 selectNextNode = ->
   if not selected_node or selected_node.index is graph.nodeSize - 1
-    selected_node = graph.getNodeByIndex(0)
+    selected_node = graph.getNodeByIndex 0
   else
     selected_node = graph.getNodeByIndex(selected_node.index + 1)
 
@@ -466,9 +457,9 @@ keyup = ->
   lastKeyDown = -1
   # shift
   if d3.event.keyCode is 16
-    circle
-        .on('mousedown.drag', null)
-        .on('touchstart.drag', null)
+    circleGroup
+        .on 'mousedown.drag', null
+        .on 'touchstart.drag', null
     svg.classed('shiftkey', false)
 
 
@@ -476,7 +467,7 @@ nearestNeighbor = (node, nodes) ->
   nearest = selected_node
   minDistance = Infinity
   for n in nodes
-    d = dist([node.x, node.y], [n.x, n.y])
+    d = dist [node.x, node.y], [n.x, n.y]
     if d <= minDistance
       minDistance = d
       nearest = n
@@ -487,29 +478,30 @@ dist = (p0, p1) ->
   Math.sqrt(Math.pow(p1[0] - p0[0], 2) + Math.pow(p1[1] - p0[1], 2))
 
 
-# Set up initial graph.
+
+# Initialization
 # =============================================================================
-#
+
+# Set up initial graph.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 graph = new Graph()
 
 # Bind the controls to the graph.
 graph.controls = controls
 
-graph.addNode(
+graph.addNode
   on: 1
   mechanism: 'OR'
   reflexive: false
-)
-graph.addNode(
+graph.addNode
   on: 0
   mechanism: 'AND'
   reflexive: false
-)
-graph.addNode(
+graph.addNode
   on: 0
   mechanism: 'XOR'
   reflexive: false
-)
 
 graph.addEdge(0, 2)
 graph.addEdge(0, 1)
@@ -520,33 +512,36 @@ graph.addEdge(2, 1)
 
 graph.setPastState([1, 1, 0])
 
-# =============================================================================
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Resize canvas.
+$(window).resize resizeCanvas
+# Bind d3 nodes and links to graph.
 nodes = graph.getNodes()
 links = graph.getDrawableEdges()
-
-# init D3 force layout
+# Initialize D3 force layout.
 force = d3.layout.force()
-    .nodes(nodes)
-    .links(links)
-    .size([width, height])
-    .linkDistance(175)
-    .linkStrength(0.75)
-    .charge(-900)
-    .on('tick', tick)
-
-# app starts here
+    .nodes nodes
+    .links links
+    .size [width, height]
+    .linkDistance 175
+    .linkStrength 0.75
+    .charge -900
+    .on 'tick', tick
+# Bind mouse handlers.
 svg
-    .on('dblclick', dblclick)
-    .on('mousemove', mousemove)
-    .on('mousedown', mousedown)
-    .on('mouseup', mouseup)
+    .on 'dblclick', dblclick
+    .on 'mousemove', mousemove
+    .on 'mousedown', mousedown
+    .on 'mouseup', mouseup
+# Bind keyboard handlers.
+d3.select document
+    .on 'keydown', keydown
+    .on 'keyup', keyup
+# Go go go!
+update()
 
-d3.select(document)
-    .on('keydown', keydown)
-    .on('keyup', keyup)
-
-restart()
+# =============================================================================
 
 
 exports.graph = graph
