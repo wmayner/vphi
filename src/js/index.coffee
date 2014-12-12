@@ -1,9 +1,15 @@
+'use strict'
+
+# AngularJS
+ngControllers = require './controllers'
+ngServices = require './services'
+
 pyphi = require './graph-editor/pyphi'
 error = require './errors'
 
 # Initialize interface components
-graphEditor = require './graph-editor.js'
-conceptSpace = require './concept-space.js'
+graphEditor = require './graph-editor'
+conceptSpace = require './concept-space'
 
 
 PRECISION = 6

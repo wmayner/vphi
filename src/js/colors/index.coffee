@@ -4,9 +4,15 @@
 
 solarized = require './solarized'
 
+
+white = d3.rgb 255, 255, 255
+
 module.exports =
   solarized: solarized
   node:
     on: solarized.cyan
     off: solarized.base1
-    label: solarized.base03
+    label: white
+  link:
+    line: white
+    endpoint: white

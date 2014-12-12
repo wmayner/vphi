@@ -1,3 +1,7 @@
+###
+# concept-space/rotate.coffee
+###
+
 # Rotate an object around an arbitrary axis in world space
 exports.aroundWorldAxis = (object, axis, radians) ->
   rotWorldMatrix = new THREE.Matrix4()

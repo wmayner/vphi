@@ -1,0 +1,18 @@
+{
+  "name": "vphi",
+  "description": "A visual interface to PyPhi.",
+  "version": "0.0.1",
+  "homepage": "http://github.com/wmayner/vphi",
+  "license": "GPLv3",
+  "private": "true",
+  "dependencies": {
+    "bootstrap": "~3.1.1",
+    "jquery": "1.10.2",
+    "d3": "3.x",
+    "c3": "~0.4.7",
+    "threejs": "*",
+    "jquery-jsonrpcclient": "~0.7.0",
+    "underscore": "~1.7.0",
+    "angular": "~1.3.6"
+  }
+}

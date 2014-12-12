@@ -1,4 +1,6 @@
-# Logical functions that nodes can implement
+###
+# graph-editor/mechanism.coffee
+###
 
 utils = require './utils'
 

@@ -1,5 +1,5 @@
 ###
-# Helper for drawing axes.
+# concept-space/axes.coffee
 ###
 
 rotate = require './rotate'

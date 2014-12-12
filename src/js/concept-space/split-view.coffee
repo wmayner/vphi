@@ -1,11 +1,10 @@
 ###
-split-view.coffee
-
-Returns a scene initialized with all the static stuff necessary to represent
-concept space.
+# concept-space/split-view.coffee
+#
+# Returns a scene initialized with all the static stuff necessary to represent
+# concept space.
 ###
 
-_ = require 'jashkenas/underscore'
 axes = require './axes'
 utils = require './utils'
 

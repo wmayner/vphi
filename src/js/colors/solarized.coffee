@@ -1,5 +1,5 @@
 ###
-# solarized.coffee
+# colors/solarized.coffee
 ###
 
 module.exports =

@@ -1,15 +1,21 @@
-html(lang='en')
+doctype html
+html(lang='en' ng-app="vphi")
 head
   meta(charset='utf-8')
   meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
   meta(name='viewport', content='width=device-width')
   title vphi
-
   // Online/Offline
   // link(href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css', rel='stylesheet', type='text/css')
-  link(href='/lib/bootstrap.css', rel='stylesheet', type='text/css')
+  link(href='/bower_components/bootstrap/dist/css/bootstrap.css', rel='stylesheet', type='text/css')
+  // TODO load minified versions
+  link(href='bower_components/c3/c3.css', rel='stylesheet', type='text/css')
+  link(href='/css/app.css', rel='stylesheet', type='text/css')
 
-  link(href='/vphi.css', rel='stylesheet', type='text/css')
+  // Scripts
+
+  // Online/Offline
+  script(src='/bower_components/angular/angular.min.js')
 body
   .container-fluid
     .row.clearfix
@@ -66,29 +72,48 @@ body
                 | ···
     .row.clearfix
       .col-md-12
-        #repertoire-module.well.module
-          .col-md-6#past-repertoires
-          .col-md-6#future-repertoires
+        #concept-list-module(ng-controller="ConceptListCtrl").module.well
+          h2.module-title Concepts
+          .row.clearfix
+            .col-md-6#past-repertoires(ng-controller="RepertoireListCtrl")
+              h3 Past Repertoires
+              ul
+                li(ng-repeat="pastRepertoire in pastRepertoires") {{pastRepertoire}}
+            .col-md-6#future-repertoires(ng-controller="RepertoireListCtrl")
+              h3 Future Repertoires
+              ul
+                li {{futureRepertoire}}
         
+  // TODO *** minify
+  
   // Online/Offline
   // script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
-  script(src='/lib/jquery.js')
+  script(src='/bower_components/jquery/jquery.min.js')
+
+  // TODO minify?
+  script(src='/bower_components/jquery-jsonrpcclient/jquery.jsonrpcclient.js')
 
   // Online/Offline
-  script(src='/lib/d3.js')
+  script(src='/bower_components/underscore/underscore.js')
+
+  // Online/Offline
+  // TODO get minified versions
+  // script(src='//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.js')
+  script(src='/bower_components/d3/d3.js')
+
+  // TODO get minified versions
+  // Online/Offline
+  script(src='/bower_components/c3/c3.js')
 
   // Online/Offline
   // script(src='//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js')
-  script(src='/lib/three.min.js')
+  script(src='/bower_components/threejs/build/three.js')
 
-  script(src='/lib/TrackballControls.js')
-  script(src='/lib/OrthographicTrackballControls.js')
-  script(src='/lib/PointerLockControls.js')
-  script(src='/lib/Detector.js')
-  script(src='/lib/jquery.jsonrpcclient.js')
+  script(src='/js/lib/TrackballControls.js')
+  script(src='/js/lib/Detector.js')
 
-  script(src='/build.js')
+  script(src='/js/app.js')
 
   // Online/Offline
   // script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')
-  script(src='/lib/bootstrap.js')
+  script(src='/bower_components/bootstrap/dist/js/bootstrap.js')

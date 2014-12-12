@@ -1,3 +1,7 @@
+###
+# graph-editor/controls.coffee
+###
+
 # Selectors
 PAST_STATE_CHOOSER = '#past-state-chooser'
 PAST_STATE_CHOICES = '#possible-past-states'

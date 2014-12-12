@@ -1,5 +1,7 @@
 ###
-API for PyPhi's RPC server.
+# graph-editor/pyphi.coffee
+#
+# API for PyPhi's RPC server.
 ###
 
 error = require '../errors'

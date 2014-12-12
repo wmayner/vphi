@@ -1,3 +1,7 @@
+###
+# errors.coffee
+###
+
 module.exports =
 
   STATE_UNREACHABLE: 1

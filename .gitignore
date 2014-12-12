@@ -1,8 +1,6 @@
 node_modules
-components
+bower_components
 lib
-!test/lib
-build/*
-!build/index.jade
-test/tests.js
-test/js
+app/js/*
+app/css/*
+app/index.html

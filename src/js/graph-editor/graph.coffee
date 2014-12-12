@@ -1,4 +1,8 @@
 ###
+# graph-editor/graph.coffee
+###
+
+###
 Graph implemented as a modified incidence list. O(1) for every typical
 operation except `removeNode()` at O(E) where E is the number of edges.
 

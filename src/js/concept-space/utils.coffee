@@ -1,4 +1,6 @@
-_ = require 'jashkenas/underscore'
+###
+# concept-space/utils.coffee
+###
 
 sum = (x) ->
   x.reduce (a, b) -> a + b
@@ -42,7 +44,7 @@ module.exports =
       wireframeLinewidth: 3
       shading: THREE.SmoothShading
     )
-    geometry = new THREE.SphereGeometry(radius, 1, 1)
+    geometry = new THREE.SphereGeometry(radius, 2, 2)
     star = new THREE.Mesh(geometry, material)
     star.position.set(position.x, position.y, position.z)
     scene.add(star)

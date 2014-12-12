@@ -1,10 +1,10 @@
 ###
-Main concept space script.
+# concept-space/index.coffee
 ###
 
-axes = require './concept-space/axes'
-SplitView = require './concept-space/split-view'
-JoinedView = require './concept-space/joined-view'
+axes = require './axes'
+SplitView = require './split-view'
+JoinedView = require './joined-view'
 
 
 # Check for lack of WebGL support.

@@ -1,8 +1,10 @@
-# d3 = require 'mbostock/d3'
+###
+# graph-editor/index.coffee
+###
 
-Graph = require './graph-editor/digraph'
-controls = require './graph-editor/controls'
-colors = require './colors/index'
+Graph = require './graph'
+controls = require './controls'
+colors = require '../colors'
 
 
 MAXIMUM_NODES = 5
@@ -69,6 +71,7 @@ svg
 drag_line = svg
   .append 'svg:path'
     .attr 'class', 'link dragline hidden'
+    .attr 'stroke', colors.link.line
     .attr 'd', 'M0,0L0,0'
 
 # handles to link and node element groups
@@ -135,6 +138,7 @@ update = ->
   path.enter()
     .append 'svg:path'
       .attr 'class', 'link'
+      .attr 'stroke', colors.link.line
       .classed 'selected', (edge) ->
         edge.key is selected_link
       .style 'marker-start', (edge) ->
@@ -167,11 +171,6 @@ update = ->
   g.append 'svg:circle'
       .attr 'class', 'node'
       .attr 'r', NODE_RADIUS
-      .style 'fill', (node) ->
-        if (node is selected_node)
-          nodeColor(node).brighter().toString()
-        else
-          nodeColor(node)
       .classed 'reflexive', (node) ->
         node.reflexive
         # TODO mouseover/mouseout
@@ -254,7 +253,7 @@ update = ->
       .style 'fill', (node) ->
         # Brighten the selected node.
         if (node is selected_node)
-          return nodeColor(node).brighter()
+          return nodeColor(node).brighter(0.5)
         else
           return nodeColor(node)
       .attr 'transform', (node) ->
