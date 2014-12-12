@@ -1,8 +1,8 @@
-'use strict'
+###
+# controllers.coffee
+###
 
-# Controllers
-
-window.vphi = angular.module('vphiControllers', [])
+window.vphi = angular.module 'vphi', []
 
 window.vphi.controller 'RepertoireListCtrl', ($scope) ->
   $scope.sup = 'no'
