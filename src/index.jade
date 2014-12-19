@@ -12,8 +12,6 @@ head
   link(href='bower_components/c3/c3.css', rel='stylesheet', type='text/css')
   link(href='/css/app.css', rel='stylesheet', type='text/css')
 
-  // Scripts
-
   // Online/Offline
   script(src='/bower_components/angular/angular.min.js')
 body
@@ -24,7 +22,7 @@ body
           h2.module-title Network
           .row.clearfix
             .col-md-12
-              #graph-editor-container
+              #graph-editor-container(vphi-graph-editor-canvas)
           .row.clearfix
             .col-md-12
               form.form-horizontal.control-panel(role="form")
@@ -72,18 +70,28 @@ body
                 | ···
     .row.clearfix
       .col-md-12
-        #concept-list-module(ng-controller="ConceptListCtrl").module.well
+        #concept-list-module.module(ng-controller="vphiConceptListCtrl")
           h2.module-title Concepts
-          .row.clearfix
-            .col-md-6#past-repertoires(ng-controller="RepertoireListCtrl")
-              h3 Past Repertoires
-              ul
-                li(ng-repeat="pastRepertoire in pastRepertoires") {{pastRepertoire}}
-            .col-md-6#future-repertoires(ng-controller="RepertoireListCtrl")
-              h3 Future Repertoires
-              ul
-                li {{futureRepertoire}}
-        
+          .concept.well(phi-concept, ng-repeat="concept in concepts", id="concept-{{$index}}")
+            .row.clearfix
+              .col-md-5.repertoire-container
+                h4 Past Repertoire
+                .repertoire(phi-repertoire-chart, direction="cause")
+              .col-md-2.concept-data
+                hr
+                button.mechanism.btn.btn-lg.btn-primary
+                  | {{getMechanism(concept)}}
+                hr
+                .btn-group
+                  button.btn.btn-lg.btn-default
+                    | φ
+                  button.btn.btn-lg.btn-default
+                    | {{getSmallPhi(concept)}}
+                h4.cut
+              .col-md-5.repertoire-container
+                h4 Future Repertoire
+                .repertoire(phi-repertoire-chart, direction="effect")
+
   // TODO *** minify
   
   // Online/Offline
