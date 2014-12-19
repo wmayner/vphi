@@ -42,19 +42,15 @@ graph.removeEdge('A', 'B'); // => the edge object removed
 - edgeSize: total number of edges.
 ###
 
+utils = require '../utils'
 tpmify = require './tpmify'
-utils = require './utils'
+graphUtils = require './utils'
 mechanism = require './mechanism'
-
-# Alphabet for letter labels of nodes.
-ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-            'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-            'W', 'X', 'Y', 'Z']
 
 # Helpers
 
 getAllStates = (numNodes) ->
-  return (utils.indexToState(i, numNodes) for i in [0...Math.pow(2, numNodes)])
+  return (utils.holiIndexToState(i, numNodes) for i in [0...Math.pow(2, numNodes)])
 
 checkPossiblePastState = (tpm, pastStateIndex, currentState) ->
   row = tpm[pastStateIndex]
@@ -95,7 +91,7 @@ class Graph
       _outEdges: {}
       _inEdges: {}
       index: @nodeSize
-      label: ALPHABET[@nodeSize]
+      label: utils.LABEL[@nodeSize]
       on: 0
       mechanism: 'MAJ'
       reflexive: false
@@ -143,7 +139,7 @@ class Graph
     @forEachNode (node) ->
       if node.index > nodeToRemove.index
         node.index--
-        node.label = ALPHABET[node.index]
+        node.label = utils.LABEL[node.index]
     @update()
     return nodeToRemove
 
@@ -332,7 +328,7 @@ class Graph
     @update()
 
   toggleState: (node) ->
-    node.on = utils.negate(node.on)
+    node.on = graphUtils.negate(node.on)
     @update()
 
   toggleReflexivity: (node) ->
@@ -359,7 +355,7 @@ class Graph
   # TODO just take graph, keep a tpm in graph?
   getPossiblePastStates: ->
     numStates = Math.pow(2, @nodeSize)
-    result = (utils.indexToState(pastStateIndex, @nodeSize) \
+    result = (utils.holiIndexToState(pastStateIndex, @nodeSize) \
       for pastStateIndex in [0...numStates] \
       when checkPossiblePastState(@tpm, pastStateIndex, @currentState))
     if result.length is 0
