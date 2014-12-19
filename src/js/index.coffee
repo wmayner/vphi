@@ -25,7 +25,7 @@ PRECISION = 6
 
 displayBigMip = (bigMip) ->
   # Round to PRECISION.
-  phi = Number(bigMip.phi).toFixed(PRECISION)
+  phi = utils.formatPhi(bigMip.phi)
   # Display the result.
   $('#output-phi').html(phi)
   # Draw the unpartitioned constellation.
