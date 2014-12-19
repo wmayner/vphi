@@ -135,7 +135,7 @@ class JoinedView
 
   resetControls: =>
     @controls.reset()
-    @controls.target = new THREE.Vector3(0.5, 0.5, 0.5)
+    @controls.target = @scene.position
 
   render: =>
     @renderer.render(@scene, @camera)
