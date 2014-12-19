@@ -2,6 +2,7 @@
 # concept-space/axes.coffee
 ###
 
+colors = require '../colors'
 rotate = require './rotate'
 
 π = Math.PI
@@ -111,23 +112,30 @@ module.exports =
     return axes
 
   drawSplit: (scene) ->
+    pastColor = [
+      colors.cause.r / 255
+      colors.cause.g / 255
+      colors.cause.b / 255
+    ]
+    futureColor = [
+      colors.effect.r / 255
+      colors.effect.g / 255
+      colors.effect.b / 255
+    ]
     past_axis = new AxisHelper(
       coords: [
         [-1, 0, 0]
         [0, -1, 0]
         [0, 0, -1]
       ]
-      colors: new Float32Array([
-        # 0.2, 0.8, 1.0,  0.2, 0.8, 1.0,
-        # 0.1, 0.2, 0.9,  0.1, 0.2, 0.9,
-        # 0.4, 0.4, 1.0,  0.4, 0.4, 1.0,
-        0.14, 0.54, 0.82,  0.14, 0.54, 0.82,
-        0.14, 0.54, 0.82,  0.14, 0.54, 0.82,
-        0.14, 0.54, 0.82,  0.14, 0.54, 0.82,
-        # 0.0, 0.0, 0.0,  1.0, 0.0, 0.0,
-        # 0.0, 0.0, 0.0,  0.0, 1.0, 0.0,
-        # 0.0, 0.0, 0.0,  0.0, 0.0, 1.0,
-      ])
+      colors: new Float32Array([]
+        .concat(pastColor).concat(pastColor)
+        .concat(pastColor).concat(pastColor)
+        .concat(pastColor).concat(pastColor)
+        # 1.0, 0.0, 0.0,  1.0, 0.0, 0.0,
+        # 0.0, 1.0, 0.0,  0.0, 1.0, 0.0,
+        # 0.0, 0.0, 1.0,  0.0, 0.0, 1.0,
+      )
       lineoptions: {linewidth: RENDERED_AXIS_LINE_WIDTH}
     )
     scene.add(past_axis)
@@ -137,17 +145,14 @@ module.exports =
         [0, 1, 0]
         [0, 0, 1]
       ]
-      colors: new Float32Array([
-        # 0.8, 1.0, 0.3,  0.8, 1.0, 0.3,
-        # 0.1, 0.5, 0.2,  0.1, 0.5, 0.2,
-        # 0.4, 0.9, 0.4,  0.4, 0.9, 0.4,
-        0.1, 0.5, 0.2,  0.1, 0.5, 0.2,
-        0.1, 0.5, 0.2,  0.1, 0.5, 0.2,
-        0.1, 0.5, 0.2,  0.1, 0.5, 0.2,
+      colors: new Float32Array([]
+        .concat(futureColor).concat(futureColor)
+        .concat(futureColor).concat(futureColor)
+        .concat(futureColor).concat(futureColor)
         # 1.0, 0.0, 0.0,  1.0, 0.0, 0.0,
         # 0.0, 1.0, 0.0,  0.0, 1.0, 0.0,
         # 0.0, 0.0, 1.0,  0.0, 0.0, 1.0,
-      ])
+      )
       lineoptions: {linewidth: RENDERED_AXIS_LINE_WIDTH}
     )
     scene.add(future_axis)

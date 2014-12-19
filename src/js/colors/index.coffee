@@ -16,3 +16,7 @@ module.exports =
   link:
     line: white
     endpoint: white
+  cause: solarized.blue
+  effect: d3.rgb 42, 188, 72
+  repertoire:
+    partitioned: '#ccc'
