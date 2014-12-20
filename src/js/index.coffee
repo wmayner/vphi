@@ -9,6 +9,7 @@ angular = require './angular'
 
 pyphi = require './graph-editor/pyphi'
 error = require './errors'
+utils = require './utils'
 
 # Initialize interface components
 graphEditor = require './graph-editor'
