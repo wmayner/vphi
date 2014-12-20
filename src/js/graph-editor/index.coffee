@@ -396,17 +396,17 @@ keydown = ->
       if selected_link
         # Cycle through link directions:
         # Faithful selected_link -> switch
-        if (graph.getEdge sourceId, targetId  and
-            not graph.getEdge targetId, sourceId)
+        if (graph.getEdge(sourceId, targetId) and
+            not graph.getEdge(targetId, sourceId))
           graph.removeEdge sourceId, targetId
           graph.addEdge targetId, sourceId
         # Switched selected_link -> bidirectional
-        else if (graph.getEdge targetId, sourceId  and
-                 not graph.getEdge sourceId, targetId )
+        else if (graph.getEdge(targetId, sourceId) and
+                 not graph.getEdge(sourceId, targetId))
           graph.addEdge sourceId, targetId
         # Bidirectional -> faithful selected_link
-        else if (graph.getEdge sourceId, targetId and
-                 graph.getEdge targetId, sourceId)
+        else if (graph.getEdge(sourceId, targetId) and
+                 graph.getEdge(targetId, sourceId))
           graph.removeEdge targetId, sourceId
         update()
       break
