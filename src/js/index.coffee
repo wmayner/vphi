@@ -1,8 +1,11 @@
+###
+# index.coffee
+###
+
 'use strict'
 
 # AngularJS
-ngControllers = require './controllers'
-ngServices = require './services'
+angular = require './angular'
 
 pyphi = require './graph-editor/pyphi'
 error = require './errors'
