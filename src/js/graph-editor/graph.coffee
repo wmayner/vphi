@@ -2,46 +2,6 @@
 # graph-editor/graph.coffee
 ###
 
-###
-Graph implemented as a modified incidence list. O(1) for every typical
-operation except `removeNode()` at O(E) where E is the number of edges.
-
-## Overview example:
-
-```js
-var graph = new Graph;
-graph.addNode('A'); // => a node object. For more info, log the output or check
-                    // the documentation for addNode
-graph.addNode('B');
-graph.addNode('C');
-graph.addEdge('A', 'C'); // => an edge object
-graph.addEdge('A', 'B');
-graph.getEdge('B', 'A'); // => undefined. Directed edge!
-graph.getEdge('A', 'B'); // => the edge object previously added
-graph.getEdge('A', 'B').weight = 2 // weight is the only built-in handy property
-                                   // of an edge object. Feel free to attach
-                                   // other properties
-graph.getInEdgesOf('B'); // => array of edge objects, in this case only one;
-                         // connecting A to B
-graph.getOutEdgesOf('A'); // => array of edge objects, one to B and one to C
-graph.getAllEdgesOf('A'); // => all the in and out edges. Edge directed toward
-                          // the node itself are only counted once
-forEachNode(function(nodeObject) {
-  console.log(node);
-});
-forEachEdge(function(edgeObject) {
-  console.log(edgeObject);
-});
-graph.removeNode('C'); // => 'C'. The edge between A and C also removed
-graph.removeEdge('A', 'B'); // => the edge object removed
-```
-
-## Properties:
-
-- nodeSize: total number of nodes.
-- edgeSize: total number of edges.
-###
-
 utils = require '../utils'
 tpmify = require './tpmify'
 graphUtils = require './utils'
@@ -82,9 +42,9 @@ class Graph
 
   addNode: (nodeData = {}) ->
     ###
-    _Returns:_ the node object. Feel free to attach additional custom properties
-    on it for graph algorithms' needs. **Undefined if node id already exists**,
-    as to avoid accidental overrides.
+    _Returns:_ the node object. Feel free to attach additional custom
+    properties on it for graph algorithms' needs. **Undefined if node id
+    already exists**, so as to avoid accidental overrides.
     ###
     node =
       _id: @getNewNodeId()
@@ -146,14 +106,14 @@ class Graph
   addEdge: (sourceId, targetId, weight = 1) ->
     ###
     `source` and `target` are the node id specified when it was created using
-    `addNode()`. `weight` is optional and defaults to 1. Ignoring it effectively
-    makes this an unweighted graph. Under the hood, `weight` is just a normal
-    property of the edge object.
+    `addNode()`. `weight` is optional and defaults to 1. Ignoring it
+    effectively makes this an unweighted graph. Under the hood, `weight` is
+    just a normal property of the edge object.
 
     _Returns:_ the edge object created. Feel free to attach additional custom
     properties on it for graph algorithms' needs. **Or undefined** if the nodes
-    of id `source` or `target` aren't found, or if an edge already exists between
-    the two nodes.
+    of id `source` or `target` aren't found, or if an edge already exists
+    between the two nodes.
     ###
     if @getEdge sourceId, targetId then return
     fromNode = @_nodes[sourceId]
@@ -232,9 +192,9 @@ class Graph
     `getOutEdgesOf()`. Some nodes might have an edge pointing toward itself.
     This method solves that duplication.
 
-    _Returns:_ an array of edge objects linked to the node, no matter if they're
-    outgoing or coming. Duplicate edge created by self-pointing nodes are
-    removed. Only one copy stays. Empty array if node has no edges.
+    _Returns:_ an array of edge objects linked to the node, no matter if
+    they're outgoing or coming. Duplicate edge created by self-pointing nodes
+    are removed. Only one copy stays. Empty array if node has no edges.
     ###
     inEdges = @getInEdgesOf nodeId
     outEdges = @getOutEdgesOf nodeId
