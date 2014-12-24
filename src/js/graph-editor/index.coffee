@@ -481,9 +481,6 @@ dist = (p0, p1) ->
 # Initialization
 # =============================================================================
 
-# Set up initial graph.
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 graph = new Graph()
 
 # Bind the controls to the graph.
@@ -511,7 +508,6 @@ graph.addEdge(2, 1)
 
 graph.setPastState([1, 1, 0])
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Resize canvas.
 $(window).resize resizeCanvas

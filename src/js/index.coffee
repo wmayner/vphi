@@ -7,7 +7,7 @@
 # AngularJS
 angular = require './angular'
 
-pyphi = require './graph-editor/pyphi'
+pyphi = require './pyphi'
 error = require './errors'
 utils = require './utils'
 

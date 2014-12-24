@@ -64,7 +64,7 @@ body
         #main-control-module.module
           .control-panel.btn-toolbar(role='toolbar')
             .btn-group
-              button#btn-calculate.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…')
+              button#btn-calculate.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-controller="vphiCalculateButtonCtrl" ng-click="click()")
                 | Calculate Φ
               button#output-phi.btn.btn-lg.btn-default.disabled
                 | ···
@@ -82,11 +82,9 @@ body
                 button.mechanism.btn.btn-lg.btn-primary
                   | {{getMechanism(concept)}}
                 hr
-                .btn-group
-                  button.btn.btn-lg.btn-default
-                    | φ
-                  button.btn.btn-lg.btn-default
-                    | {{getSmallPhi(concept)}}
+                .output-label φ:
+                button.btn.btn-lg.btn-default
+                  | {{getSmallPhi(concept)}}
                 h4.cut
               .col-md-5.repertoire-container
                 h4 Future Repertoire

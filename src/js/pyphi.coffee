@@ -1,15 +1,15 @@
 ###
-# graph-editor/pyphi.coffee
+# pyphi.coffee
 #
 # API for PyPhi's RPC server.
 ###
 
-error = require '../errors'
+error = require './errors'
 
 
 # TODO*** change endpoint
 pyphi = new $.JsonRpcClient({
-  ajaxUrl: 'http://localhost:4000/'
+  ajaxUrl: 'http://127.0.0.1:5000/'
 })
 
 

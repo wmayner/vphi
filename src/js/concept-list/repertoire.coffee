@@ -2,7 +2,7 @@
 # concept-list/repertoire.coffee
 ###
 
-class Repertoire
+class RepertoireChart
   constructor: (args) ->
     @_args = args
     @_data = args.data
@@ -43,19 +43,8 @@ class Repertoire
 
     @_chart = c3.generate(config)
 
-  _update: =>
-    @_chart.load(columns: [@_data])
+  load: (columns) ->
+    @_chart.load
+      columns: columns
 
-  load: (dataIndex) =>
-    d = @_args.data[dataIndex]
-    @_data = [@_args.name]
-      .concat(@_args.data[0...(dataIndex + 1)])
-      .concat(null for i in [(dataIndex + 1)...@_args.data.length])
-    @_update()
-
-  clear: =>
-    @_data = [@_args.name]
-      .concat(null for d in @_args.data)
-    @_update()
-
-module.exports = Repertoire
+module.exports = RepertoireChart
