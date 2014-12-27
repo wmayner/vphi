@@ -4,80 +4,136 @@
 
 'use strict'
 
-# AngularJS
-angular = require './angular'
-
-pyphi = require './pyphi'
-error = require './errors'
 utils = require './utils'
-
-# Initialize interface components
+colors = require './colors'
+pyphi = require './pyphi'
 graphEditor = require './graph-editor'
 conceptSpace = require './concept-space'
+RepertoireChart = require './concept-list/repertoire'
 
 
-PRECISION = 6
+window.vphi = angular.module 'vphi', [
+  'vphiDataService'
+  'vphiControls'
+  'vphiConceptList'
+]
+
+window.vphiDataService = angular.module 'vphiDataService', []
+  .factory 'vphiDataService', [
+    '$rootScope'
+    ($rootScope, $scope) ->
+      new class PhiData
+        bigMip: false
+
+        update: (success, always) =>
+          console.log "DATA_SERVICE: Updating..."
+          pyphi.bigMip(graphEditor.graph, (bigMip) =>
+            @bigMip = bigMip
+            console.log "DATA_SERVICE: Broadcasting data update."
+            $rootScope.$broadcast 'vphiDataUpdated'
+            $rootScope.$apply success
+          ).always(-> $rootScope.$apply always)
+  ]
 
 
-# TODO dispense with jQuery and use d3 instead
+window.vphiControls = angular.module 'vphiControls', [
+  'vphiDataService'
+]
+  .controller 'vphiCalculateButtonCtrl', [
+    '$scope'
+    'vphiDataService',
+    ($scope, vphiDataService) ->
+      btnCooldown = false
 
-#################
-# Control panel #
-#################
+      startLoading = ->
+        $('#output-phi').html '···'
+        $('#concept-space-loading-spinner').removeClass 'hidden'
+        $('#concept-space-loading-spinner').show()
+        $('#concept-space-overlay').removeClass 'hidden'
+        $('#concept-space-overlay').show()
 
-# Helpers
+      finishLoading = ->
+        $('#concept-space-loading-spinner').fadeOut 400, ->
+          btnCooldown = false
+        $('#concept-space-overlay').fadeOut 400
 
-displayBigMip = (bigMip) ->
-  # Round to PRECISION.
-  phi = utils.formatPhi(bigMip.phi)
-  # Display the result.
-  $('#output-phi').html(phi)
-  # Draw the unpartitioned constellation.
-  conceptSpace.display(bigMip)
+      displayBigMip = (bigMip) ->
+        # Round to PRECISION.
+        phi = utils.formatPhi(bigMip.phi)
+        # Display the result.
+        $('#output-phi').html(phi)
+        # Draw the unpartitioned constellation.
+        conceptSpace.display(bigMip)
 
-cooldown = false
+      $scope.click = ->
+        return if btnCooldown
+        btnCooldown = true
+        btn = $('#btn-calculate')
+        btn.button 'loading'
+        startLoading()
 
-startLoading = ->
-  $('#output-phi').html('···')
-  $('#concept-space-loading-spinner').removeClass('hidden')
-  $('#concept-space-loading-spinner').show()
-  $('#concept-space-overlay').removeClass('hidden')
-  $('#concept-space-overlay').show()
+        success = ->
+          displayBigMip(vphiDataService.bigMip)
 
-finishLoading = ->
-  $('#concept-space-loading-spinner').fadeOut(400, -> cooldown = false)
-  $('#concept-space-overlay').fadeOut(400)
+        always = ->
+          btn.button 'reset'
+          finishLoading()
 
-pressCalculate = ->
-  return if cooldown
-  cooldown = true
-  btn = $('#btn-calculate')
-  btn.button 'loading'
-  startLoading()
-  try
-    pyphi.bigMip(graphEditor.graph, displayBigMip).always ->
-      btn.button 'reset'
-      finishLoading()
-  catch e
-    btn.button 'reset'
-    finishLoading()
-    switch e.code
-      when 1
-        # TODO display "invalid past state message"
-        console.error(e.message)
-      when 2
-        # TODO display "network size limit exceeded message"
-        console.error(e.message)
+        vphiDataService.update(success, always)
+  ]
 
+window.vphiConceptList = angular.module 'vphiConceptList', [
+  'vphiDataService'
+]
+  .controller 'vphiConceptListCtrl', [
+    '$scope'
+    'vphiDataService'
+    ($scope, vphiDataService) ->
+      $scope.concepts = null
+      $scope.numNodes = null
 
-$(document).ready ->
+      $scope.$on 'vphiDataUpdated', ->
+        console.log "CONCEPT_LIST: Updating concept list..."
+        console.log "CONCEPT_LIST: Old concepts:"
+        console.log $scope.concepts
+        $scope.concepts = vphiDataService.bigMip.unpartitioned_constellation
+        $scope.numNodes = vphiDataService.bigMip.subsystem.node_indices.length
+        console.log "CONCEPT_LIST: New concepts:"
+        console.log $scope.concepts
 
-# Event handlers
+      $scope.getSmallPhi = (concept) ->
+        return utils.formatPhi(concept.phi)
 
-control = $('#btn-calculate').mouseup(pressCalculate)
+      $scope.getMechanism = (concept) ->
+        return (utils.LABEL[n] for n in concept.mechanism).join(' ')
+  ]
 
-# Keyboard shorcuts
+  # .directive 'vphiConcept', ->
+  #   link: (scope, element, attrs) ->
 
-$(document).keydown (e) ->
-  if e.keyCode is 13
-    pressCalculate()
+  .directive 'vphiRepertoireChart', ->
+    link: (scope, element, attrs) ->
+      chart = new RepertoireChart
+        name: 'P'
+        bindto: element[0]
+        data: []
+        height: 150
+        colors:
+          'Unpartitioned': colors[attrs.direction]
+          'Partitioned': colors.repertoire.partitioned
+        x:
+          tick:
+            # count: concept.repertoire.length
+            rotate: 60
+            format: (x) ->
+              utils.loliIndexToState(d3.round(x, 0), scope.numNodes).join(', ')
+          label: (if attrs.direction is 'cause' then 'Past State' else 'Future State')
+
+      # scope.$watch (-> scope.concept[attrs.direction]), (concept) ->
+
+      concept = scope.concept[attrs.direction]
+      console.log "REPERTOIRE_CHART: Loading new data for concept #{scope.$index} (#{attrs.direction})."
+      chart.load [
+        ['Unpartitioned'].concat concept.repertoire
+        ['Partitioned'].concat concept.partitioned_repertoire
+      ]
