@@ -9,7 +9,7 @@ error = require './errors'
 
 # TODO*** change endpoint
 pyphi = new $.JsonRpcClient({
-  ajaxUrl: 'http://127.0.0.1:5000/'
+  ajaxUrl: 'http://144.92.3.24/'
 })
 
 
