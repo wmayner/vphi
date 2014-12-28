@@ -2,10 +2,26 @@
 base_font = 'Open Sans', 'Helvetica Neue', 'Helvetica'
 mono_font = 'Droid Sans Mono', 'Monaco', 'Menlo', 'Courier New', monospace
 
+@import "colors"
+
+
 body
   font-family base_font
   padding-top 50px
   background sol_background
+
+ul {
+  padding-top: 15px;
+}
+ul li {
+  padding-bottom: 10px;
+}
+span.keyboard {
+  font-weight: bold;
+  background: #ccc;
+  border-radius: 3px;
+  padding: 0.5px 6px;
+}
 
 .row-centered
   text-align center
@@ -65,7 +81,6 @@ svg
   -o-user-select none
   user-select none
 
-@import "colors"
 @import "graph-editor"
 @import "concept-space"
 @import "concept-list"
