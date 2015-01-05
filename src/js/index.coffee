@@ -15,6 +15,7 @@ RepertoireChart = require './concept-list/repertoire'
 window.vphi = angular.module 'vphi', [
   'vphiDataService'
   'vphiControls'
+  'vphiOutputSummary'
   'vphiConceptList'
 ]
 
@@ -30,6 +31,8 @@ window.vphiDataService = angular.module 'vphiDataService', []
           pyphi.bigMip(graphEditor.graph, (bigMip) =>
             @bigMip = bigMip
             console.log "DATA_SERVICE: Broadcasting data update."
+            console.log "DATA_SERVICE: bigMip:"
+            console.log bigMip
             $rootScope.$broadcast 'vphiDataUpdated'
             $rootScope.$apply success
           ).always(-> $rootScope.$apply always)
@@ -82,6 +85,25 @@ window.vphiControls = angular.module 'vphiControls', [
         vphiDataService.update(success, always)
   ]
 
+window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
+  .controller 'vphiOutputSummaryCtrl', [
+    '$scope'
+    'vphiDataService'
+    ($scope, vphiDataService) ->
+      $scope.bigPhi = null
+      $scope.numConcepts = null
+
+      $scope.$on 'vphiDataUpdated', ->
+        d = vphiDataService.bigMip
+        $scope.bigPhi = utils.formatPhi d.phi
+        $scope.numConcepts = d.unpartitioned_constellation.length
+        if d.unpartitioned_constellation.length > 0
+          $scope.sumSmallPhi = utils.formatPhi (c.phi for c in d.unpartitioned_constellation).reduce((x, y) -> x + y)
+        else
+          $scope.sumSmallPhi = 0
+        $scope.minimalCut = utils.formatCut d.cut_subsystem.cut
+  ]
+
 window.vphiConceptList = angular.module 'vphiConceptList', [
   'vphiDataService'
 ]
@@ -93,19 +115,15 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
       $scope.numNodes = null
 
       $scope.$on 'vphiDataUpdated', ->
-        console.log "CONCEPT_LIST: Updating concept list..."
-        console.log "CONCEPT_LIST: Old concepts:"
-        console.log $scope.concepts
         $scope.concepts = vphiDataService.bigMip.unpartitioned_constellation
         $scope.numNodes = vphiDataService.bigMip.subsystem.node_indices.length
-        console.log "CONCEPT_LIST: New concepts:"
-        console.log $scope.concepts
+        console.log "CONCEPT_LIST: Updated concept list."
 
       $scope.getSmallPhi = (concept) ->
-        return utils.formatPhi(concept.phi)
+        return utils.formatPhi concept.phi
 
       $scope.getMechanism = (concept) ->
-        return (utils.LABEL[n] for n in concept.mechanism).join(' ')
+        return utils.formatNodes concept.mechanism
   ]
 
   # .directive 'vphiConcept', ->

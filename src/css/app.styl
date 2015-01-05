@@ -44,6 +44,20 @@ span.keyboard {
     padding-top 10px
     padding-bottom 10px
 
+.number-2
+  width 3em
+
+.number-7
+  width 6em
+
+.number-2, .number-7
+  background sol_background
+  border 1px solid #ddd
+  border-radius 5px
+  padding 6px 10px
+  text-align center
+  display inline-block
+
 #concept-space-module, #graph-editor-module
   min-height 700px
 
@@ -61,6 +75,12 @@ span.keyboard {
 
 #btn-calculate
   width 175px
+
+.output-label
+  display inline-block
+  font-size 120%
+  text-align right
+  margin-right 20px
 
 #output-phi
   opacity 1
@@ -83,5 +103,6 @@ svg
 
 @import "graph-editor"
 @import "concept-space"
+@import "output-summary"
 @import "concept-list"
 @import "tetromino"
