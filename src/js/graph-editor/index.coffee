@@ -11,10 +11,10 @@ MAXIMUM_NODES = 5
 CONTAINER_SELECTOR = '#graph-editor-container'
 
 $container = $(CONTAINER_SELECTOR)
-height = 500
+height = 300
 width = $container.width()
 
-NODE_RADIUS = 30
+NODE_RADIUS = 24
 
 
 nodeColor = (node) -> (if node.on then colors.node.on else colors.node.off)
@@ -229,7 +229,7 @@ update = ->
   # Show node IDs.
   g.append 'svg:text'
       .attr 'x', 0
-      .attr 'y', -6
+      .attr 'y', -4
       .classed 'node-label', true
       .classed 'id', true
       .attr 'fill', colors.node.label
@@ -237,7 +237,7 @@ update = ->
   # Show node mechanisms.
   g.append 'svg:text'
       .attr 'x', 0
-      .attr 'y', 13
+      .attr 'y', 12
       .classed 'node-label', true
       .classed 'mechanism', true
       .attr 'fill', colors.node.label

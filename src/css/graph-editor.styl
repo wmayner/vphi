@@ -1,11 +1,17 @@
 // graph-editor.styl
 
-node_radius = 18
-
 #graph-editor-module
 
-  .form-horizontal .control-label
-    text-align right
+  #graph-editor-container
+    margin-bottom 20px
+
+  .form-group
+    margin-bottom 0
+
+  .form-horizontal
+    .control-label
+      padding-top 5px
+      text-align right
 
   svg
     background #000
@@ -35,16 +41,15 @@ node_radius = 18
       stroke-width 3.5px
 
   text
-    font 14px 'Helvetica Neue', sans-serif
+    font 12px 'Helvetica Neue', sans-serif
     pointer-events none
     &.node-label
       text-anchor middle
       &.id
-        font 16px 'Helvetica Neue', sans-serif
+        font 14px 'Helvetica Neue', sans-serif
         font-weight bold
 
   ul#possible-past-states
-    font-size 120%
     font-family mono_font
     text-align center
 

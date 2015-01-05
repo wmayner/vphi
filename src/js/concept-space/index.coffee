@@ -30,7 +30,7 @@ container = $container[0]
 
 # Width and height of the canvas.
 width = $container.css('width')
-height = 500
+height = 300
 
 # Construct views.
 splitView = new SplitView(container, width, height)
