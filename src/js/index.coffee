@@ -118,16 +118,68 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
         $scope.concepts = vphiDataService.bigMip.unpartitioned_constellation
         $scope.numNodes = vphiDataService.bigMip.subsystem.node_indices.length
         console.log "CONCEPT_LIST: Updated concept list."
-
-      $scope.getSmallPhi = (concept) ->
-        return utils.formatPhi concept.phi
-
-      $scope.getMechanism = (concept) ->
-        return utils.formatNodes concept.mechanism
   ]
 
-  # .directive 'vphiConcept', ->
-  #   link: (scope, element, attrs) ->
+  .controller 'vphiConceptCtrl', [
+    '$scope'
+    ($scope) ->
+      concept = $scope.concept
+
+      $scope.mechanism = utils.formatNodes concept.mechanism
+      $scope.smallPhi = utils.formatPhi concept.phi
+      $scope.smallPhiPast = utils.formatPhi concept.phi
+      $scope.smallPhiPast = utils.formatPhi concept.cause.mip.phi
+      $scope.smallPhiFuture = utils.formatPhi concept.effect.mip.phi
+
+      if concept.cause.mip.phi > concept.effect.mip.phi
+        $scope.smallPhiPastClass = "bold"
+      else
+        $scope.smallPhiFutureClass = "bold"
+
+      $scope.causeMip = "\\frac{" +
+        utils.formatNodes(concept.effect.mip.mechanism) + "^{c}" +
+        "}{" +
+        utils.formatNodes(concept.effect.mip.purview) + "^{p}" +
+        "}"
+      $scope.partitionedCauseMip = "\\frac{" +
+        utils.formatNodes(concept.cause.mip.partition[0].mechanism) + "^{c}" +
+        "}{" +
+        utils.formatNodes(concept.cause.mip.partition[0].purview) + "^{p}" +
+        "} \\times \\frac{" +
+        utils.formatNodes(concept.cause.mip.partition[1].mechanism) + "^{c}" +
+        "}{" +
+        utils.formatNodes(concept.cause.mip.partition[1].purview) + "^{p}" +
+        "}"
+      $scope.effectMip = "\\frac{" +
+        utils.formatNodes(concept.effect.mip.mechanism) + "^{c}" +
+        "}{" +
+        utils.formatNodes(concept.effect.mip.purview) + "^{f}" +
+        "}"
+      $scope.partitionedEffectMip = "\\frac{" +
+        utils.formatNodes(concept.effect.mip.partition[0].mechanism) + "^{c}" +
+        "}{" +
+        utils.formatNodes(concept.effect.mip.partition[0].purview) + "^{f}" +
+        "} \\times \\frac{" +
+        utils.formatNodes(concept.effect.mip.partition[1].mechanism) + "^{c}" +
+        "}{" +
+        utils.formatNodes(concept.effect.mip.partition[1].purview) + "^{f}" +
+        "}"
+  ]
+
+  .directive 'mathjaxBind', ->
+    restrict: 'A'
+    controller: [
+      '$scope'
+      '$element'
+      '$attrs'
+      ($scope, $element, $attrs) ->
+        $scope.$watch $attrs.mathjaxBind, (value) ->
+          $script = angular.element("<script type='math/tex'>")
+            .html(value or "")
+          $element.html("")
+          $element.append($script)
+          MathJax.Hub.Queue ['Reprocess', MathJax.Hub, $element[0]]
+    ]
 
   .directive 'vphiRepertoireChart', ->
     link: (scope, element, attrs) ->
@@ -146,8 +198,6 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
             format: (x) ->
               utils.loliIndexToState(d3.round(x, 0), scope.numNodes).join(', ')
           label: (if attrs.direction is 'cause' then 'Past State' else 'Future State')
-
-      # scope.$watch (-> scope.concept[attrs.direction]), (concept) ->
 
       concept = scope.concept[attrs.direction]
       console.log "REPERTOIRE_CHART: Loading new data for concept #{scope.$index} (#{attrs.direction})."

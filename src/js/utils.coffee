@@ -14,7 +14,11 @@ module.exports =
 
   formatCut: (cut) -> "#{@formatNodes cut.severed} ⇏ #{@formatNodes cut.intact}"
 
-  formatNodes: (nodeArray) -> (@LABEL[n] for n in nodeArray).join(' ')
+  formatNodes: (nodeArray) ->
+    if nodeArray.length > 0
+      (@LABEL[n] for n in nodeArray).join(' ')
+    else
+      return '[\\,]'
 
   holiIndexToState: (i, numberOfNodes) ->
     # Convert a decimal index into an array of binary node states according to

@@ -4,7 +4,7 @@ head
   meta(charset='utf-8')
   meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
   meta(name='viewport', content='width=device-width')
-  title Calculate Phi
+  title Calculate Φ
 
   //- TODO load minified versions
 
@@ -19,7 +19,7 @@ head
   link(href='/css/app.css', rel='stylesheet', type='text/css')
 
   //- Online/Offline
-  script(src='/bower_components/angular/angular.min.js')
+  script(src='/bower_components/angular/angular.js')
   //- script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js")
 body
   .container-fluid
@@ -30,13 +30,11 @@ body
           .row.clearfix
             .col-md-12
               #graph-editor-container(vphi-graph-editor-canvas)
-          .row.clearfix
-            .col-md-12
               form.form-horizontal.control-panel(role="form")
-                .form-group.form-group-lg
+                .form-group.form-group
                   label.control-label.col-sm-5(for="past-state-chooser") Past state:
                   .col-sm-7
-                    button#past-state-chooser.btn.btn-lg.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                    button#past-state-chooser.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
                       #selected-past-state 1, 1, 0
                       span.caret
                       span.sr-only Toggle past state selection dropdown
@@ -44,7 +42,7 @@ body
                       li
                         strong A, B, C
               .modal
-                h2 Graph-editing commands
+                h3 Graph-editing commands
                 ul.commands
                   li Add a node by double-clicking where you want the node to appear.
                   li Add edges by clicking on a node and dragging your cursor to another node.
@@ -64,7 +62,7 @@ body
         #concept-space-module.well.module
           h2.module-title Conceptual structure
           .row.clearfix
-            .col-md-12.column
+            .col-md-12
               #concept-space-container
                 #concept-space-overlay.hidden &nbsp;
               #concept-space-loading-spinner.hidden
@@ -77,21 +75,22 @@ body
             .col-centered
               .control-panel.btn-toolbar(role='toolbar')
                 .btn-group.pull-right
-                  button#reset-camera.btn.btn-lg.btn-default(type='button')
+                  button#reset-camera.btn.btn-md.btn-default(type='button')
                     | Reset Camera
-                  button#switch-view.btn.btn-lg.btn-default(type='button')
+                  button#switch-view.btn.btn-md.btn-default(type='button')
                     | Switch View
-                  button#toggle-grids.btn.btn-lg.btn-default(type='button')
+                  button#toggle-grids.btn.btn-md.btn-default(type='button')
                     | Toggle Grids
+    hr
     .row.row-centered.clearfix
       .col-centered
         #main-control-module.module
             button#btn-calculate.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-controller="vphiCalculateButtonCtrl" ng-click="click()")
-              | Calculate Φ
+              | Calculate
     hr
     .row.clearfix
       .col-md-12
-        #output-summary-module.module(ng-controller="vphiOutputSummaryCtrl")
+        section#output-summary-module.module(ng-controller="vphiOutputSummaryCtrl")
           h2.module-title Summary
           .row.row-centered.clearfix
             .col-centered
@@ -100,44 +99,67 @@ body
                   .output-label Φ 
                   .number-7#phi-value {{bigPhi || '–'}}
                 .item.well
-                  .output-label # concepts 
-                  .number-2#num-concepts {{numConcepts || '–'}}
-                .item.well
                   .output-label Minimal cut
                   .number-7#minimal-cut {{minimalCut || '–'}}
                 .item.well
+                  .output-label # concepts 
+                  .number-2#num-concepts {{numConcepts || '–'}}
+                .item.well
                   .output-label Sum of φ
                   .number-7#sum-small-phi {{sumSmallPhi || '–'}}
-    hr
     .row.clearfix
       .col-md-12
-        #concept-list-module.module(ng-controller="vphiConceptListCtrl")
+        section#concept-list-module.module(ng-controller="vphiConceptListCtrl")
           h2.module-title Concepts
-          .concept.well(vphi-concept, ng-repeat="concept in concepts", id="concept-{{$index}}")
+          .concept.well(ng-controller="vphiConceptCtrl" ng-repeat="concept in concepts", id="concept-{{$index}}")
+            .concept-data
+              .row.row-centered.clearfix
+                .col-xs-4
+                  ul
+                    li
+                      .small-phi-past
+                        .output-label(class="{{smallPhiPastClass}}") φ
+                          sub p
+                        .number-7 {{smallPhiPast || '–'}}
+                    li
+                      .small-phi-mips
+                        .output-label Cause MIP:
+                        .math-output(mathjax-bind="causeMip")
+                        .output-label Partitioned:
+                        .math-output(mathjax-bind="partitionedCauseMip")
+                .col-xs-4
+                  button.mechanism.btn.btn-lg.btn-primary
+                    | {{mechanism}}
+                  hr
+                  .small-phi
+                    .output-label φ
+                    .number-7 {{smallPhi || '–'}}
+                .col-xs-4
+                  ul
+                    li
+                      .small-phi-future
+                        .output-label(class="{{smallPhiFutureClass}}") φ
+                          sub f
+                        .number-7 {{smallPhiFuture || '–'}}
+                    li
+                      .small-phi-mips
+                        .output-label Effect MIP:
+                        .math-output(mathjax-bind="effectMip")
+                        .output-label Partitioned:
+                        .math-output(mathjax-bind="partitionedEffectMip")
             .row.clearfix
-              .col-md-5
-                .row.clearfix
-                  .col-md-12
-                    h4 hi
-                .row.clearfix
-                  .col-md-12.repertoire-container
-                    h4 Past Repertoire
-                    .repertoire(vphi-repertoire-chart, direction="cause")
-              .col-md-2.concept-data
-                button.mechanism.btn.btn-lg.btn-primary
-                  | {{getMechanism(concept)}}
-                hr
-                .output-label φ
-                .number-7 {{getSmallPhi(concept)}}
-                h4.cut
-              .col-md-5.repertoire-container
-                .row.clearfix
-                  .col-md-12
-                    h4 hi
-                .row.clearfix
-                  .col-md-12
-                    h4 Future Repertoire
-                    .repertoire(vphi-repertoire-chart, direction="effect")
+              .col-md-6
+                .repertoire-container
+                  .row.clearfix
+                    .col-md-12
+                      h5.repertoire-title Past Repertoire
+                      .repertoire(vphi-repertoire-chart, direction="cause")
+              .col-md-6
+                .repertoire-container
+                  .row.clearfix
+                    .col-md-12
+                      h5.repertoire-title Future Repertoire
+                      .repertoire(vphi-repertoire-chart, direction="effect")
 
   // TODO *** minify
   
@@ -169,6 +191,12 @@ body
 
   script(src='/js/lib/TrackballControls.js')
   script(src='/js/lib/Detector.js')
+
+  //- Online/Offline
+  script(src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
+  //- IMPORTANT: If loading from Bower, need to load the config file also
+  // script(src='/bower_components/MathJax/MathJax.js')
+  // script(src='/bower_components/MathJax/config/TeX-AMS-MML_HTMLorMML.js')
 
   script(src='/js/app.js')
 
