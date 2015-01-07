@@ -104,7 +104,7 @@ class JoinedView
     # Initialize the camera.
     @camera = new THREE.PerspectiveCamera(20, width / height, 0.01, 1000)
     @scene.add(@camera)
-    @camera.position.set(4, 4, 4)
+    @camera.position.set(1.5, 1.5, 1.5)
 
     # Initialize the camera controls.
     @controls = new THREE.TrackballControls(@camera, @container)
