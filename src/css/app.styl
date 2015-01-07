@@ -15,6 +15,9 @@ ul
   li
     margin 5px 0
 
+.bold
+  font-weight bold
+
 span.keyboard
   font-weight bold
   background #ccc
@@ -36,6 +39,12 @@ span.keyboard
   font-size 160%
   text-align center
   margin 0 0 15px 0
+
+section
+  margin-bottom 15px
+  margin-top 10px
+  .module-title
+    margin-bottom 25px
 
 .control-panel
   .control-label
@@ -63,22 +72,11 @@ span.keyboard
 .control-panel
   margin 10px 0 10px 0
 
-#btn-calculate
-  width 175px
-
 .output-label
   display inline-block
   font-size 120%
   text-align right
   margin-right 15px
-
-#output-phi
-  opacity 1
-  text-align center
-  font-size 130%
-  font-weight bold
-  width 175px
-  letter-spacing .25ex
 
 canvas, svg
   border-radius 5px
@@ -93,6 +91,7 @@ svg
 
 @import "graph-editor"
 @import "concept-space"
+@import "main-control"
 @import "output-summary"
 @import "concept-list"
 @import "tetromino"
