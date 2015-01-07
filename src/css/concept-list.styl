@@ -2,6 +2,7 @@
 
 #concept-list-module
   text-align center
+
   h3
     margin-bottom 35px
 
@@ -15,7 +16,9 @@
     font-size 130%
 
   .small-phi
-    font-size 100%
+    [class^=number]
+      width 100px
+      letter-spacing 0.2ex
 
   .concept-data
     ul
@@ -30,5 +33,11 @@
     .math-output
       display inline-block
       font-size 150%
-      margin-right 15px
       text-align center
+
+    .output-label
+      margin 5px 15px 5px 0
+
+    .small-phi-mips
+      .spacer
+        margin 0 15px

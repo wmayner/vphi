@@ -137,32 +137,32 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
         $scope.smallPhiFutureClass = "bold"
 
       $scope.causeMip = "\\frac{" +
-        utils.formatNodes(concept.effect.mip.mechanism) + "^{c}" +
+        utils.formatNodes(concept.effect.mip.mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.effect.mip.purview) + "^{p}" +
+        utils.formatNodes(concept.effect.mip.purview) + "^{\\,p}" +
         "}"
       $scope.partitionedCauseMip = "\\frac{" +
-        utils.formatNodes(concept.cause.mip.partition[0].mechanism) + "^{c}" +
+        utils.formatNodes(concept.cause.mip.partition[0].mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.cause.mip.partition[0].purview) + "^{p}" +
+        utils.formatNodes(concept.cause.mip.partition[0].purview) + "^{\\,p}" +
         "} \\times \\frac{" +
-        utils.formatNodes(concept.cause.mip.partition[1].mechanism) + "^{c}" +
+        utils.formatNodes(concept.cause.mip.partition[1].mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.cause.mip.partition[1].purview) + "^{p}" +
+        utils.formatNodes(concept.cause.mip.partition[1].purview) + "^{\\,p}" +
         "}"
       $scope.effectMip = "\\frac{" +
-        utils.formatNodes(concept.effect.mip.mechanism) + "^{c}" +
+        utils.formatNodes(concept.effect.mip.mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.effect.mip.purview) + "^{f}" +
+        utils.formatNodes(concept.effect.mip.purview) + "^{\\,f}" +
         "}"
       $scope.partitionedEffectMip = "\\frac{" +
-        utils.formatNodes(concept.effect.mip.partition[0].mechanism) + "^{c}" +
+        utils.formatNodes(concept.effect.mip.partition[0].mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.effect.mip.partition[0].purview) + "^{f}" +
+        utils.formatNodes(concept.effect.mip.partition[0].purview) + "^{\\,f}" +
         "} \\times \\frac{" +
-        utils.formatNodes(concept.effect.mip.partition[1].mechanism) + "^{c}" +
+        utils.formatNodes(concept.effect.mip.partition[1].mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.effect.mip.partition[1].purview) + "^{f}" +
+        utils.formatNodes(concept.effect.mip.partition[1].purview) + "^{\\,f}" +
         "}"
   ]
 
