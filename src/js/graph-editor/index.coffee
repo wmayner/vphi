@@ -11,7 +11,7 @@ MAXIMUM_NODES = 5
 CONTAINER_SELECTOR = '#graph-editor-container'
 
 $container = $(CONTAINER_SELECTOR)
-height = 300
+height = 500
 width = $container.width()
 
 NODE_RADIUS = 24
