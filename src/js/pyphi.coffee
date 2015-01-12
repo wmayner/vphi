@@ -13,7 +13,7 @@ pyphi = new $.JsonRpcClient({
 })
 
 
-NETWORK_SIZE_LIMIT = 5
+NETWORK_SIZE_LIMIT = 8
 
 
 validate = (graph) ->
