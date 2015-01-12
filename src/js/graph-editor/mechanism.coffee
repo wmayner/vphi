@@ -28,8 +28,12 @@ exports.names = [
   'MAJ'
   'MIN'
   'PAR'
-  'THRESH'
+  '>'
+  '<'
 ]
+
+console.log parityGate
+
 exports.functions =
   'AND': andGate
   'NAND': (input) ->
@@ -52,12 +56,11 @@ exports.functions =
     sum += i for i in input
     return utils.bit(sum <= (input.length / 2))
   'PAR': parityGate
-  'THRESH':
-    'ABOVE': (n, input) ->
-      sum = 0
-      sum += i for i in input
-      return utils.bit(sum > n)
-    'BELOW': (n, input) ->
-      sum = 0
-      sum += i for i in input
-      return utils.bit(sum < n)
+  '>': (input, threshold) ->
+    sum = 0
+    sum += i for i in input
+    return utils.bit(sum > threshold)
+  '<': (input, threshold) ->
+    sum = 0
+    sum += i for i in input
+    return utils.bit(sum < threshold)

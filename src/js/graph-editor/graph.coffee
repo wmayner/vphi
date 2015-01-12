@@ -55,6 +55,8 @@ class Graph
       on: 0
       mechanism: 'MAJ'
       reflexive: false
+      # Threshold for '>' and '<' mechanisms
+      threshold: 2
     for key, value of nodeData
       node[key] = value
     @nodeSize++

@@ -19,7 +19,10 @@ getNewNodeState = (graph, index, state) ->
   inputs = (state[inputNodeId] for inputNodeId in inputNodeIds)
   # Compute the new state of the node by plugging-in the inputs to its
   # mechanism.
-  return mechanism.functions[node.mechanism](inputs)
+  if node.mechanism is '>' or node.mechanism is '<'
+    return mechanism.functions[node.mechanism](inputs, node.threshold)
+  else
+    return mechanism.functions[node.mechanism](inputs)
 
 # Get a map from nodes to their next states.
 getNextNetworkState = (graph, state) ->

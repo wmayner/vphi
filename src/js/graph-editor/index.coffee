@@ -267,7 +267,11 @@ update = ->
   circleGroup.select '.node-label.id'
     .text (node) -> node.label
   circleGroup.select '.node-label.mechanism'
-    .text (node) -> node.mechanism
+    .text (node) ->
+      if node.mechanism is '>' or node.mechanism is '<'
+        return "#{node.mechanism} #{node.threshold}"
+      else
+        return node.mechanism
 
   # Remove old nodes.
   circleGroup.exit().remove()
@@ -428,6 +432,14 @@ keydown = ->
     when 77
       if selected_node
         graph.cycleMechanism selected_node
+        console.log selected_node.mechanism
+        update()
+      break
+    when 84
+      if selected_node
+        oldThreshold = selected_node.threshold++
+        if oldThreshold >= NETWORK_SIZE_LIMIT
+          selected_node.threshold = 0
         update()
       break
     # r
