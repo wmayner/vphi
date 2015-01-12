@@ -9,20 +9,20 @@ head
   //- TODO load minified versions
 
   //- Online/Offline
-  //- link(href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css', rel='stylesheet', type='text/css')
-  link(href='/bower_components/bootstrap/dist/css/bootstrap.css', rel='stylesheet', type='text/css')
+  link(href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css', rel='stylesheet', type='text/css')
+  //- link(href='/bower_components/bootstrap/dist/css/bootstrap.css', rel='stylesheet', type='text/css')
 
   //- Online/Offline
-  link(href='bower_components/c3/c3.css', rel='stylesheet', type='text/css')
-  //- link(href='//cdnjs.cloudflare.com/ajax/libs/c3/0.4.8/c3.min.css', rel='stylesheet', type='text/css')
+  //- link(href='bower_components/c3/c3.css', rel='stylesheet', type='text/css')
+  link(href='//cdnjs.cloudflare.com/ajax/libs/c3/0.4.8/c3.min.css', rel='stylesheet', type='text/css')
   
   link(href='/css/app.css', rel='stylesheet', type='text/css')
 
   //- Online/Offline
-  script(src='/bower_components/angular/angular.js')
-  //- script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js")
+  //- script(src='/bower_components/angular/angular.js')
+  script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js")
 body
-  .container-fluid
+  #top-wrapper.container-fluid
     .row.clearfix
       .col-md-6
         #graph-editor-module.well.module
@@ -166,30 +166,35 @@ body
   // TODO *** minify
   
   //- Online/Offline
-  //- script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
-  script(src='/bower_components/jquery/jquery.min.js')
+  script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
+  //- script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js')
+  //- script(src='/bower_components/jquery/jquery.min.js')
 
   //- TODO minify?
-  //- script(src='/js/lib/jquery.jsonrpcclient.js')
-  script(src='/bower_components/jquery-jsonrpcclient/jquery.jsonrpcclient.js')
+  script(src='/js/lib/jquery.jsonrpcclient.js')
+  //- script(src='/bower_components/jquery-jsonrpcclient/jquery.jsonrpcclient.js')
 
   //- Online/Offline
   //- TODO get minified versions
+  script(src='//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js')
   //- script(src='//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.js')
-  script(src='/bower_components/d3/d3.js')
+  //- script(src='/bower_components/d3/d3.js')
 
   //- Online/Offline
-  //- script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js')
-  script(src='/bower_components/underscore/underscore.js')
+  script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js')
+  //- script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore.js')
+  //- script(src='/bower_components/underscore/underscore.js')
 
   //- TODO get minified versions
   //- Online/Offline
-  //- script(src='//cdnjs.cloudflare.com/ajax/libs/c3/0.4.8/c3.min.js')
-  script(src='/bower_components/c3/c3.js')
+  script(src='//cdnjs.cloudflare.com/ajax/libs/c3/0.4.8/c3.min.js')
+  //- script(src='//cdnjs.cloudflare.com/ajax/libs/c3/0.4.8/c3.js')
+  //- script(src='/bower_components/c3/c3.js')
 
   //- Online/Offline
+  script(src='//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js')
   //- script(src='//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js')
-  script(src='/bower_components/threejs/build/three.js')
+  //- script(src='/bower_components/threejs/build/three.js')
 
   script(src='/js/lib/TrackballControls.js')
   script(src='/js/lib/Detector.js')
@@ -203,5 +208,6 @@ body
   script(src='/js/app.js')
 
   //- Online/Offline
-  //- script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')
-  script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
+  script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')
+  //- script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.js')
+  //- script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
