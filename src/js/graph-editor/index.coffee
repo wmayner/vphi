@@ -2,8 +2,6 @@
 # graph-editor/index.coffee
 ###
 
-Graph = require './graph'
-controls = require './controls'
 colors = require '../colors'
 
 
@@ -501,33 +499,12 @@ dist = (p0, p1) ->
 # Initialization
 # =============================================================================
 
-graph = new Graph()
-
-# Bind the controls to the graph.
-graph.controls = controls
-
-graph.addNode
-  on: 1
-  mechanism: 'OR'
+examples = require './examples'
+# graph = examples.paper()
+graph = examples.chain 8,
+  circle: false
   reflexive: false
-graph.addNode
-  on: 0
-  mechanism: 'AND'
-  reflexive: false
-graph.addNode
-  on: 0
-  mechanism: 'XOR'
-  reflexive: false
-
-graph.addEdge(0, 2)
-graph.addEdge(0, 1)
-graph.addEdge(1, 0)
-graph.addEdge(1, 2)
-graph.addEdge(2, 0)
-graph.addEdge(2, 1)
-
-graph.setPastState([1, 1, 0])
-
+  bidirectional: false
 
 # Resize canvas.
 $(window).resize resizeCanvas

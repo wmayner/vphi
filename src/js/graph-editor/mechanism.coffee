@@ -32,8 +32,6 @@ exports.names = [
   '<'
 ]
 
-console.log parityGate
-
 exports.functions =
   'AND': andGate
   'NAND': (input) ->
