@@ -15,6 +15,7 @@ if not Detector.webgl then Detector.addGetWebGLMessage()
 # Globals
 # ~~~~~~~~
 TOGGLE_GRIDS_SELECTOR = '#toggle-grids'
+TOGGLE_IGNORED_AXES_SELECTOR = '#toggle-ignored-axes'
 SWITCH_VIEW_SELECTOR = '#switch-view'
 RESET_CAMERA_SELECTOR = '#reset-camera'
 CONTAINER_SELECTOR = '#concept-space-container'
@@ -93,6 +94,11 @@ toggleGrids = ->
   splitView.toggleGrids()
 
 
+toggleIgnoredAxes = ->
+  joinedView.toggleIgnoredAxes()
+  splitView.toggleIgnoredAxes()
+
+
 # ~~~~~~~~~~~~~
 # API
 # ~~~~~~~~~~~~~
@@ -133,14 +139,11 @@ $container.on('webglcontextrestored', init, false)
 # Listen for window resizing.
 $(window).resize(resizeHandler)
 
-# Bind the reset-camera handler to its button.
+# Bind event handlers.
 $(RESET_CAMERA_SELECTOR).mousedown -> activeView.resetControls()
-
-# Bind the switch-view handler to its button.
 $(SWITCH_VIEW_SELECTOR).mousedown -> switchView()
-
-# Bind the toggle-grid handler to its button.
 $(TOGGLE_GRIDS_SELECTOR).mousedown -> toggleGrids()
+$(TOGGLE_IGNORED_AXES_SELECTOR).mousedown -> toggleIgnoredAxes()
 
 
 # 3... 2... 1... BLAST OFF!

@@ -24,7 +24,7 @@ getRenderedDimensions = (constellation, numNodes) ->
   futureDistributions = (c.effect.repertoire for c in constellation)
   distributions = pastDistributions.concat(futureDistributions)
   renderedDimensions = utils.sortStatesByVariance( \
-      distributions, (2 * numStates))[0...3]
+      distributions, (2 * numStates))[-3...]
   renderedDimensions = ({
     direction: (if d >= numStates then 'effect' else 'cause')
     index: (if d >= numStates then d - numStates else d)
@@ -161,6 +161,10 @@ class JoinedView
     currentIgnoredAxes = currentIgnoredAxes.concat(
       axes.drawJoinedIgnored(scene, numStates - 3, renderedDimensions)
     )
+
+  toggleIgnoredAxes: ->
+    for axis in currentIgnoredAxes
+      axis.visible = not axis.visible
 
 
 module.exports = JoinedView

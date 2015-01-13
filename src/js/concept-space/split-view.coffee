@@ -25,8 +25,8 @@ getRenderedDimensions = (constellation, numNodes) ->
   pastDistributions = (c.cause.repertoire for c in constellation)
   futureDistributions = (c.effect.repertoire for c in constellation)
   return {
-    past: utils.sortStatesByVariance(pastDistributions, numStates)[0...3]
-    future: utils.sortStatesByVariance(futureDistributions, numStates)[0...3]
+    past: utils.sortStatesByVariance(pastDistributions, numStates)[-3...]
+    future: utils.sortStatesByVariance(futureDistributions, numStates)[-3...]
   }
 
 
@@ -185,6 +185,10 @@ class SplitView
     currentIgnoredAxes = currentIgnoredAxes.concat(
       axes.drawSplitIgnored(@scene, numStates - 3, 'future', renderedDimensions)
     )
+
+  toggleIgnoredAxes: =>
+    for axis in currentIgnoredAxes
+      axis.visible = not axis.visible
 
 
 module.exports = SplitView
