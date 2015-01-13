@@ -341,6 +341,11 @@ mousedown = ->
 lastKeyDown = -1
 
 
+logChange = (node, propertyName, property) ->
+  console.log "Changed node #{selected_node.label} #{propertyName} to " +
+              "#{selected_node[property]}."
+
+
 keydown = ->
 
   switch d3.event.keyCode
@@ -426,13 +431,14 @@ keydown = ->
       d3.event.preventDefault()
       if selected_node
         graph.toggleState selected_node
+        logChange(selected_node, 'state', 'on')
         update()
       break
     # m
     when 77
       if selected_node
         graph.cycleMechanism selected_node
-        console.log selected_node.mechanism
+        logChange(selected_node, 'mechanism', 'mechanism')
         update()
       break
     when 84
@@ -440,12 +446,14 @@ keydown = ->
         oldThreshold = selected_node.threshold++
         if oldThreshold >= NETWORK_SIZE_LIMIT
           selected_node.threshold = 0
+        logChange(selected_node, 'threshold', 'threshold')
         update()
       break
     # r
     when 82
       if selected_node
         graph.toggleReflexivity selected_node
+        logChange(selected_node, 'reflexivity', 'reflexive')
         update()
       break
 
