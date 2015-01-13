@@ -43,7 +43,11 @@ exports.paper = ->
 #   circle - chain is a loop
 #   reflexive - all nodes reflexive
 #   bidirectional - all edges bidirectional
+#   k - number of following nodes in the chain to connect to (default 1)
 exports.chain = (n, options) ->
+  unless options.k?
+    options.k = 1
+
   for i in [0...n]
     graph.addNode
       on: 0
@@ -51,17 +55,16 @@ exports.chain = (n, options) ->
       reflexive: (if options.reflexive then true else false)
 
   for i in [0...n]
-    if i is n - 1
-      if options.circle
-        target = 0
-      else
-        target = null
-    else
-      target = i + 1
-    if target?
-      graph.addEdge(i, target)
-      if options.bidirectional
-        graph.addEdge(target, i)
+    for j in [0...options.k]
+      target = i + 1 + j
+      if target >= n
+        if options.circle
+          target %= n
+        else target = null
+      if target?
+        graph.addEdge(i, target)
+        if options.bidirectional
+          graph.addEdge(target, i)
 
   graph.setPastState (0 for i in [0...n])
 
