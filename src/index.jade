@@ -32,8 +32,8 @@ body
               #graph-editor-container(vphi-graph-editor-canvas)
               form.form-horizontal.control-panel(role="form")
                 .form-group.form-group
-                  label.control-label.col-sm-4(for="past-state-chooser") Past state:
-                  .col-sm-8
+                  label.control-label.col-sm-2(for="past-state-chooser") Past state:
+                  .col-sm-7
                     button#past-state-chooser.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
                       #selected-past-state 1, 1, 0
                       span.caret
@@ -41,24 +41,8 @@ body
                     ul#possible-past-states.dropdown-menu(role='menu')
                       li
                         strong A, B, C
-              .modal
-                h3 Graph-editing commands
-                ul.commands
-                  li Add a node by double-clicking where you want the node to appear.
-                  li Add edges by clicking on a node and dragging your cursor to another node.
-                  li Move nodes around by shift-clicking and dragging. 
-                  li Select a node by clicking on it. If a node is selected: 
-                    ul
-                      li Press <span class="keyboard">spacebar</span> to turn the node on or off.
-                      li Press <span class="keyboard">m</span> to change the node's mechanism.
-                      li Press <span class="keyboard">r</span> to change whether the node has a self-loop.
-                      li Press <span class="keyboard">delete</span> or <span class="keyboard">backspace</span> to delete the node.
-                      li Press <span class="keyboard">t</span> to change the node's threshold. The threshold only has an effect if the mechanism is <span class="keyboard">></span> or <span class="keyboard"><</span>.
-                  li Select an edge by clicking on it. If an edge is selected:
-                    ul
-                      li Press <span class="keyboard">d</span> to change the direction of the edge.
-                      li Press <span class="keyboard">b</span> to make the edge bidirectional.
-                      li Press <span class="keyboard">delete</span> or <span class="keyboard">backspace</span> to delete the edge.
+                  .col-sm-3
+                    button#show-help.btn.btn-md.btn-default(type='button', data-toggle="modal", data-target="#graph-editor-help") Show Controls
       .col-md-6
         #concept-space-module.well.module
           h2.module-title Conceptual structure
@@ -105,7 +89,7 @@ body
                   .output-label Minimal cut
                   .number-7 {{minimalCut}}
                 #num-concepts.item.well
-                  .output-label # concepts 
+                  .output-label # concepts
                   .number-2 {{numConcepts}}
                 #sum-small-phi.item.well
                   .output-label Sum of φ
@@ -166,6 +150,34 @@ body
                       h5.repertoire-title Future Repertoire
                       .repertoire(vphi-repertoire-chart, direction="effect")
 
+  #graph-editor-help.modal.fade
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span(aria-hidden='true') &times;
+            h4.modal-title Graph-editing controls
+          .modal-body
+            ul.commands
+              li <strong>Double-click</strong> to add nodes.
+              li <strong>Click and drag</strong> to add edges.
+              li <strong>Hold shift + click and drag</strong> to reposition nodes.
+              li <strong>Click a node</strong> to select it. New nodes are automatically selected.
+              li When a node is selected: 
+                ul
+                  li Press <span class="keyboard">spacebar</span> to turn the node on or off.
+                  li Press <span class="keyboard">m</span> to change the node's mechanism.
+                  li Press <span class="keyboard">r</span> to change whether the node has a self-loop.
+                  li Press <span class="keyboard">delete</span> or <span class="keyboard">backspace</span> to delete the node.
+                  li Press <span class="keyboard">t</span> to change the node's threshold. The threshold only has an effect when the mechanism is <span class="keyboard">></span> or <span class="keyboard"><</span>.
+              li <strong>Click an edge</strong> to select it. New edges are automatically selected.
+              li When an edge is selected:
+                ul
+                  li Press <span class="keyboard">d</span> to change the direction of the edge.
+                  li Press <span class="keyboard">b</span> to make the edge bidirectional.
+                  li Press <span class="keyboard">delete</span> or <span class="keyboard">backspace</span> to delete the edge.
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Close
   // TODO *** minify
   
   //- Online/Offline

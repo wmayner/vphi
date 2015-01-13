@@ -1,5 +1,11 @@
 // graph-editor.styl
 
+#graph-editor-help
+  ul
+    padding-top 0
+    li
+      margin 7px 0
+
 #graph-editor-module
 
   #graph-editor-container
@@ -13,6 +19,23 @@
       font-weight normal
       padding-top 5px
       text-align right
+
+  #show-help
+    float right
+
+  ul#possible-past-states
+    font-family mono_font
+    text-align center
+
+  #past-state-chooser
+    text-align center
+    #selected-past-state
+      display inline-block
+      width 200px
+      font-family mono_font
+    span.caret
+      margin-left 15px
+
 
   svg
     background #000
@@ -49,16 +72,3 @@
       &.id
         font 14px 'Helvetica Neue', sans-serif
         font-weight bold
-
-  ul#possible-past-states
-    font-family mono_font
-    text-align center
-
-  #past-state-chooser
-    text-align center
-    #selected-past-state
-      display inline-block
-      width 200px
-      font-family mono_font
-    span.caret
-      margin-left 15px
