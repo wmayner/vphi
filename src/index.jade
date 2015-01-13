@@ -100,16 +100,16 @@ body
               .summary-items
                 #phi-value.item.well
                   .output-label Φ 
-                  .number-7 {{bigPhi || '–'}}
+                  .number-7 {{bigPhi}}
                 #minimal-cut.item.well
                   .output-label Minimal cut
-                  .number-7 {{minimalCut || '–'}}
+                  .number-7 {{minimalCut}}
                 #num-concepts.item.well
                   .output-label # concepts 
-                  .number-2 {{numConcepts || '–'}}
+                  .number-2 {{numConcepts}}
                 #sum-small-phi.item.well
                   .output-label Sum of φ
-                  .number-7 {{sumSmallPhi || '–'}}
+                  .number-7 {{sumSmallPhi}}
     .row.clearfix
       .col-md-12
         section#concept-list-module.module(ng-controller="vphiConceptListCtrl")
@@ -123,7 +123,7 @@ body
                       .small-phi-past
                         .output-label(class="{{smallPhiPastClass}}") φ
                           sub p
-                        .number-7 {{smallPhiPast || '–'}}
+                        .number-7 {{smallPhiPast}}
                     li
                       .small-phi-mips
                         .output-label Cause MIP:
@@ -137,14 +137,14 @@ body
                   hr
                   .small-phi
                     .output-label φ
-                    .number-7 {{smallPhi || '–'}}
+                    .number-7 {{smallPhi}}
                 .col-xs-4
                   ul
                     li
                       .small-phi-future
                         .output-label(class="{{smallPhiFutureClass}}") φ
                           sub f
-                        .number-7 {{smallPhiFuture || '–'}}
+                        .number-7 {{smallPhiFuture}}
                     li
                       .small-phi-mips
                         .output-label Effect MIP:

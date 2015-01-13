@@ -19,6 +19,7 @@ window.vphi = angular.module 'vphi', [
   'vphiConceptList'
 ]
 
+
 window.vphiDataService = angular.module 'vphiDataService', []
   .factory 'vphiDataService', [
     '$rootScope'
@@ -85,13 +86,16 @@ window.vphiControls = angular.module 'vphiControls', [
         vphiDataService.update(success, always)
   ]
 
+
 window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
   .controller 'vphiOutputSummaryCtrl', [
     '$scope'
     'vphiDataService'
     ($scope, vphiDataService) ->
-      $scope.bigPhi = null
-      $scope.numConcepts = null
+      $scope.bigPhi = '–'
+      $scope.minimalCut = '–'
+      $scope.numConcepts = '–'
+      $scope.sumSmallPhi = '–'
 
       $scope.$on 'vphiDataUpdated', ->
         d = vphiDataService.bigMip
@@ -103,6 +107,7 @@ window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
           $scope.sumSmallPhi = 0
         $scope.minimalCut = utils.formatCut d.cut_subsystem.cut
   ]
+
 
 window.vphiConceptList = angular.module 'vphiConceptList', [
   'vphiDataService'
@@ -193,9 +198,11 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
           'Partitioned': colors.repertoire.partitioned
         x:
           tick:
-            # count: concept.repertoire.length
             rotate: 60
             format: (x) ->
+              # Low-Order bits correspond to Low-Index nodes.
+              # NOTE: This should correspond to how NumPy's `flatten` function
+              # works.
               utils.loliIndexToState(d3.round(x, 0), scope.numNodes).join(', ')
           label: (if attrs.direction is 'cause' then 'Past State' else 'Future State')
 
