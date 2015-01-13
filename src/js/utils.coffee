@@ -12,13 +12,17 @@ module.exports =
 
   formatPhi: (phiValue) -> d3.round(phiValue, PRECISION)
 
-  formatCut: (cut) -> "#{@formatNodes cut.severed} ⇏ #{@formatNodes cut.intact}"
+  formatCut: (cut) ->
+    if cut.severed.length is 0
+      return 'N/A'
+    intact = @formatNodes(cut.intact) or '[]'
+    severed = @formatNodes(cut.severed) or '[]'
+    return "#{severed} ⇏ #{intact}"
 
   formatNodes: (nodeArray) ->
-    if nodeArray.length > 0
-      (@LABEL[n] for n in nodeArray).join(' ')
-    else
-      return '[\\,]'
+    return (@LABEL[n] for n in nodeArray).join(' ')
+
+  latexNodes: (nodeArray) -> @formatNodes(nodeArray) or '[\\,]'
 
   holiIndexToState: (i, numberOfNodes) ->
     # Convert a decimal index into an array of binary node states according to

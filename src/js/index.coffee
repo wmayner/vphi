@@ -130,7 +130,7 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
     ($scope) ->
       concept = $scope.concept
 
-      $scope.mechanism = utils.formatNodes concept.mechanism
+      $scope.mechanism = utils.latexNodes concept.mechanism
       $scope.smallPhi = utils.formatPhi concept.phi
       $scope.smallPhiPast = utils.formatPhi concept.phi
       $scope.smallPhiPast = utils.formatPhi concept.cause.mip.phi
@@ -142,32 +142,32 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
         $scope.smallPhiFutureClass = "bold"
 
       $scope.causeMip = "\\frac{" +
-        utils.formatNodes(concept.effect.mip.mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.effect.mip.mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.effect.mip.purview) + "^{\\,p}" +
+        utils.latexNodes(concept.effect.mip.purview) + "^{\\,p}" +
         "}"
       $scope.partitionedCauseMip = "\\frac{" +
-        utils.formatNodes(concept.cause.mip.partition[0].mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.cause.mip.partition[0].mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.cause.mip.partition[0].purview) + "^{\\,p}" +
+        utils.latexNodes(concept.cause.mip.partition[0].purview) + "^{\\,p}" +
         "} \\times \\frac{" +
-        utils.formatNodes(concept.cause.mip.partition[1].mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.cause.mip.partition[1].mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.cause.mip.partition[1].purview) + "^{\\,p}" +
+        utils.latexNodes(concept.cause.mip.partition[1].purview) + "^{\\,p}" +
         "}"
       $scope.effectMip = "\\frac{" +
-        utils.formatNodes(concept.effect.mip.mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.effect.mip.mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.effect.mip.purview) + "^{\\,f}" +
+        utils.latexNodes(concept.effect.mip.purview) + "^{\\,f}" +
         "}"
       $scope.partitionedEffectMip = "\\frac{" +
-        utils.formatNodes(concept.effect.mip.partition[0].mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.effect.mip.partition[0].mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.effect.mip.partition[0].purview) + "^{\\,f}" +
+        utils.latexNodes(concept.effect.mip.partition[0].purview) + "^{\\,f}" +
         "} \\times \\frac{" +
-        utils.formatNodes(concept.effect.mip.partition[1].mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.effect.mip.partition[1].mechanism) + "^{\\,c}" +
         "}{" +
-        utils.formatNodes(concept.effect.mip.partition[1].purview) + "^{\\,f}" +
+        utils.latexNodes(concept.effect.mip.partition[1].purview) + "^{\\,f}" +
         "}"
   ]
 
@@ -203,7 +203,7 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
               # Low-Order bits correspond to Low-Index nodes.
               # NOTE: This should correspond to how NumPy's `flatten` function
               # works.
-              utils.loliIndexToState(d3.round(x, 0), scope.numNodes).join(', ')
+              utils.loliIndexToState(x, scope.numNodes).join(', ')
           label: (if attrs.direction is 'cause' then 'Past State' else 'Future State')
 
       concept = scope.concept[attrs.direction]
