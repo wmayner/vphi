@@ -500,11 +500,11 @@ dist = (p0, p1) ->
 # =============================================================================
 
 examples = require './examples'
-# graph = examples.paper()
-graph = examples.chain 8,
-  circle: false
-  reflexive: false
-  bidirectional: false
+graph = examples.paper()
+# graph = examples.chain 3,
+#   circle: false
+#   reflexive: false
+#   bidirectional: false
 
 # Resize canvas.
 $(window).resize resizeCanvas
