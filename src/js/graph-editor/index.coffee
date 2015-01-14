@@ -219,9 +219,6 @@ update = ->
           resetMouseVars()
           return
 
-        # Unenlarge target node.
-        d3.select(this).attr 'transform', ''
-
         edge = graph.addEdge mousedown_node._id, mouseup_node._id
 
         if not edge?
@@ -491,10 +488,17 @@ selectPreviousNode = ->
 
 keyup = ->
   lastKeyDown = -1
+  # Stop dragging when shift is released.
+  if d3.event.keyCode is 16
+    circleGroup
+        .on 'mousedown.drag', null
+        .on 'touchstart.drag', null
+    svg.classed('shiftkey', false)
 
 
 dragstart = (node) ->
-  d3.select(this).classed('fixed', node.fixed = true)
+  node.fixed = true
+  node.classed 'fixed', true
 
 
 nearestNeighbor = (node, nodes) ->
