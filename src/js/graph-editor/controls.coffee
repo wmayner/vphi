@@ -6,6 +6,7 @@
 PAST_STATE_CHOOSER = '#past-state-chooser'
 PAST_STATE_CHOICES = '#possible-past-states'
 SELECTED_PAST_STATE = '#selected-past-state'
+CALCULATE_BUTTON = '#btn-calculate'
 
 # Element IDs
 PAST_STATE_CHOICE_HEADER = 'possible-past-state-header'
@@ -36,8 +37,10 @@ module.exports =
     # Update currently displayed past state.
     if graph.pastState
       pastStateString = graph.pastState.join(', ')
+      $(CALCULATE_BUTTON).removeClass('disabled')
     else
       pastStateString = '—'
+      $(CALCULATE_BUTTON).addClass('disabled')
     $(SELECTED_PAST_STATE).html(pastStateString)
     # Remove old event handler.
     $(PAST_STATE_CHOOSER).off('mouseup')

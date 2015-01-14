@@ -47,10 +47,10 @@ window.vphiControls = angular.module 'vphiControls', [
     '$scope'
     'vphiDataService',
     ($scope, vphiDataService) ->
+      btn = $('#btn-calculate')
       btnCooldown = false
 
       startLoading = ->
-        $('#output-phi').html '···'
         $('#concept-space-loading-spinner').removeClass 'hidden'
         $('#concept-space-loading-spinner').show()
         $('#concept-space-overlay').removeClass 'hidden'
@@ -61,23 +61,16 @@ window.vphiControls = angular.module 'vphiControls', [
           btnCooldown = false
         $('#concept-space-overlay').fadeOut 400
 
-      displayBigMip = (bigMip) ->
-        # Round to PRECISION.
-        phi = utils.formatPhi(bigMip.phi)
-        # Display the result.
-        $('#output-phi').html(phi)
-        # Draw the unpartitioned constellation.
-        conceptSpace.display(bigMip)
-
       $scope.click = ->
-        return if btnCooldown
+        return if btnCooldown or not graphEditor.graph.getPossiblePastStates()
         btnCooldown = true
-        btn = $('#btn-calculate')
         btn.button 'loading'
         startLoading()
 
         success = ->
-          displayBigMip(vphiDataService.bigMip)
+          conceptSpace.display(vphiDataService.bigMip)
+          btn.button 'reset'
+          finishLoading()
 
         always = ->
           btn.button 'reset'
