@@ -142,32 +142,32 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
         $scope.smallPhiFutureClass = "bold"
 
       $scope.causeMip = "\\frac{" +
-        utils.latexNodes(concept.effect.mip.mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.effect.mip.mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.effect.mip.purview) + "^{\\,p}" +
+        utils.latexNodes(concept.effect.mip.purview) + "^{p}" +
         "}"
       $scope.partitionedCauseMip = "\\frac{" +
-        utils.latexNodes(concept.cause.mip.partition[0].mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.cause.mip.partition[0].mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.cause.mip.partition[0].purview) + "^{\\,p}" +
+        utils.latexNodes(concept.cause.mip.partition[0].purview) + "^{p}" +
         "} \\times \\frac{" +
-        utils.latexNodes(concept.cause.mip.partition[1].mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.cause.mip.partition[1].mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.cause.mip.partition[1].purview) + "^{\\,p}" +
+        utils.latexNodes(concept.cause.mip.partition[1].purview) + "^{p}" +
         "}"
       $scope.effectMip = "\\frac{" +
-        utils.latexNodes(concept.effect.mip.mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.effect.mip.mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.effect.mip.purview) + "^{\\,f}" +
+        utils.latexNodes(concept.effect.mip.purview) + "^{f}" +
         "}"
       $scope.partitionedEffectMip = "\\frac{" +
-        utils.latexNodes(concept.effect.mip.partition[0].mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.effect.mip.partition[0].mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.effect.mip.partition[0].purview) + "^{\\,f}" +
+        utils.latexNodes(concept.effect.mip.partition[0].purview) + "^{f}" +
         "} \\times \\frac{" +
-        utils.latexNodes(concept.effect.mip.partition[1].mechanism) + "^{\\,c}" +
+        utils.latexNodes(concept.effect.mip.partition[1].mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.effect.mip.partition[1].purview) + "^{\\,f}" +
+        utils.latexNodes(concept.effect.mip.partition[1].purview) + "^{f}" +
         "}"
   ]
 
