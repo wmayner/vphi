@@ -15,8 +15,8 @@ width = $container.width()
 NODE_RADIUS = 24
 
 
-nodeColor = (node) -> (if node.on then colors.node.on else colors.node.off)
-
+# Globals
+# =====================================================================
 
 # Declare the canvas.
 svg = d3.select CONTAINER_SELECTOR
@@ -82,7 +82,9 @@ circleGroup = svg
 
 selected_node = null
 selected_link = null
+mouseover_link = null
 mousedown_link = null
+mouseover_node = null
 mousedown_node = null
 mouseup_node = null
 
@@ -93,7 +95,9 @@ resetMouseVars = ->
   mousedown_link = null
   return
 
+# =====================================================================
 # Update force layout (called automatically each iteration).
+# =====================================================================
 tick = ->
   # Draw directed edges with proper padding from node centers.
   path.attr "d", (edge) ->
@@ -112,6 +116,7 @@ tick = ->
   circleGroup.attr 'transform', (node) ->
     "translate(#{node.x},#{node.y})"
   return
+# =====================================================================
 
 # Update graph (called when needed).
 # =====================================================================
@@ -129,32 +134,38 @@ update = ->
       .classed 'selected', (edge) ->
         graph.isSameLink(edge.key, selected_link)
       .style 'marker-start', (edge) ->
-         (if edge.bidirectional then 'url(#start-arrow)' else "")
+        (if edge.bidirectional then 'url(#start-arrow)' else "")
       .style 'marker-end', (edge) ->
-       'url(#end-arrow)'
+        'url(#end-arrow)'
   # Add new links.
   path.enter()
     .append 'svg:path'
       .attr 'class', 'link'
       .attr 'stroke', colors.link.line
       .classed 'selected', (edge) ->
-        edge.key is selected_link
+        graph.isSameLink(edge.key, selected_link)
       .style 'marker-start', (edge) ->
         (if edge.bidirectional then 'url(#start-arrow)' else '')
       .style 'marker-end', (edge) ->
         'url(#end-arrow)'
+      .on 'mouseover', (edge) ->
+        mouseover_link = edge.key
+        # Only select link if it's different.
+        unless graph.isSameLink(mouseover_link, selected_link)
+          selected_link = mouseover_link
+          selected_node = null
+          update()
+      .on 'mouseout', (edge) ->
+        mouseover_link = null
       .on 'mousedown', (edge) ->
-        return if d3.event.shiftKey
-
-        # select link
         mousedown_link = edge.key
-        if mousedown_link is selected_link
-          selected_link = null
-        else
-          selected_link = mousedown_link
-        selected_node = null
-
-        update()
+        # Only update mousedown link if it's selected.
+        if graph.isSameLink(mousedown_link, selected_link)
+          ids = selected_link.split ','
+          sourceId = ids[0]
+          targetId = ids[1]
+          cycleDirection(sourceId, targetId)
+          update()
   # Remove old links.
   path.exit().remove()
 
@@ -171,23 +182,21 @@ update = ->
       .attr 'r', NODE_RADIUS
       .classed 'reflexive', (node) ->
         node.reflexive
-        # TODO mouseover/mouseout
       .on 'mouseover', (node) ->
-        return if not mousedown_node or node is mousedown_node
+        mouseover_node = node
+
+        # Select node.
+        selected_node = node
+        selected_link = null
+
         # Enlarge target node.
         d3.select(this).attr 'transform', 'scale(1.1)'
-      .on 'mouseout', (node) ->
-        return if not mousedown_node or node is mousedown_node
-        # Unenlarge target node.
-        d3.select(this).attr 'transform', ''
-      .on 'mousedown', (node) ->
-        return if d3.event.shiftKey
 
-        # Select/deselect node.
+        update()
+      .on 'mouseout', (node) ->
+        mouseover_node = null
+      .on 'mousedown', (node) ->
         mousedown_node = node
-        if mousedown_node is selected_node then selected_node = null
-        else selected_node = mousedown_node
-        selected_link = null
 
         # Reposition drag line.
         drag_line
@@ -283,19 +292,40 @@ update = ->
   force.start()
 
 # =====================================================================
+# Helpers
+# =====================================================================
 
+nodeColor = (node) -> (if node.on then colors.node.on else colors.node.off)
+
+cycleDirection = (sourceId, targetId) ->
+  # Cycle through link directions:
+  # Original -> reverse
+  if (graph.getEdge(sourceId, targetId) and
+      not graph.getEdge(targetId, sourceId))
+    graph.removeEdge sourceId, targetId
+    graph.addEdge targetId, sourceId
+  # Reverse -> bidirectional
+  else if (graph.getEdge(targetId, sourceId) and
+           not graph.getEdge(sourceId, targetId))
+    graph.addEdge sourceId, targetId
+  # Bidirectional -> original
+  else if (graph.getEdge(sourceId, targetId) and
+           graph.getEdge(targetId, sourceId))
+    graph.removeEdge targetId, sourceId
+
+# =====================================================================
 # Mouse handlers
 # =====================================================================
 
 dblclick = (properties) ->
+  return if d3.event.shiftKey or
+            mouseover_node or
+            mouseover_link or
+            graph.nodeSize >= NETWORK_SIZE_LIMIT
   # Prevent I-bar on drag.
   d3.event.preventDefault()
   # Because :active only works in WebKit?
   svg.classed 'active', true
-  return if d3.event.shiftKey or
-            mousedown_node or
-            mousedown_link or
-            graph.nodeSize >= NETWORK_SIZE_LIMIT
   # Insert new node at this point.
   point = d3.mouse(this)
   # Add the node and start with it selected.
@@ -328,6 +358,7 @@ mousedown = ->
   selected_node = null unless mousedown_node
   selected_link = null unless mousedown_link
   update()
+
 
 # =====================================================================
 
@@ -374,7 +405,6 @@ keydown = ->
   # shift
   if d3.event.keyCode is 16
     circleGroup.call force.drag
-    svg.classed 'shiftkey', true
 
   return if not selected_node and not selected_link
 
@@ -390,7 +420,7 @@ keydown = ->
       d3.event.preventDefault()
       if selected_node
         removed = graph.removeNode selected_node._id
-        selected_node = null
+        selectPreviousNode()
         update()
       else if selected_link
         graph.removeEdge sourceId, targetId
@@ -401,20 +431,7 @@ keydown = ->
     # d
     when 68
       if selected_link
-        # Cycle through link directions:
-        # Faithful selected_link -> switch
-        if (graph.getEdge(sourceId, targetId) and
-            not graph.getEdge(targetId, sourceId))
-          graph.removeEdge sourceId, targetId
-          graph.addEdge targetId, sourceId
-        # Switched selected_link -> bidirectional
-        else if (graph.getEdge(targetId, sourceId) and
-                 not graph.getEdge(sourceId, targetId))
-          graph.addEdge sourceId, targetId
-        # Bidirectional -> faithful selected_link
-        else if (graph.getEdge(sourceId, targetId) and
-                 graph.getEdge(targetId, sourceId))
-          graph.removeEdge targetId, sourceId
+        cycleDirection(sourceId, targetId)
         update()
       break
     # b
@@ -461,6 +478,7 @@ selectNextNode = ->
     selected_node = graph.getNodeByIndex 0
   else
     selected_node = graph.getNodeByIndex(selected_node.index + 1)
+  selected_link = null
 
 
 selectPreviousNode = ->
@@ -468,16 +486,15 @@ selectPreviousNode = ->
     selected_node = graph.getNodeByIndex(graph.nodeSize - 1)
   else
     selected_node = graph.getNodeByIndex(selected_node.index - 1)
+  selected_link = null
 
 
 keyup = ->
   lastKeyDown = -1
-  # shift
-  if d3.event.keyCode is 16
-    circleGroup
-        .on 'mousedown.drag', null
-        .on 'touchstart.drag', null
-    svg.classed('shiftkey', false)
+
+
+dragstart = (node) ->
+  d3.select(this).classed('fixed', node.fixed = true)
 
 
 nearestNeighbor = (node, nodes) ->
@@ -520,6 +537,11 @@ force = d3.layout.force()
     .linkStrength 0.75
     .charge -900
     .on 'tick', tick
+
+# Bind drag handler.
+drag = force.drag()
+  .on 'dragstart', dragstart
+
 # Bind mouse handlers.
 svg
     .on 'dblclick', dblclick
