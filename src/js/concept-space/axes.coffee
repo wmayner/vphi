@@ -6,7 +6,7 @@ colors = require '../colors'
 rotate = require './rotate'
 
 π = Math.PI
-RENDERED_AXIS_LINE_WIDTH = 5
+RENDERED_AXIS_LINE_WIDTH = 3
 IGNORED_AXIS_LINE_WIDTH = 2
 IGNORED_AXIS_COLOR = 0x999999
 # World axis vectors to use in rotation.
@@ -52,7 +52,6 @@ drawVector = (point, lineoptions) ->
   return new THREE.Line(geometry, material)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 module.exports =
 
