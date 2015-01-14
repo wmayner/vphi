@@ -9,9 +9,6 @@ mechanism = require './mechanism'
 
 # Helpers
 
-getAllStates = (numNodes) ->
-  return (utils.holiIndexToState(i, numNodes) for i in [0...Math.pow(2, numNodes)])
-
 checkPossiblePastState = (tpm, pastStateIndex, currentState) ->
   row = tpm[pastStateIndex]
   for i in [0...currentState.length]
@@ -317,7 +314,7 @@ class Graph
   # TODO just take graph, keep a tpm in graph?
   getPossiblePastStates: ->
     numStates = Math.pow(2, @nodeSize)
-    result = (utils.holiIndexToState(pastStateIndex, @nodeSize) \
+    result = (utils.loliIndexToState(pastStateIndex, @nodeSize) \
       for pastStateIndex in [0...numStates] \
       when checkPossiblePastState(@tpm, pastStateIndex, @currentState))
     if result.length is 0
