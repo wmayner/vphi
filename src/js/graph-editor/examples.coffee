@@ -36,6 +36,31 @@ exports.paper = ->
 
   return graph
 
+# Matlab default example
+exports.matlab = ->
+  graph.addNode
+    on: 1
+    mechanism: 'OR'
+    reflexive: false
+  graph.addNode
+    on: 0
+    mechanism: 'OR'
+    reflexive: false
+  graph.addNode
+    on: 0
+    mechanism: 'XOR'
+    reflexive: false
+
+  graph.addEdge(0, 2)
+  graph.addEdge(1, 0)
+  graph.addEdge(1, 2)
+  graph.addEdge(2, 0)
+  graph.addEdge(2, 1)
+
+  graph.setPastState([1, 1, 0])
+
+  return graph
+
 
 # N-node chain
 #
