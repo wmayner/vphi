@@ -6,6 +6,7 @@ utils = require '../utils'
 tpmify = require './tpmify'
 graphUtils = require './utils'
 mechanism = require './mechanism'
+controls = require './controls'
 
 # Helpers
 
@@ -31,9 +32,7 @@ class Graph
     @pastState = undefined
     @currentState = undefined
     @tpm = undefined
-    @controls = undefined
-
-  # User will select a past state
+    @controls = controls
 
   getNewNodeId: ->
     id = @_newNodeId
@@ -300,6 +299,12 @@ class Graph
     else
       @removeEdge(node._id, node._id)
     @update()
+
+  setThreshold: (node, threshold) ->
+    oldThreshold = node.threshold
+    node.threshold = threshold
+    @update()
+    return oldThreshold
 
   getCurrentState: (node_indices) ->
     return @getNodeProperties('on', node_indices)

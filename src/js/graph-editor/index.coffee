@@ -65,14 +65,14 @@ svg
     .attr 'fill', colors.link.endpoint
     .classed 'arrow-head', true
 
-# line displayed when dragging new nodes
+# Line displayed when dragging new nodes.
 drag_line = svg
   .append 'svg:path'
     .attr 'class', 'link dragline hidden'
     .attr 'stroke', colors.link.line
     .attr 'd', 'M0,0L0,0'
 
-# handles to link and node element groups
+# Handles to link and node element groups.
 path = svg
   .append 'svg:g'
     .selectAll 'path'
@@ -88,7 +88,7 @@ mouseover_node = null
 mousedown_node = null
 mouseup_node = null
 
-# mouse event vars
+# Mouse event vars
 resetMouseVars = ->
   mousedown_node = null
   mouseup_node = null
@@ -314,7 +314,7 @@ cycleDirection = (sourceId, targetId) ->
 # Mouse handlers
 # =====================================================================
 
-dblclick = (properties) ->
+dblclick = (e) ->
   return if d3.event.shiftKey or
             mouseover_node or
             mouseover_link or
@@ -455,9 +455,11 @@ keydown = ->
       break
     when 84
       if selected_node
-        oldThreshold = selected_node.threshold++
-        if oldThreshold >= NETWORK_SIZE_LIMIT
-          selected_node.threshold = 0
+        if selected_node.threshold >= NETWORK_SIZE_LIMIT
+          newThreshold = 0
+        else
+          newThreshold = selected_node.threshold + 1
+        graph.setThreshold selected_node, newThreshold
         logChange(selected_node, 'threshold', 'threshold')
         update()
       break
@@ -494,11 +496,6 @@ keyup = ->
         .on 'mousedown.drag', null
         .on 'touchstart.drag', null
     svg.classed('shiftkey', false)
-
-
-dragstart = (node) ->
-  node.fixed = true
-  node.classed 'fixed', true
 
 
 nearestNeighbor = (node, nodes) ->
@@ -544,15 +541,15 @@ force = d3.layout.force()
 
 # Bind drag handler.
 drag = force.drag()
-  .on 'dragstart', dragstart
+  .on 'dragstart', (node) -> node.fixed = true
 
-# Bind mouse handlers.
+# Bind global mouse handlers.
 svg
     .on 'dblclick', dblclick
     .on 'mousemove', mousemove
     .on 'mousedown', mousedown
     .on 'mouseup', mouseup
-# Bind keyboard handlers.
+# Bind global keyboard handlers.
 d3.select document
     .on 'keydown', keydown
     .on 'keyup', keyup

@@ -3,15 +3,11 @@
 ###
 
 Graph = require './graph'
-controls = require './controls'
-
-graph = new Graph()
-
-# Bind the controls to the graph.
-graph.controls = controls
 
 # IIT 3.0 paper example
 exports.paper = ->
+  graph = new Graph()
+
   graph.addNode
     on: 1
     mechanism: 'OR'
@@ -32,12 +28,14 @@ exports.paper = ->
   graph.addEdge(2, 0)
   graph.addEdge(2, 1)
 
-  graph.setPastState([1, 1, 0])
+  graph.setPastState graph.getPossiblePastStates()[0]
 
   return graph
 
 # Matlab default example
 exports.matlab = ->
+  graph = new Graph()
+
   graph.addNode
     on: 1
     mechanism: 'OR'
@@ -57,7 +55,7 @@ exports.matlab = ->
   graph.addEdge(2, 0)
   graph.addEdge(2, 1)
 
-  graph.setPastState([1, 1, 0])
+  graph.setPastState graph.getPossiblePastStates()[0]
 
   return graph
 
@@ -70,6 +68,8 @@ exports.matlab = ->
 #   bidirectional - all edges bidirectional
 #   k - number of following nodes in the chain to connect to (default 1)
 exports.chain = (n, options) ->
+  graph = new Graph()
+
   unless options.k?
     options.k = 1
 
@@ -91,6 +91,8 @@ exports.chain = (n, options) ->
         if options.bidirectional
           graph.addEdge(target, i)
 
-  graph.setPastState (0 for i in [0...n])
+  graph.setPastState graph.getPossiblePastStates()[0]
+
+  return graph
 
   return graph
