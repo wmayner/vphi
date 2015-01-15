@@ -3,6 +3,7 @@
 ###
 
 colors = require '../colors'
+utils = require './utils'
 
 
 NETWORK_SIZE_LIMIT = 8
@@ -87,11 +88,13 @@ mousedown_link = null
 mouseover_node = null
 mousedown_node = null
 mouseup_node = null
+drag_source = null
+
+absorbNextMouseout = false
 
 # Mouse event vars
 resetMouseVars = ->
   mousedown_node = null
-  mouseup_node = null
   mousedown_link = null
   return
 
@@ -150,8 +153,8 @@ update = ->
         'url(#end-arrow)'
       .on 'mouseover', (edge) ->
         mouseover_link = edge.key
-        # Only select link if it's different.
-        unless graph.isSameLink(mouseover_link, selected_link)
+        # Only select link if it's different and we're dragging a new one.
+        unless mousedown_node or graph.isSameLink(mouseover_link, selected_link)
           selected_link = mouseover_link
           selected_node = null
           update()
@@ -182,19 +185,37 @@ update = ->
       .attr 'r', NODE_RADIUS
       .classed 'reflexive', (node) ->
         node.reflexive
+      .on 'click', (node) ->
+        # Don't toggle state if we're dragging a new link or if shift is pressed.
+        unless drag_source or d3.event.shiftKey
+          graph.toggleState node
+          update()
       .on 'mouseover', (node) ->
+        # Only select a node if it's a new one and we haven't just finished
+        # dragging a new link.
+        unless mousedown_node or node is mouseup_node
+          # Select node.
+          selected_node = node
+          selected_link = null
+          # Enlarge target node.
+          d3.select(this).attr 'transform', 'scale(1.1)'
+          update()
+        # Update global.
         mouseover_node = node
-
-        # Select node.
-        selected_node = node
-        selected_link = null
-
-        # Enlarge target node.
-        d3.select(this).attr 'transform', 'scale(1.1)'
-
-        update()
       .on 'mouseout', (node) ->
+        if absorbNextMouseout
+          absorbNextMouseout = false
+          return
+
         mouseover_node = null
+        # If this is the mouseup node, then we just finished dragging a link.
+        if node is mouseup_node then mouseup_node = null
+        # Mousedown + mouseout means we're dragging.
+        if node is mousedown_node
+          drag_source = node
+        # Otherwise we've just finished dragging.
+        else
+          drag_source = null
       .on 'mousedown', (node) ->
         mousedown_node = node
 
@@ -206,7 +227,9 @@ update = ->
 
         update()
       .on 'mouseup', (node) ->
-        return if not mousedown_node
+        return unless mousedown_node
+
+        mouseup_node = node
 
         # Needed by FF.
         drag_line
@@ -214,10 +237,16 @@ update = ->
           .style 'marker-end', ''
 
         # Check for drag-to-self.
-        mouseup_node = node
         if mouseup_node is mousedown_node
           resetMouseVars()
           return
+
+        drag_source = null
+
+        # Chrome triggers a mouseout after finishing dragging for some
+        # reason...
+        if utils.isChrome
+          absorbNextMouseout = true
 
         edge = graph.addEdge mousedown_node._id, mouseup_node._id
 
@@ -317,6 +346,7 @@ cycleDirection = (sourceId, targetId) ->
 dblclick = (e) ->
   return if d3.event.shiftKey or
             mouseover_node or
+            mousedown_node or
             mouseover_link or
             graph.nodeSize >= NETWORK_SIZE_LIMIT
   # Prevent I-bar on drag.
@@ -340,6 +370,8 @@ mousemove = ->
 
 
 mouseup = ->
+  # Reset drag source since we're done dragging.
+  drag_source = null
   if mousedown_node
     # Hide drag line.
     drag_line
@@ -470,6 +502,12 @@ keydown = ->
         logChange(selected_node, 'reflexivity', 'reflexive')
         update()
       break
+    # f
+    when 70
+      if selected_node
+        # Free/fix node
+        selected_node.fixed = not selected_node.fixed
+        update()
 
 
 selectNextNode = ->
