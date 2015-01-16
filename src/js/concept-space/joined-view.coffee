@@ -6,16 +6,19 @@
 ###
 
 axes = require './axes'
+Label = require './label'
 utils = require './utils'
+globalUtils = require '../utils'
 
 
 π = Math.PI
+# THREE.js world.
 MAX_CONCEPT_RADIUS = 0.5
+# Font-size in pixels.
+MIN_CONCEPT_LABEL_SIZE = 14
+MAX_CONCEPT_LABEL_SIZE = 60
 
 scene = new THREE.Scene()
-
-currentConstellation = []
-currentIgnoredAxes = []
 
 
 getRenderedDimensions = (constellation, numNodes) ->
@@ -31,39 +34,15 @@ getRenderedDimensions = (constellation, numNodes) ->
   } for d in renderedDimensions)
   return renderedDimensions
 
-getConceptRadius = (numNodes, phi) -> (phi / numNodes) * MAX_CONCEPT_RADIUS
-
-
-drawConcept = (concept, dimensions, numNodes) ->
-  radius = getConceptRadius(numNodes, concept.phi)
-  position =
-    x: concept[dimensions[0].direction].repertoire[dimensions[0].index]
-    y: concept[dimensions[1].direction].repertoire[dimensions[1].index]
-    z: concept[dimensions[2].direction].repertoire[dimensions[2].index]
-  utils.drawStar(scene, radius, position)
-
-
-clearConstellation = ->
-  for concept in currentConstellation
-    scene.remove(concept)
-  currentConstellation = []
-
-
-clearIgnoredAxes = ->
-  for axis in currentIgnoredAxes
-    scene.remove(axis)
-  currentIgnoredAxes = []
-
-
-clear = ->
-  clearConstellation()
-  clearIgnoredAxes()
-
 
 class JoinedView
   constructor: (@container, width, height) ->
 
     @scene = scene
+
+    @ignoredAxes = []
+    @constellation = []
+    @labels = []
 
     # ~~~~~~~~~
     # Lighting.
@@ -128,42 +107,116 @@ class JoinedView
 
     # Start with the default focal point and camera position.
     @resetControls()
+    return
 
-  toggleGrids: =>
+  drawIgnoredAxes: (numStates, renderedDimensions) ->
+    @ignoredAxes = @ignoredAxes.concat(
+      axes.drawJoinedIgnored(scene, numStates - 3, renderedDimensions)
+    )
+    return
+
+  drawConcept: (concept, dimensions, radiusScale, labelScale) ->
+    radius = radiusScale(concept.phi)
+    position =
+      x: concept[dimensions[0].direction].repertoire[dimensions[0].index]
+      y: concept[dimensions[1].direction].repertoire[dimensions[1].index]
+      z: concept[dimensions[2].direction].repertoire[dimensions[2].index]
+    star = utils.drawStar(scene, radius, position)
+
+    labelText = globalUtils.formatNodes(concept.mechanism)
+      .replace(/\ /g, '')
+    labelSize = labelScale(concept.phi)
+    label = new Label(star, labelText, labelSize, @camera, @renderer)
+    label.setOffsetFunction (star) ->
+      offsetVector = new THREE.Vector3(
+        star.position.x,
+        star.position.y,
+        star.position.z
+      )
+      offsetVector.add(new THREE.Vector3(0, radius, 0))
+      return offsetVector
+
+    # Keep track of the star and label we just made so we can clear them later.
+    @constellation.push(star)
+    @labels.push(label)
+    return
+
+  updateLabels: ->
+    for label in @labels
+      label.update()
+    return
+
+  clearLabels: ->
+    for label in @labels
+      label.remove()
+    @labels = []
+    return
+
+  clearConstellation: ->
+    for concept in @constellation
+      scene.remove(concept)
+    @constellation = []
+    return
+
+  clearIgnoredAxes: ->
+    for axis in @ignoredAxes
+      scene.remove(axis)
+    @ignoredAxes = []
+    return
+
+  clear: ->
+    @clearConstellation()
+    @clearIgnoredAxes()
+    @clearLabels()
+    return
+
+  toggleGrids: ->
     for grid in @grids
       grid.visible = not grid.visible
+    return
 
-  resetControls: =>
+  resetControls: ->
     @controls.reset()
     @controls.target = @scene.position
+    return
 
   render: =>
+    @updateLabels()
     @renderer.render(@scene, @camera)
+    return
 
   animate: =>
     requestAnimationFrame(@animate)
     @render()
     @controls.update()
+    return
 
-  display: (bigMip) =>
-    clear()
+  display: (bigMip) ->
+    @clear()
     numNodes = bigMip.subsystem.node_indices.length
     numStates = Math.pow(2, numNodes)
     # Find the three dimensions with the highest variance in probabilities.
     renderedDimensions = getRenderedDimensions(
       bigMip.unpartitioned_constellation, numNodes)
+    # Small phi is bounded by n/2
+    smallPhiBound = numNodes / 2
+    # Get a scale for concept radii
+    radiusScale = d3.scale.linear()
+      .domain [0, smallPhiBound]
+      .range [0, MAX_CONCEPT_RADIUS]
+    # Get a scale for concept labels
+    labelScale = d3.scale.linear()
+      .domain [0, smallPhiBound]
+      .range [MIN_CONCEPT_LABEL_SIZE, MAX_CONCEPT_LABEL_SIZE]
     # Draw the unpartitioned constellation.
     for concept in bigMip.unpartitioned_constellation
-      currentIgnoredAxes = currentIgnoredAxes.concat(
-        drawConcept(concept, renderedDimensions, numNodes)
-      )
+      @drawConcept(concept, renderedDimensions, radiusScale, labelScale)
     # Draw the ignored axes.
-    currentIgnoredAxes = currentIgnoredAxes.concat(
-      axes.drawJoinedIgnored(scene, numStates - 3, renderedDimensions)
-    )
+    @drawIgnoredAxes(numStates, renderedDimensions)
+    return
 
   toggleIgnoredAxes: ->
-    for axis in currentIgnoredAxes
+    for axis in @ignoredAxes
       axis.visible = not axis.visible
 
 
