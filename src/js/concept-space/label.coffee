@@ -5,7 +5,7 @@
 ###
 
 class Label
-  constructor: (@object, content, size, @camera, @renderer) ->
+  constructor: (@object, content, size, @camera, controls, @renderer) ->
     @offset = (object) -> object.position
 
     @label = $("<div>#{content}</div>")
@@ -15,6 +15,10 @@ class Label
 
     @width = @label.outerWidth()
     @height = @label.outerHeight()
+
+    # Bind control event handlers to the label, so it's treated as part of the
+    # scene even though it's a sibling DOM element.
+    controls.bindEventHandlers(@label[0])
 
     @update()
 

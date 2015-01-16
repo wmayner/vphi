@@ -35,7 +35,7 @@ height = 500
 
 # Construct views.
 splitView = new SplitView(container, width, height)
-joinedView = new JoinedView(container, width, height)
+joinedView = new JoinedView(width, height)
 
 # References to the two view canvases.
 $splitViewCanvas = undefined
@@ -48,8 +48,6 @@ $joinedViewCanvas = undefined
 
 resizeView = (view) ->
   view.renderer.setSize(width, height)
-  # Update controls.
-  view.controls.handleResize()
   # Update aspect ratio.
   view.camera.aspect = width / height
   # Update camera projection matrix.
@@ -124,9 +122,9 @@ init = ->
   resizeHandler()
 
 
-animate = ->
+render = ->
+  joinedView.render()
   splitView.animate()
-  joinedView.animate()
 
 
 # ~~~~~~~~~~~~~~~
@@ -149,4 +147,4 @@ $(TOGGLE_IGNORED_AXES_SELECTOR).mousedown -> toggleIgnoredAxes()
 # 3... 2... 1... BLAST OFF!
 $(document).ready ->
   init()
-  animate()
+  render()

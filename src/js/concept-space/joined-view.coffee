@@ -36,7 +36,7 @@ getRenderedDimensions = (constellation, numNodes) ->
 
 
 class JoinedView
-  constructor: (@container, width, height) ->
+  constructor: (width, height) ->
 
     @scene = scene
 
@@ -80,30 +80,28 @@ class JoinedView
       @scene.add(grid)
     # ~~~~~~~~~~~~~~~~~~~~
 
+    # Initialize the renderer.
+    @renderer = new THREE.WebGLRenderer(alpha: false)
+    @renderer.setSize(width, height)
+
     # Initialize the camera.
-    @camera = new THREE.PerspectiveCamera(20, width / height, 0.01, 1000)
+    @camera = new THREE.PerspectiveCamera(20, width / height, 0.0001, 1000)
     @scene.add(@camera)
     @camera.position.set(1.5, 1.5, 1.5)
 
     # Initialize the camera controls.
-    @controls = new THREE.TrackballControls(@camera, @container)
-
-    @controls.rotateSpeed = 2.0
-    @controls.zoomSpeed = 3
-    @controls.panSpeed = 1.0
+    @controls = new THREE.OrbitControls(@camera, @renderer.domElement)
 
     @controls.noRotate = false
+    @controls.rotateSpeed = 1.5
+
     @controls.noZoom = false
+    @controls.zoomSpeed = 2
+
     @controls.noPan = false
+    @controls.keyPanSpeed = 1.0
 
-    @controls.staticMoving = true
-    @controls.dynamicDampingFactor = 0.15
-
-    @controls.addEventListener('change', @render)
-
-    # Initialize the renderer.
-    @renderer = new THREE.WebGLRenderer(alpha: false)
-    @renderer.setSize(width, height)
+    @controls.addEventListener 'change', @render
 
     # Start with the default focal point and camera position.
     @resetControls()
@@ -126,7 +124,10 @@ class JoinedView
     labelText = globalUtils.formatNodes(concept.mechanism)
       .replace(/\ /g, '')
     labelSize = labelScale(concept.phi)
-    label = new Label(star, labelText, labelSize, @camera, @renderer)
+    label = new Label(
+      star, labelText, labelSize,
+      @camera, @controls, @renderer
+    )
     label.setOffsetFunction (star) ->
       offsetVector = new THREE.Vector3(
         star.position.x,
@@ -185,12 +186,6 @@ class JoinedView
     @renderer.render(@scene, @camera)
     return
 
-  animate: =>
-    requestAnimationFrame(@animate)
-    @render()
-    @controls.update()
-    return
-
   display: (bigMip) ->
     @clear()
     numNodes = bigMip.subsystem.node_indices.length
@@ -213,6 +208,7 @@ class JoinedView
       @drawConcept(concept, renderedDimensions, radiusScale, labelScale)
     # Draw the ignored axes.
     @drawIgnoredAxes(numStates, renderedDimensions)
+    @render()
     return
 
   toggleIgnoredAxes: ->
