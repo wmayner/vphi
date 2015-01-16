@@ -150,4 +150,3 @@ $(TOGGLE_IGNORED_AXES_SELECTOR).mousedown -> toggleIgnoredAxes()
 $(document).ready ->
   init()
   animate()
-  switchView()
