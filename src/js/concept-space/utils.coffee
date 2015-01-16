@@ -2,18 +2,10 @@
 # concept-space/utils.coffee
 ###
 
-sum = (x) ->
-  x.reduce (a, b) -> a + b
-
-mean = (x) ->
-  if x.length is 0 then return null
-  return sum(x) / x.length
-
 variance = (x) ->
   if x.length is 0 then return null
-  mean_value = mean(x)
-  deviations = (Math.pow(n - mean_value, 2) for n in x)
-  return mean(deviations)
+  deviations = (Math.pow(n - d3.mean(x), 2) for n in x)
+  return d3.mean(deviations)
 
 module.exports =
 
@@ -24,7 +16,7 @@ module.exports =
         variance: variance(probabilities[i])
       } for i in [0...numStates]
     )
-    # (b - a) => descending sort.
+    # Ascending sort.
     variances = _.sortBy(variances, 'variance')
     return (v.state for v in variances)
 
