@@ -52,6 +52,7 @@ resizeView = (view) ->
   view.camera.aspect = width / height
   # Update camera projection matrix.
   view.camera.updateProjectionMatrix()
+  view.render()
 
 
 resizeHandler = ->
