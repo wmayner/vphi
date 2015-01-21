@@ -9,34 +9,36 @@ variance = (x) ->
 
 module.exports =
 
-  sortStatesByVariance: (distributions, numStates) ->
-    probabilities = ((d[i] for d in distributions) for i in [0...numStates])
+  sortByVariance: (probabilities, numStates) ->
     variances = ({
-        state: i
-        variance: variance(probabilities[i])
-      } for i in [0...numStates]
+        index: index
+        variance: variance(dimension)
+      } for dimension, index in probabilities
     )
-    # Ascending sort.
-    variances = _.sortBy(variances, 'variance')
-    return (v.state for v in variances)
+    # Descending sort.
+    return (v.index for v in _.sortBy(variances, (d) -> - d.variance))
 
   drawStar: (scene, radius, position) ->
     # TODO make these actual stars.
-    # material = new THREE.MeshPhongMaterial(
-    #   wireframe: false
-    #   ambient: 0x404040
-    #   color: 0xF5F237
-    #   specular: 0x404040
-    #   shininess: 20
-    #   shading: THREE.SmoothShading
-    #   transparent: true
-    # )
-    material = new THREE.MeshNormalMaterial(
-      wireframe: true
-      wireframeLinewidth: 3
+    material = new THREE.MeshPhongMaterial(
+      transparent: true
+      opacity: 0.9
+      # wireframe: true
+      # wireframeLinewidth: 2
+      ambient: 0x404040
+      color: 0xF5F237
+      specular: 0x404040
+      shininess: 3
       shading: THREE.SmoothShading
+      # Necessary for nested transparent objects to render properly.
+      depthWrite: false
     )
-    geometry = new THREE.SphereGeometry(radius, 2, 2)
+    # material = new THREE.MeshNormalMaterial(
+    #   wireframe: true
+    #   wireframeLinewidth: 3
+    #   shading: THREE.SmoothShading
+    # )
+    geometry = new THREE.SphereGeometry(radius, 32, 32)
     star = new THREE.Mesh(geometry, material)
     star.position.set(position.x, position.y, position.z)
     scene.add(star)

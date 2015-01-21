@@ -23,15 +23,24 @@ scene = new THREE.Scene()
 
 getRenderedDimensions = (constellation, numNodes) ->
   numStates = Math.pow(2, numNodes)
+
   pastDistributions = (c.cause.repertoire for c in constellation)
   futureDistributions = (c.effect.repertoire for c in constellation)
-  distributions = pastDistributions.concat(futureDistributions)
-  renderedDimensions = utils.sortStatesByVariance( \
-      distributions, (2 * numStates))[-3...]
+
+  pastProbabilities = ((d[i] for d in pastDistributions) for i in [0...numStates])
+  futureProbabilities = ((d[i] for d in futureDistributions) for i in [0...numStates])
+
+  probabilities = pastProbabilities.concat(futureProbabilities)
+
+  sortedDimensions = utils.sortByVariance(probabilities, numStates)
+
   renderedDimensions = ({
     direction: (if d >= numStates then 'effect' else 'cause')
     index: (if d >= numStates then d - numStates else d)
-  } for d in renderedDimensions)
+    state: globalUtils.loliIndexToState(d, numNodes)
+  } for d in sortedDimensions[0...3])
+  console.log renderedDimensions
+
   return renderedDimensions
 
 
@@ -44,6 +53,35 @@ class JoinedView
     @constellation = []
     @labels = []
 
+    # Initialize the renderer.
+    @renderer = new THREE.WebGLRenderer(
+      alpha: false
+      devicePixelRatio: window.devicePixelRatio or 1
+    )
+    @renderer.setSize(width, height)
+
+    # Initialize the camera.
+    @camera = new THREE.PerspectiveCamera(20, width / height, 0.0001, 1000)
+    @scene.add(@camera)
+    @camera.position.set(1.5, 1.5, 1.5)
+
+    # Initialize the camera controls.
+    @controls = new THREE.OrbitControls(@camera, @renderer.domElement)
+
+    @controls.noRotate = false
+    @controls.rotateSpeed = 1.5
+
+    @controls.noZoom = false
+    @controls.zoomSpeed = 2
+
+    @controls.noPan = true
+    @controls.keyPanSpeed = 5.0
+
+    @controls.addEventListener 'change', @render
+
+    # Start with the default focal point and camera position.
+    @resetControls()
+
     # ~~~~~~~~~
     # Lighting.
     # ~~~~~~~~~
@@ -53,9 +91,6 @@ class JoinedView
     scene.add(light)
     scene.add(new THREE.HemisphereLight(0xdddddd, 0x444444))
     # ~~~~~~~~~
-
-    # Draw the past and future axes.
-    axes.drawJoined(@scene)
 
     # ~~~~~~~~~~~~~~~~~~~~
     # Draw the axis grids.
@@ -80,31 +115,6 @@ class JoinedView
       @scene.add(grid)
     # ~~~~~~~~~~~~~~~~~~~~
 
-    # Initialize the renderer.
-    @renderer = new THREE.WebGLRenderer(alpha: false)
-    @renderer.setSize(width, height)
-
-    # Initialize the camera.
-    @camera = new THREE.PerspectiveCamera(20, width / height, 0.0001, 1000)
-    @scene.add(@camera)
-    @camera.position.set(1.5, 1.5, 1.5)
-
-    # Initialize the camera controls.
-    @controls = new THREE.OrbitControls(@camera, @renderer.domElement)
-
-    @controls.noRotate = false
-    @controls.rotateSpeed = 1.5
-
-    @controls.noZoom = false
-    @controls.zoomSpeed = 2
-
-    @controls.noPan = false
-    @controls.keyPanSpeed = 1.0
-
-    @controls.addEventListener 'change', @render
-
-    # Start with the default focal point and camera position.
-    @resetControls()
     return
 
   drawIgnoredAxes: (numStates, renderedDimensions) ->
@@ -112,6 +122,11 @@ class JoinedView
       axes.drawJoinedIgnored(scene, numStates - 3, renderedDimensions)
     )
     return
+
+  mechanismLabel: (mechanism) ->
+    return ("<span class='mechanism-node " +
+      "#{if @bigMip.currentState[n] then 'on' else 'off'}'>" +
+      "#{globalUtils.LABEL[n]}</span>" for n in mechanism).join('')
 
   drawConcept: (concept, dimensions, radiusScale, labelScale) ->
     radius = radiusScale(concept.phi)
@@ -121,8 +136,7 @@ class JoinedView
       z: concept[dimensions[2].direction].repertoire[dimensions[2].index]
     star = utils.drawStar(scene, radius, position)
 
-    labelText = globalUtils.formatNodes(concept.mechanism)
-      .replace(/\ /g, '')
+    labelText = @mechanismLabel(concept.mechanism)
     labelSize = labelScale(concept.phi)
     label = new Label(
       star, labelText, labelSize,
@@ -174,11 +188,13 @@ class JoinedView
   toggleGrids: ->
     for grid in @grids
       grid.visible = not grid.visible
+    @render()
     return
 
   resetControls: ->
     @controls.reset()
     @controls.target = @scene.position
+    @render()
     return
 
   render: =>
@@ -188,11 +204,35 @@ class JoinedView
 
   display: (bigMip) ->
     @clear()
+
+    @bigMip = bigMip
+
     numNodes = bigMip.subsystem.node_indices.length
     numStates = Math.pow(2, numNodes)
+
     # Find the three dimensions with the highest variance in probabilities.
     renderedDimensions = getRenderedDimensions(
       bigMip.unpartitioned_constellation, numNodes)
+    # Draw the past and future axes.
+    axes.drawJoined(@scene, renderedDimensions)
+    # Label them.
+    axisLabelSize = 10
+    @labels.push new Label(
+      {position: {x: 1, y: 0, z: 0}}, renderedDimensions[0].state,
+      axisLabelSize, @camera, @controls, @renderer
+    )
+    console.log renderedDimensions
+    @labels.push new Label(
+      {position: {x: 0, y: 1, z: 0}}, renderedDimensions[1].state,
+      axisLabelSize, @camera, @controls, @renderer
+    )
+    @labels.push new Label(
+      {position: {x: 0, y: 0, z: 1}}, renderedDimensions[2].state,
+      axisLabelSize, @camera, @controls, @renderer
+    )
+    # Draw the ignored axes.
+    @drawIgnoredAxes(numStates, renderedDimensions)
+
     # Small phi is bounded by n/2
     smallPhiBound = numNodes / 2
     # Get a scale for concept radii
@@ -203,17 +243,20 @@ class JoinedView
     labelScale = d3.scale.linear()
       .domain [0, smallPhiBound]
       .range [MIN_CONCEPT_LABEL_SIZE, MAX_CONCEPT_LABEL_SIZE]
+
     # Draw the unpartitioned constellation.
     for concept in bigMip.unpartitioned_constellation
       @drawConcept(concept, renderedDimensions, radiusScale, labelScale)
-    # Draw the ignored axes.
-    @drawIgnoredAxes(numStates, renderedDimensions)
+
+    # Rerender everything.
     @render()
     return
 
   toggleIgnoredAxes: ->
     for axis in @ignoredAxes
       axis.visible = not axis.visible
+    @render()
+    return
 
 
 module.exports = JoinedView

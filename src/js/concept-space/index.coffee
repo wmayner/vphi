@@ -34,7 +34,6 @@ width = $container.css('width')
 height = 500
 
 # Construct views.
-splitView = new SplitView(container, width, height)
 joinedView = new JoinedView(width, height)
 
 # References to the two view canvases.
@@ -63,7 +62,6 @@ resizeHandler = ->
   $canvas.attr('width', width)
   $canvas.css('width', width)
   # Resize the views.
-  resizeView(splitView)
   resizeView(joinedView)
 
 
@@ -78,24 +76,12 @@ deactivateView = (view, $element) ->
   $element.hide()
 
 
-switchView = ->
-  # Switch between split and joined view of past/future subspaces.
-  if activeView is joinedView
-    activateView(splitView, $splitViewCanvas)
-    deactivateView(joinedView, $joinedViewCanvas)
-  else if activeView is splitView
-    activateView(joinedView, $joinedViewCanvas)
-    deactivateView(splitView, $splitViewCanvas)
-
-
 toggleGrids = ->
   joinedView.toggleGrids()
-  splitView.toggleGrids()
 
 
 toggleIgnoredAxes = ->
   joinedView.toggleIgnoredAxes()
-  splitView.toggleIgnoredAxes()
 
 
 # ~~~~~~~~~~~~~
@@ -103,29 +89,23 @@ toggleIgnoredAxes = ->
 # ~~~~~~~~~~~~~
 exports.display = (bigMip) ->
   joinedView.display(bigMip)
-  splitView.display(bigMip)
 
 
 init = ->
   # Tag the canvases with an ID.
-  splitView.renderer.domElement.id = SPLIT_VIEW_CANVAS_ID
   joinedView.renderer.domElement.id = JOINED_VIEW_CANVAS_ID
   # Add the two view canvases to the DOM.
   $container.append(joinedView.renderer.domElement)
-  $container.append(splitView.renderer.domElement)
   # Get jQuery references to the canvases.
-  $splitViewCanvas = $('#' + SPLIT_VIEW_CANVAS_ID)
   $joinedViewCanvas = $('#' + JOINED_VIEW_CANVAS_ID)
   # Start with the joined view activated.
   activateView(joinedView, $joinedViewCanvas)
-  deactivateView(splitView, $splitViewCanvas)
   # Force a resize at start.
   resizeHandler()
 
 
 render = ->
   joinedView.render()
-  splitView.animate()
 
 
 # ~~~~~~~~~~~~~~~

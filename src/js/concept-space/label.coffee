@@ -4,14 +4,15 @@
 # A DOM-element label for a THREE.js object.
 ###
 
+# TODO get these to work with panning
 class Label
   constructor: (@object, content, size, @camera, controls, @renderer) ->
     @offset = (object) -> object.position
 
     @label = $("<div>#{content}</div>")
-      .insertAfter(@renderer.domElement)
-    @label.addClass('threejs-label')
-    @label.css('font-size', size)
+      .insertAfter @renderer.domElement
+    @label.addClass 'threejs-label'
+    @label.css 'font-size', size
 
     @width = @label.outerWidth()
     @height = @label.outerHeight()
@@ -22,6 +23,8 @@ class Label
 
     @update()
 
+  pixelRatio: window.devicePixelRatio or 1
+
   setOffsetFunction: (offsetFunction) -> @offset = offsetFunction
 
   setScaleFunction: (scaleFunction) -> @scale = setScaleFunction
@@ -29,22 +32,22 @@ class Label
   get2Dpoint: (position) ->
     vector = new THREE.Vector3(position.x, position.y, position.z)
       .project(@camera)
-    halfHeight = @renderer.domElement.height / 2
-    halfWidth = @renderer.domElement.width / 2
+    halfHeight = @renderer.domElement.height / @pixelRatio / 2
+    halfWidth = @renderer.domElement.width / @pixelRatio / 2
     return {
       x: Math.round(vector.x * halfWidth + halfWidth)
       y: Math.round(- vector.y * halfHeight + halfHeight)
     }
 
   inBounds: (coord) ->
-    coord.y > 0 and
     coord.x > 0 and
-    coord.y + @height < @renderer.domElement.height and
-    coord.x + @width < @renderer.domElement.width
+    coord.y > 0 and
+    coord.x + @width < (@renderer.domElement.width / @pixelRatio) and
+    coord.y + @height < (@renderer.domElement.height / @pixelRatio)
 
   update: ->
     coord = @get2Dpoint(@offset(@object))
-    if @inBounds(coord)
+    if @inBounds coord
       # Show and update coords
       @label.css
         'top': coord.y + 'px'
@@ -53,7 +56,9 @@ class Label
     else
       # Hide using display property
       # See http://jsperf.com/fastest-way-to-hide-dom-element/
-      @label.css('display', 'none')
+      @label.css 'display', 'none'
     return
+
+  remove: -> @label.remove()
 
 module.exports = Label

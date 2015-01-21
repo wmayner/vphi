@@ -42,7 +42,7 @@ AxisHelper = (config) ->
 AxisHelper:: = Object.create(THREE.Line::)
 
 
-drawVector = (point, lineoptions) ->
+makeVector = (point, lineoptions) ->
   material = new THREE.LineBasicMaterial(lineoptions)
   geometry = new THREE.Geometry();
   geometry.vertices.push(
@@ -74,7 +74,7 @@ module.exports =
     for v in geometry.vertices
       v.z += shift
     # Make the axes.
-    axes = (drawVector(v,
+    axes = (makeVector(v,
       color: IGNORED_AXIS_COLOR
       linewidth: IGNORED_AXIS_LINE_WIDTH
     ) for v in geometry.vertices)
@@ -98,7 +98,7 @@ module.exports =
     for d in renderedDimensions
       geometry.vertices.splice(d.index, d.index + 1)
     # Make the axes.
-    axes = (drawVector(v,
+    axes = (makeVector(v,
       color: IGNORED_AXIS_COLOR
       linewidth: IGNORED_AXIS_LINE_WIDTH
     ) for v in geometry.vertices)
@@ -156,18 +156,35 @@ module.exports =
     )
     scene.add(future_axis)
 
-  drawJoined: (scene) ->
-    future_axis = new AxisHelper(
+  drawJoined: (scene, renderedDimensions) ->
+    # X, Y, Z proceed from highest to lowest variance.
+    pastColor = [
+      colors.cause.r / 255
+      colors.cause.g / 255
+      colors.cause.b / 255
+    ]
+    futureColor = [
+      colors.effect.r / 255
+      colors.effect.g / 255
+      colors.effect.b / 255
+    ]
+    colors = []
+    # Build color array, one row per axis.
+    for direction in (d.direction for d in renderedDimensions)
+      # Double concatenation since each row is a gradient with two RGB
+      # colors.
+      if direction is 'cause'
+        colors = colors.concat(pastColor).concat(pastColor)
+      else if direction is 'effect'
+        colors = colors.concat(futureColor).concat(futureColor)
+      else throw Error("Invalid direction.")
+    axes = new AxisHelper(
       coords: [
         [1, 0, 0]
         [0, 1, 0]
         [0, 0, 1]
       ]
-      colors: new Float32Array([
-        0.8, 0.8, 0.8,  0.8, 0.8, 0.8,
-        0.8, 0.8, 0.8,  0.8, 0.8, 0.8,
-        0.8, 0.8, 0.8,  0.8, 0.8, 0.8,
-      ])
+      colors: new Float32Array(colors)
       lineoptions: {linewidth: RENDERED_AXIS_LINE_WIDTH}
     )
-    scene.add(future_axis)
+    scene.add(axes)

@@ -31,6 +31,9 @@ window.vphiDataService = angular.module 'vphiDataService', []
           console.log "DATA_SERVICE: Updating..."
           pyphi.bigMip(graphEditor.graph, (bigMip) =>
             @bigMip = bigMip
+            # Attach current and past state to the returned data structure.
+            @bigMip.currentState = graphEditor.graph.currentState
+            @bigMip.pastState = graphEditor.graph.pastState
             console.log "DATA_SERVICE: Broadcasting data update."
             console.log "DATA_SERVICE: bigMip:"
             console.log bigMip
