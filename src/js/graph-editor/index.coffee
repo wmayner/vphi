@@ -186,6 +186,8 @@ update = ->
       .classed 'reflexive', (node) ->
         node.reflexive
       .on 'click', (node) ->
+        selected_node = node
+        selected_link = null
         # Don't toggle state if we're dragging a new link or if shift is pressed.
         unless drag_source or d3.event.shiftKey
           graph.toggleState node
