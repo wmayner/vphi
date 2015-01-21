@@ -95,4 +95,27 @@ exports.chain = (n, options) ->
 
   return graph
 
+
+exports.threshold = ->
+  graph = new Graph()
+
+  graph.addNode
+    on: 0
+    mechanism: 'OR'
+    reflexive: false
+  graph.addNode
+    on: 0
+    mechanism: 'OR'
+    reflexive: false
+  graph.addNode
+    on: 1
+    mechanism: '>'
+    threshold: 1
+    reflexive: false
+
+  graph.addEdge(0, 2)
+  graph.addEdge(1, 2)
+
+  graph.setPastState graph.getPossiblePastStates()[0]
+
   return graph
