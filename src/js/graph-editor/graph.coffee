@@ -21,6 +21,8 @@ checkPossiblePastState = (tpm, pastStateIndex, currentState) ->
       return false
   return true
 
+log = (msg) ->
+  console.log "GRAPH: #{msg}"
 
 class Graph
 
@@ -60,6 +62,7 @@ class Graph
       node[key] = value
     @nodeSize++
     @_nodes[node._id] = node
+    log "Added node #{node._id}."
     @update()
     return node
 
@@ -88,7 +91,9 @@ class Graph
     first place.
     ###
     nodeToRemove = @_nodes[id]
-    if not nodeToRemove then return
+    if not nodeToRemove
+      log "Node #{id} doesn't exist."
+      return
     else
       for own outEdgeId of nodeToRemove._outEdges
         @removeEdge id, outEdgeId
@@ -101,6 +106,7 @@ class Graph
       if node.index > nodeToRemove.index
         node.index--
         node.label = utils.LABEL[node.index]
+    log "Removed node #{id}."
     @update()
     return nodeToRemove
 
@@ -116,7 +122,9 @@ class Graph
     of id `source` or `target` aren't found, or if an edge already exists
     between the two nodes.
     ###
-    if @getEdge sourceId, targetId then return
+    if @getEdge sourceId, targetId
+      log "Edge #{sourceId},#{targetId} already exists."
+      return
     fromNode = @_nodes[sourceId]
     toNode = @_nodes[targetId]
     if not fromNode or not toNode then return
@@ -131,6 +139,7 @@ class Graph
     if sourceId is targetId
       fromNode.reflexive = true
     @edgeSize++
+    log "Added edge #{sourceId},#{targetId}."
     @update()
     return edgeToAdd
 
@@ -151,7 +160,9 @@ class Graph
     fromNode = @_nodes[sourceId]
     toNode = @_nodes[targetId]
     edgeToDelete = @getEdge sourceId, targetId
-    if not edgeToDelete then return
+    if not edgeToDelete
+      log "Edge #{sourceId},#{targetId} doesn't exist."
+      return
     delete fromNode._outEdges[targetId]
     delete toNode._inEdges[sourceId]
     # Set the node's reflexive bit to false if the edge was a self-loop.
@@ -162,6 +173,7 @@ class Graph
     if reverseEdge
       delete reverseEdge.bidirectional
     @edgeSize--
+    log "Removed edge #{sourceId},#{targetId}."
     @update()
     return edgeToDelete
 
@@ -318,7 +330,6 @@ class Graph
     (((if @getEdge(@getNodeByIndex(i)._id, @getNodeByIndex(j)._id) \
       then 1 else 0) for i in [0...@nodeSize]) for j in [0...@nodeSize])
 
-  # TODO just take graph, keep a tpm in graph?
   getPossiblePastStates: ->
     numStates = Math.pow(2, @nodeSize)
     result = (utils.holiIndexToState(pastStateIndex, @nodeSize) \
@@ -333,7 +344,7 @@ class Graph
     @pastState = state
     @updateTpm()
     @controls.update(this)
-    console.log "GRAPH: Changed past state from [#{old}] to [#{@pastState}]."
+    log "Changed past state from [#{old}] to [#{@pastState}]."
 
   updatePastState: ->
     old = @pastState
@@ -342,18 +353,19 @@ class Graph
       @pastState = false
     else
       @pastState = possiblePastStates[0]
-    console.log "GRAPH: Changed past state from [#{old}] to [#{@pastState}]."
+    console.log "  Changed past state from [#{old}] to [#{@pastState}]."
 
   updateCurrentState: ->
     old = @currentState
     @currentState = @getNodeProperties('on', [0...@nodeSize])
-    console.log "GRAPH: Changed current state from [#{old}] to [#{@currentState}]."
+    console.log "  Changed current state from [#{old}] to [#{@currentState}]."
 
   updateTpm: =>
     @tpm = tpmify(this)
-    console.log "GRAPH: Updated TPM."
+    console.log "  Updated TPM."
 
   update: =>
+    log "Updating..."
     @updateCurrentState()
     @updateTpm()
     @updatePastState()
