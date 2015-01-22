@@ -4,6 +4,7 @@
 
 PRECISION = 6
 
+
 module.exports =
 
   # Alphabet for letter labels of nodes.
@@ -24,12 +25,19 @@ module.exports =
 
   latexNodes: (nodeArray) -> @formatNodes(nodeArray) or '[\\,]'
 
-  holiIndexToState: (i, numberOfNodes) ->
+  holiIndexToState: (i, numNodes) ->
     # Convert a decimal index into an array of binary node states according to
     # the HOLI convention (high-order bits correspond to low-index nodes).
-    return ((i >> n) & 1 for n in [0...numberOfNodes])
+    return ((i >> n) & 1 for n in [0...numNodes])
 
-  loliIndexToState: (i, numberOfNodes) ->
+  loliIndexToState: (i, numNodes) ->
     # Convert a decimal index into an array of binary node states according to
     # the LOLI convention (low-order bits correspond to low-index nodes).
-    return @holiIndexToState(i, numberOfNodes).reverse()
+    return @holiIndexToState(i, numNodes).reverse()
+
+  logTpm: (tpm) ->
+    console.log "---------------"
+    n = tpm[0].length
+    for i in [0...tpm.length]
+      console.log "#{@holiIndexToState(i, n)} -> #{tpm[i]}"
+    console.log "---------------"
