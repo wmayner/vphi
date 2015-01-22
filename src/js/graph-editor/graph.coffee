@@ -314,10 +314,9 @@ class Graph
       return false
     return (@pastState[i] for i in node_indices)
 
-  # TODO test
   getConnectivityMatrix: ->
-    (((if @getEdge(sourceId, targetId) then 1 else 0) \
-      for targetId in [0...@nodeSize]) for sourceId in [0...@nodeSize])
+    (((if @getEdge(@getNodeByIndex(i)._id, @getNodeByIndex(j)._id) \
+      then 1 else 0) for i in [0...@nodeSize]) for j in [0...@nodeSize])
 
   # TODO just take graph, keep a tpm in graph?
   getPossiblePastStates: ->
