@@ -126,7 +126,7 @@ class SplitView
     # Initialize the camera.
     @camera = new THREE.PerspectiveCamera(20, width / height, 0.01, 1000)
     @scene.add(@camera)
-    @camera.position.set(-1.3, 1.7, 1)
+    @camera.position.set(-4, 5, 3)
 
     # Initialize the camera controls.
     @controls = new THREE.TrackballControls(@camera, @container)

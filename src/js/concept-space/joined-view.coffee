@@ -63,7 +63,7 @@ class JoinedView
     # Initialize the camera.
     @camera = new THREE.PerspectiveCamera(20, width / height, 0.0001, 1000)
     @scene.add(@camera)
-    @camera.position.set(1.5, 1.5, 1.5)
+    @camera.position.set(4, 4, 4)
 
     # Initialize the camera controls.
     @controls = new THREE.OrbitControls(@camera, @renderer.domElement)
