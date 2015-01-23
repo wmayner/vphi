@@ -5,6 +5,7 @@
 'use strict'
 
 utils = require './utils'
+format = require './format'
 colors = require './colors'
 pyphi = require './pyphi'
 graphEditor = require './graph-editor'
@@ -121,7 +122,7 @@ window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
     'vphiDataService'
     ($scope, vphiDataService) ->
       $scope.title = 'Subsystem'
-      $scope.subsystem = '–'
+      $scope.nodes = []
       $scope.bigPhi = '–'
       $scope.minimalCut = '–'
       $scope.numConcepts = '–'
@@ -133,14 +134,14 @@ window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
           $scope.title = 'Main Complex'
         else
           $scope.title = 'Subsystem'
-        $scope.subsystem = utils.formatNodes d.subsystem.node_indices
-        $scope.bigPhi = utils.formatPhi d.phi
+        $scope.nodes = (format.node i for i in d.subsystem.node_indices)
+        $scope.bigPhi = format.phi d.phi
         $scope.numConcepts = d.unpartitioned_constellation.length
         if d.unpartitioned_constellation.length > 0
-          $scope.sumSmallPhi = utils.formatPhi (c.phi for c in d.unpartitioned_constellation).reduce((x, y) -> x + y)
+          $scope.sumSmallPhi = format.phi (c.phi for c in d.unpartitioned_constellation).reduce((x, y) -> x + y)
         else
           $scope.sumSmallPhi = 0
-        $scope.minimalCut = utils.formatCut d.cut_subsystem.cut
+        $scope.minimalCut = format.cut d.cut_subsystem.cut
   ]
 
 
@@ -165,11 +166,11 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
     ($scope) ->
       concept = $scope.concept
 
-      $scope.mechanism = utils.latexNodes concept.mechanism
-      $scope.smallPhi = utils.formatPhi concept.phi
-      $scope.smallPhiPast = utils.formatPhi concept.phi
-      $scope.smallPhiPast = utils.formatPhi concept.cause.mip.phi
-      $scope.smallPhiFuture = utils.formatPhi concept.effect.mip.phi
+      $scope.mechanism = (format.node n for n in concept.mechanism)
+      $scope.smallPhi = format.phi concept.phi
+      $scope.smallPhiPast = format.phi concept.phi
+      $scope.smallPhiPast = format.phi concept.cause.mip.phi
+      $scope.smallPhiFuture = format.phi concept.effect.mip.phi
 
       if concept.cause.mip.phi > concept.effect.mip.phi
         $scope.smallPhiPastClass = "bold"
@@ -177,32 +178,32 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
         $scope.smallPhiFutureClass = "bold"
 
       $scope.causeMip = "\\frac{" +
-        utils.latexNodes(concept.effect.mip.mechanism) + "^{c}" +
+        format.latexNodes(concept.effect.mip.mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.effect.mip.purview) + "^{p}" +
+        format.latexNodes(concept.effect.mip.purview) + "^{p}" +
         "}"
       $scope.partitionedCauseMip = "\\frac{" +
-        utils.latexNodes(concept.cause.mip.partition[0].mechanism) + "^{c}" +
+        format.latexNodes(concept.cause.mip.partition[0].mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.cause.mip.partition[0].purview) + "^{p}" +
+        format.latexNodes(concept.cause.mip.partition[0].purview) + "^{p}" +
         "} \\times \\frac{" +
-        utils.latexNodes(concept.cause.mip.partition[1].mechanism) + "^{c}" +
+        format.latexNodes(concept.cause.mip.partition[1].mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.cause.mip.partition[1].purview) + "^{p}" +
+        format.latexNodes(concept.cause.mip.partition[1].purview) + "^{p}" +
         "}"
       $scope.effectMip = "\\frac{" +
-        utils.latexNodes(concept.effect.mip.mechanism) + "^{c}" +
+        format.latexNodes(concept.effect.mip.mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.effect.mip.purview) + "^{f}" +
+        format.latexNodes(concept.effect.mip.purview) + "^{f}" +
         "}"
       $scope.partitionedEffectMip = "\\frac{" +
-        utils.latexNodes(concept.effect.mip.partition[0].mechanism) + "^{c}" +
+        format.latexNodes(concept.effect.mip.partition[0].mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.effect.mip.partition[0].purview) + "^{f}" +
+        format.latexNodes(concept.effect.mip.partition[0].purview) + "^{f}" +
         "} \\times \\frac{" +
-        utils.latexNodes(concept.effect.mip.partition[1].mechanism) + "^{c}" +
+        format.latexNodes(concept.effect.mip.partition[1].mechanism) + "^{c}" +
         "}{" +
-        utils.latexNodes(concept.effect.mip.partition[1].purview) + "^{f}" +
+        format.latexNodes(concept.effect.mip.partition[1].purview) + "^{f}" +
         "}"
   ]
 

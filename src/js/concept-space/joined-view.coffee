@@ -5,6 +5,7 @@
 # concept space.
 ###
 
+format = require '../format'
 axes = require './axes'
 Label = require './label'
 utils = require './utils'
@@ -124,8 +125,8 @@ class JoinedView
 
   mechanismLabel: (mechanism) ->
     return ("<span class='mechanism-node " +
-      "#{if @bigMip.currentState[n] then 'on' else 'off'}'>" +
-      "#{globalUtils.LABEL[n]}</span>" for n in mechanism).join('')
+      "#{if @bigMip.currentState[i] then 'on' else 'off'}'>" +
+      "#{format.node(i)}</span>" for i in mechanism).join('')
 
   drawConcept: (concept, dimensions, radiusScale, labelScale) ->
     radius = radiusScale(concept.phi)
