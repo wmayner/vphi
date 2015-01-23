@@ -39,7 +39,6 @@ getRenderedDimensions = (constellation, numNodes) ->
     index: (if d >= numStates then d - numStates else d)
     state: globalUtils.loliIndexToState(d, numNodes)
   } for d in sortedDimensions[0...3])
-  console.log renderedDimensions
 
   return renderedDimensions
 
@@ -221,7 +220,6 @@ class JoinedView
       {position: {x: 1, y: 0, z: 0}}, renderedDimensions[0].state,
       axisLabelSize, @camera, @controls, @renderer
     )
-    console.log renderedDimensions
     @labels.push new Label(
       {position: {x: 0, y: 1, z: 0}}, renderedDimensions[1].state,
       axisLabelSize, @camera, @controls, @renderer

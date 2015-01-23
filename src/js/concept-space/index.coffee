@@ -87,8 +87,8 @@ toggleIgnoredAxes = ->
 # ~~~~~~~~~~~~~
 # API
 # ~~~~~~~~~~~~~
-exports.display = (bigMip) ->
-  joinedView.display(bigMip)
+exports.display = (vphiDataService) ->
+  joinedView.display(vphiDataService)
 
 
 init = ->

@@ -14,7 +14,7 @@ RepertoireChart = require './concept-list/repertoire'
 
 window.vphi = angular.module 'vphi', [
   'vphiDataService'
-  'vphiControls'
+  'vphiMainControls'
   'vphiOutputSummary'
   'vphiConceptList'
 ]
@@ -24,33 +24,52 @@ window.vphiDataService = angular.module 'vphiDataService', []
   .factory 'vphiDataService', [
     '$rootScope'
     ($rootScope, $scope) ->
-      new class PhiData
-        bigMip: false
+      # TODO handle 0 and 1-node selection as special-cases?
+      new class PhiDataService
+        data: null
+        calledMethod: null
 
-        update: (success, always) =>
-          console.log "DATA_SERVICE: Updating..."
-          pyphi.bigMip(graphEditor.graph, (bigMip) =>
-            @bigMip = bigMip
-            # Attach current and past state to the returned data structure.
-            @bigMip.currentState = graphEditor.graph.currentState
-            @bigMip.pastState = graphEditor.graph.pastState
-            console.log "DATA_SERVICE: Broadcasting data update."
-            console.log "DATA_SERVICE: bigMip:"
-            console.log bigMip
-            $rootScope.$broadcast 'vphiDataUpdated'
+        getMainComplex: (success, always) ->
+          method = 'mainComplex'
+          @calledMethod = method
+          @pyphiCall method, success, always
+
+        getBigMip: (success, always) ->
+          method = 'bigMip'
+          @calledMethod = method
+          @pyphiCall method, success, always
+
+        pyphiCall: (method, success, always) ->
+          log.debug "DATA_SERVICE: Calling `#{method}`..."
+          pyphi[method](graphEditor.graph, (bigMip) =>
+            @update(bigMip)
             $rootScope.$apply success
           ).always(-> $rootScope.$apply always)
+
+        update: (bigMip) =>
+          log.debug "DATA_SERVICE: Updating..."
+          @data = bigMip
+          # Record current and past state.
+          # TODO just attach these to the service.
+          @data.currentState = graphEditor.graph.currentState
+          @data.pastState = graphEditor.graph.pastState
+          log.debug "DATA_SERVICE: Broadcasting data update."
+          log.debug "DATA_SERVICE: data:"
+          log.debug @data
+          $rootScope.$broadcast 'vphiDataUpdated'
   ]
 
 
-window.vphiControls = angular.module 'vphiControls', [
+window.vphiControls = angular.module 'vphiMainControls', [
   'vphiDataService'
 ]
-  .controller 'vphiCalculateButtonCtrl', [
+  .controller 'vphiMainCtrl', [
     '$scope'
     'vphiDataService',
     ($scope, vphiDataService) ->
-      btn = $('#btn-calculate')
+      btnSelectedSubsystem = $('#btn-selected-subsystem')
+      btnMainComplex = $('#btn-main-complex')
+
       btnCooldown = false
 
       startLoading = ->
@@ -64,22 +83,35 @@ window.vphiControls = angular.module 'vphiControls', [
           btnCooldown = false
         $('#concept-space-overlay').fadeOut 400
 
-      $scope.click = ->
-        return if btnCooldown or not graphEditor.graph.getPossiblePastStates()
+      registerClick = (btn) ->
         btnCooldown = true
         btn.button 'loading'
         startLoading()
 
-        success = ->
-          conceptSpace.display(vphiDataService.bigMip)
+      success = (btn) ->
+        return ->
+          conceptSpace.display(vphiDataService.data)
           btn.button 'reset'
           finishLoading()
 
-        always = ->
+      always = (btn) ->
+        return ->
           btn.button 'reset'
           finishLoading()
 
-        vphiDataService.update(success, always)
+      $scope.clickSelectedSubsystem = ->
+        return if btnCooldown or not graphEditor.graph.getPossiblePastStates()
+        registerClick(btnSelectedSubsystem)
+        vphiDataService.getBigMip(
+          success(btnSelectedSubsystem), always(btnSelectedSubsystem)
+        )
+
+      $scope.clickMainComplex = ->
+        return if btnCooldown or not graphEditor.graph.getPossiblePastStates()
+        registerClick(btnMainComplex)
+        vphiDataService.getMainComplex(
+          success(btnMainComplex), always(btnMainComplex)
+        )
   ]
 
 
@@ -88,13 +120,20 @@ window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
     '$scope'
     'vphiDataService'
     ($scope, vphiDataService) ->
+      $scope.title = 'Subsystem'
+      $scope.subsystem = '–'
       $scope.bigPhi = '–'
       $scope.minimalCut = '–'
       $scope.numConcepts = '–'
       $scope.sumSmallPhi = '–'
 
       $scope.$on 'vphiDataUpdated', ->
-        d = vphiDataService.bigMip
+        d = vphiDataService.data
+        if vphiDataService.calledMethod is 'mainComplex'
+          $scope.title = 'Main Complex'
+        else
+          $scope.title = 'Subsystem'
+        $scope.subsystem = utils.formatNodes d.subsystem.node_indices
         $scope.bigPhi = utils.formatPhi d.phi
         $scope.numConcepts = d.unpartitioned_constellation.length
         if d.unpartitioned_constellation.length > 0
@@ -116,8 +155,8 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
       $scope.numNodes = null
 
       $scope.$on 'vphiDataUpdated', ->
-        $scope.concepts = vphiDataService.bigMip.unpartitioned_constellation
-        $scope.numNodes = vphiDataService.bigMip.subsystem.node_indices.length
+        $scope.concepts = vphiDataService.data.unpartitioned_constellation
+        $scope.numNodes = vphiDataService.data.subsystem.node_indices.length
         console.log "CONCEPT_LIST: Updated concept list."
   ]
 

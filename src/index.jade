@@ -69,14 +69,17 @@ body
     hr
     .row.row-centered.clearfix
       .col-centered
-        #main-control-module.module
-            button#btn-calculate.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-controller="vphiCalculateButtonCtrl" ng-click="click()")
-              | Calculate
+        #main-control-module.module(ng-controller="vphiMainCtrl")
+          button#btn-main-complex.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="clickMainComplex()")
+            | Main Complex
+          button#btn-selected-subsystem.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="clickSelectedSubsystem()")
+            | Selected Subsystem
     hr
     .row.clearfix
       .col-md-12
         section#output-summary-module.module(ng-controller="vphiOutputSummaryCtrl")
-          h2.module-title Summary
+          h2.module-title {{title}} 
+            .node-list {{subsystem}}
           .row.row-centered.clearfix
             .col-centered
               .summary-items
