@@ -121,12 +121,69 @@ exports.threshold = ->
   return graph
 
 
+# http://upload.wikimedia.org/wikipedia/commons/c/c6/R-S_mk2.gif
+exports.srLatch = ->
+  graph = new Graph()
+
+  # R
+  graph.addNode
+    # 0
+    label: 'R'
+    on: 0
+    mechanism: 'OR'
+    reflexive: false
+    fixed: true
+    x: 216
+    y: 166
+  # S
+  graph.addNode
+    # 1
+    label: 'S'
+    on: 0
+    mechanism: 'OR'
+    reflexive: false
+    fixed: true
+    x: 216
+    y: 333
+
+  # Q
+  graph.addNode
+    # 2
+    label: 'Q'
+    on: 1
+    mechanism: 'NOR'
+    reflexive: false
+    fixed: true
+    x: 432
+    y: 166
+  # NOT Q
+  graph.addNode
+    # 3
+    label: '¬Q'
+    on: 0
+    mechanism: 'NOR'
+    reflexive: false
+    fixed: true
+    x: 432
+    y: 333
+
+  graph.addEdge(0, 2)
+  graph.addEdge(1, 3)
+  graph.addEdge(2, 3)
+  graph.addEdge(3, 2)
+
+  graph.setPastState graph.getPossiblePastStates()[0]
+
+  return graph
+
+
 exports.gatedDLatch = ->
   graph = new Graph()
 
   # Data input
   graph.addNode
     # 0
+    label: 'D'
     on: 0
     mechanism: 'OR'
     reflexive: false
@@ -136,6 +193,7 @@ exports.gatedDLatch = ->
   # Enable/Control/Clock input
   graph.addNode
     # 1
+    label: 'E'
     on: 0
     mechanism: 'OR'
     reflexive: false
@@ -146,6 +204,7 @@ exports.gatedDLatch = ->
   # Input NANDs
   graph.addNode
     # 2
+    label: 'A'
     on: 0
     mechanism: 'NAND'
     reflexive: false
@@ -154,6 +213,7 @@ exports.gatedDLatch = ->
     y: 166
   graph.addNode
     # 3
+    label: 'B'
     on: 0
     mechanism: 'NAND'
     reflexive: false
@@ -164,6 +224,7 @@ exports.gatedDLatch = ->
   # SR Latch NANDs
   graph.addNode
     # 4
+    label: 'Q'
     on: 0
     mechanism: 'NAND'
     reflexive: false
@@ -172,6 +233,7 @@ exports.gatedDLatch = ->
     y: 166
   graph.addNode
     # 5
+    label: '¬Q'
     on: 1
     mechanism: 'NAND'
     reflexive: false
