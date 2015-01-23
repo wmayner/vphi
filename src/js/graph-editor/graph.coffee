@@ -8,21 +8,15 @@ graphUtils = require './utils'
 mechanism = require './mechanism'
 controls = require './controls'
 
+
 # Helpers
 
 getAllStates = (numNodes) ->
   return (utils.holiIndexToState(i, numNodes) for i in [0...Math.pow(2, numNodes)])
 
-checkPossiblePastState = (tpm, pastStateIndex, currentState) ->
-  row = tpm[pastStateIndex]
-  for i in [0...currentState.length]
-    if ((currentState[i] > 0 and row[i] is 0) or
-        (currentState[i] is 0 and row[i] isnt 0))
-      return false
-  return true
-
 llog = (msg) ->
   log.debug "GRAPH: #{msg}"
+
 
 class Graph
 
@@ -332,11 +326,26 @@ class Graph
     (((if @getEdge(@getNodeByIndex(i)._id, @getNodeByIndex(j)._id) \
       then 1 else 0) for i in [0...@nodeSize]) for j in [0...@nodeSize])
 
+  # TODO have special 'IN' mechanism, that doesn't restrict past state?
+  checkPossiblePastState: (pastStateIndex) ->
+    # Get the probabilities for each node being on given the past state.
+    row = @tpm[pastStateIndex]
+    for own id, n of @_nodes
+      # If the node has no inputs, it can have any past state.
+      unless @getInEdgesOf(id).length is 0
+        # If it does have inputs, check that the TPM says there's a nonzero
+        # probability of that node being on if it currently is, and a zero
+        # probability if it isn't.
+        if ((@currentState[n.index] > 0 and row[n.index] is 0) or
+            (@currentState[n.index] is 0 and row[n.index] > 0))
+          return false
+    return true
+
   getPossiblePastStates: ->
     numStates = Math.pow(2, @nodeSize)
     result = (utils.holiIndexToState(pastStateIndex, @nodeSize) \
       for pastStateIndex in [0...numStates] \
-      when checkPossiblePastState(@tpm, pastStateIndex, @currentState))
+      when @checkPossiblePastState(pastStateIndex))
     if result.length is 0
       return false
     return result
@@ -372,5 +381,6 @@ class Graph
     @updateTpm()
     @updatePastState()
     @controls.update(this)
+
 
 module.exports = Graph
