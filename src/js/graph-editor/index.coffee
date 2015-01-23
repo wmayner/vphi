@@ -221,11 +221,12 @@ update = ->
       .on 'mousedown', (node) ->
         mousedown_node = node
 
-        # Reposition drag line.
-        drag_line
-          .style 'marker-end', 'url(#end-arrow)'
-            .classed 'hidden', false
-            .attr 'd', "M#{mousedown_node.x},#{mousedown_node.y}L#{mousedown_node.x},#{mousedown_node.y}"
+        unless d3.event.shiftKey
+          # Reposition drag line.
+          drag_line
+            .style 'marker-end', 'url(#end-arrow)'
+              .classed 'hidden', false
+              .attr 'd', "M#{mousedown_node.x},#{mousedown_node.y}L#{mousedown_node.x},#{mousedown_node.y}"
 
         update()
       .on 'mouseup', (node) ->
