@@ -232,7 +232,7 @@ class Graph
     return
 
   getNodesByIndex: ->
-    return (@getNodeByIndex(index) for index in [0...@nodeSize])
+    return _.sortBy((node for id, node of @_nodes), 'index')
 
   mapByIndex: (operation) ->
     return (operation(node) for node in @getNodesByIndex())
