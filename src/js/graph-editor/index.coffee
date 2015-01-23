@@ -565,8 +565,6 @@ graph = examples.paper()
 #   reflexive: false
 #   bidirectional: false
 
-# Resize canvas.
-$(window).resize resizeCanvas
 # Bind d3 nodes and links to graph.
 nodes = graph.getNodes()
 links = graph.getDrawableEdges()
@@ -580,10 +578,11 @@ force = d3.layout.force()
     .charge -900
     .on 'tick', tick
 
+# Bind window resize handler.
+$(window).resize resizeCanvas
 # Bind drag handler.
 drag = force.drag()
   .on 'dragstart', (node) -> node.fixed = true
-
 # Bind global mouse handlers.
 svg
     .on 'dblclick', dblclick
@@ -594,6 +593,7 @@ svg
 d3.select document
     .on 'keydown', keydown
     .on 'keyup', keyup
+
 # Go go go!
 update()
 
