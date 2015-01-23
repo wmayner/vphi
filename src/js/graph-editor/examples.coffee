@@ -119,3 +119,75 @@ exports.threshold = ->
   graph.setPastState graph.getPossiblePastStates()[0]
 
   return graph
+
+
+exports.gatedDLatch = ->
+  graph = new Graph()
+
+  # Data input
+  graph.addNode
+    # 0
+    on: 0
+    mechanism: 'OR'
+    reflexive: false
+    fixed: true
+    x: 160
+    y: 166
+  # Enable/Control/Clock input
+  graph.addNode
+    # 1
+    on: 0
+    mechanism: 'OR'
+    reflexive: false
+    fixed: true
+    x: 160
+    y: 333
+
+  # Input NANDs
+  graph.addNode
+    # 2
+    on: 0
+    mechanism: 'NAND'
+    reflexive: false
+    fixed: true
+    x: 320
+    y: 166
+  graph.addNode
+    # 3
+    on: 0
+    mechanism: 'NAND'
+    reflexive: false
+    fixed: true
+    x: 320
+    y: 333
+
+  # SR Latch NANDs
+  graph.addNode
+    # 4
+    on: 0
+    mechanism: 'NAND'
+    reflexive: false
+    fixed: true
+    x: 480
+    y: 166
+  graph.addNode
+    # 5
+    on: 1
+    mechanism: 'NAND'
+    reflexive: false
+    fixed: true
+    x: 480
+    y: 333
+
+  graph.addEdge(0, 2)
+  graph.addEdge(1, 2)
+  graph.addEdge(1, 3)
+  graph.addEdge(2, 3)
+  graph.addEdge(2, 4)
+  graph.addEdge(3, 5)
+  graph.addEdge(4, 5)
+  graph.addEdge(5, 4)
+
+  graph.setPastState graph.getPossiblePastStates()[0]
+
+  return graph
