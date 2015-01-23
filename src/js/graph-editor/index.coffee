@@ -6,7 +6,7 @@ colors = require '../colors'
 utils = require './utils'
 
 
-NETWORK_SIZE_LIMIT = 8
+NETWORK_SIZE_LIMIT = 10
 CONTAINER_SELECTOR = '#graph-editor-container'
 
 $container = $(CONTAINER_SELECTOR)
