@@ -157,7 +157,7 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
       $scope.$on 'vphiDataUpdated', ->
         $scope.concepts = vphiDataService.data.unpartitioned_constellation
         $scope.numNodes = vphiDataService.data.subsystem.node_indices.length
-        console.log "CONCEPT_LIST: Updated concept list."
+        log.debug "CONCEPT_LIST: Updated concept list."
   ]
 
   .controller 'vphiConceptCtrl', [
@@ -242,7 +242,7 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
           label: (if attrs.direction is 'cause' then 'Past State' else 'Future State')
 
       concept = scope.concept[attrs.direction]
-      console.log "REPERTOIRE_CHART: Loading new data for concept #{scope.$index} (#{attrs.direction})."
+      log.debug "REPERTOIRE_CHART: Loading new data for concept #{scope.$index} (#{attrs.direction})."
       chart.load [
         ['Unpartitioned'].concat concept.repertoire
         ['Partitioned'].concat concept.partitioned_repertoire

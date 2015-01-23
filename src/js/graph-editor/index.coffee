@@ -403,8 +403,8 @@ lastKeyDown = -1
 
 
 logChange = (node, propertyName, property) ->
-  console.log "Changed node #{selected_node.label} #{propertyName} to " +
-              "#{selected_node[property]}."
+  log.debug "Changed node #{selected_node.label} #{propertyName} to " +
+            "#{selected_node[property]}."
 
 
 keydown = ->

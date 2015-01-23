@@ -21,8 +21,8 @@ checkPossiblePastState = (tpm, pastStateIndex, currentState) ->
       return false
   return true
 
-log = (msg) ->
-  console.log "GRAPH: #{msg}"
+llog = (msg) ->
+  log.debug "GRAPH: #{msg}"
 
 class Graph
 
@@ -62,7 +62,7 @@ class Graph
       node[key] = value
     @nodeSize++
     @_nodes[node._id] = node
-    log "Added node #{node._id}."
+    llog "Added node #{node._id}."
     @update()
     return node
 
@@ -91,8 +91,9 @@ class Graph
     first place.
     ###
     nodeToRemove = @_nodes[id]
+    llog "Removing node #{id}..."
     if not nodeToRemove
-      log "Node #{id} doesn't exist."
+      llog "  Node #{id} doesn't exist."
       return
     else
       for own outEdgeId of nodeToRemove._outEdges
@@ -106,7 +107,7 @@ class Graph
       if node.index > nodeToRemove.index
         node.index--
         node.label = utils.LABEL[node.index]
-    log "Removed node #{id}."
+    llog "  Removed node #{id}."
     @update()
     return nodeToRemove
 
@@ -123,7 +124,7 @@ class Graph
     between the two nodes.
     ###
     if @getEdge sourceId, targetId
-      log "Edge #{sourceId},#{targetId} already exists."
+      llog "Edge #{sourceId},#{targetId} already exists."
       return
     fromNode = @_nodes[sourceId]
     toNode = @_nodes[targetId]
@@ -139,7 +140,7 @@ class Graph
     if sourceId is targetId
       fromNode.reflexive = true
     @edgeSize++
-    log "Added edge #{sourceId},#{targetId}."
+    llog "Added edge #{sourceId},#{targetId}."
     @update()
     return edgeToAdd
 
@@ -157,11 +158,12 @@ class Graph
     ###
     _Returns:_ the edge object removed, or undefined of edge wasn't found.
     ###
+    llog "Removed edge #{sourceId},#{targetId}..."
     fromNode = @_nodes[sourceId]
     toNode = @_nodes[targetId]
     edgeToDelete = @getEdge sourceId, targetId
     if not edgeToDelete
-      log "Edge #{sourceId},#{targetId} doesn't exist."
+      llog "  Edge #{sourceId},#{targetId} doesn't exist."
       return
     delete fromNode._outEdges[targetId]
     delete toNode._inEdges[sourceId]
@@ -173,7 +175,7 @@ class Graph
     if reverseEdge
       delete reverseEdge.bidirectional
     @edgeSize--
-    log "Removed edge #{sourceId},#{targetId}."
+    llog "  Removed edge #{sourceId},#{targetId}."
     @update()
     return edgeToDelete
 
@@ -344,7 +346,7 @@ class Graph
     @pastState = state
     @updateTpm()
     @controls.update(this)
-    log "Changed past state from [#{old}] to [#{@pastState}]."
+    llog "Changed past state from [#{old}] to [#{@pastState}]."
 
   updatePastState: ->
     old = @pastState
@@ -353,19 +355,19 @@ class Graph
       @pastState = false
     else
       @pastState = possiblePastStates[0]
-    console.log "  Changed past state from [#{old}] to [#{@pastState}]."
+    llog "  Changed past state from [#{old}] to [#{@pastState}]."
 
   updateCurrentState: ->
     old = @currentState
     @currentState = @getNodeProperties('on', [0...@nodeSize])
-    console.log "  Changed current state from [#{old}] to [#{@currentState}]."
+    llog "  Changed current state from [#{old}] to [#{@currentState}]."
 
   updateTpm: =>
     @tpm = tpmify(this)
-    console.log "  Updated TPM."
+    llog "  Updated TPM."
 
   update: =>
-    log "Updating..."
+    llog "Updating..."
     @updateCurrentState()
     @updateTpm()
     @updatePastState()

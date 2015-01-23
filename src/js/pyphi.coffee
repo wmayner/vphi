@@ -34,8 +34,8 @@ getPyphiNetwork = (graph) ->
   'pastState': graph.pastState
 
 # Failure callback.
-failure = (error) ->
-  console.error error
+failure = (err) ->
+  log.error err
 
 
 module.exports =

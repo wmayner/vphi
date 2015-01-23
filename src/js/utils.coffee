@@ -36,8 +36,8 @@ module.exports =
     return @holiIndexToState(i, numNodes).reverse()
 
   logTpm: (tpm) ->
-    console.log "---------------"
+    log.debug "---------------"
     n = tpm[0].length
     for i in [0...tpm.length]
-      console.log "#{@holiIndexToState(i, n)} -> #{tpm[i]}"
-    console.log "---------------"
+      log.debug "#{@holiIndexToState(i, n)} -> #{tpm[i]}"
+    log.debug "---------------"
