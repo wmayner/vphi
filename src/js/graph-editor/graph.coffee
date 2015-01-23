@@ -323,8 +323,10 @@ class Graph
     return (@pastState[i] for i in node_indices)
 
   getConnectivityMatrix: ->
-    (((if @getEdge(@getNodeByIndex(i)._id, @getNodeByIndex(j)._id) \
-      then 1 else 0) for i in [0...@nodeSize]) for j in [0...@nodeSize])
+    nodes = @getNodesByIndex()
+    r = (((if @getEdge(i._id, j._id) then 1 else 0) \
+            for j in nodes) for i in nodes)
+    return r
 
   # TODO have special 'IN' mechanism, that doesn't restrict past state?
   checkPossiblePastState: (pastStateIndex) ->
