@@ -48,7 +48,7 @@ class Graph
       index: @nodeSize
       label: utils.LABEL[@nodeSize]
       on: 0
-      mechanism: 'MAJ'
+      mechanism: 'OR'
       reflexive: false
       # Threshold for '>' and '<' mechanisms
       threshold: 2
