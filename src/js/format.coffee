@@ -14,18 +14,11 @@ class Formatter
   node: (index) -> graph.getNodeByIndex(index).label
 
   # TODO Provide graph in an angular service.
-  nodes: (node_indices) -> (@node(i) for i in node_indices).join(', ')
+  nodes: (node_indices) -> (@node(i) for i in node_indices)
 
   phi: (phiValue) -> d3.round(phiValue, PRECISION)
 
-  cut: (cut) ->
-    if cut.severed.length is 0
-      return 'N/A'
-    intact = @nodes(cut.intact) or '[]'
-    severed = @nodes(cut.severed) or '[]'
-    return "#{severed} ⇏ #{intact}"
-
-  latexNodes: (nodeArray) -> @nodes(nodeArray) or '[\\,]'
+  latexNodes: (nodeArray) -> @nodes(nodeArray).join('') or '[\\,]'
 
 
 module.exports = new Formatter()

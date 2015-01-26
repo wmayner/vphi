@@ -54,9 +54,9 @@ window.vphiDataService = angular.module 'vphiDataService', []
           # TODO just attach these to the service.
           @data.currentState = graphEditor.graph.currentState
           @data.pastState = graphEditor.graph.pastState
-          log.debug "DATA_SERVICE: Broadcasting data update."
-          log.debug "DATA_SERVICE: data:"
+          log.debug "DATA_SERVICE: Data:"
           log.debug @data
+          log.debug "DATA_SERVICE: Broadcasting data update."
           $rootScope.$broadcast 'vphiDataUpdated'
   ]
 
@@ -123,25 +123,31 @@ window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
     ($scope, vphiDataService) ->
       $scope.title = 'Subsystem'
       $scope.nodes = []
+      $scope.cut = '–'
       $scope.bigPhi = '–'
-      $scope.minimalCut = '–'
       $scope.numConcepts = '–'
       $scope.sumSmallPhi = '–'
 
       $scope.$on 'vphiDataUpdated', ->
         d = vphiDataService.data
+
         if vphiDataService.calledMethod is 'mainComplex'
           $scope.title = 'Main Complex'
         else
           $scope.title = 'Subsystem'
-        $scope.nodes = (format.node i for i in d.subsystem.node_indices)
+
+        $scope.nodes = format.nodes d.subsystem.node_indices
         $scope.bigPhi = format.phi d.phi
         $scope.numConcepts = d.unpartitioned_constellation.length
+
         if d.unpartitioned_constellation.length > 0
           $scope.sumSmallPhi = format.phi (c.phi for c in d.unpartitioned_constellation).reduce((x, y) -> x + y)
         else
           $scope.sumSmallPhi = 0
-        $scope.minimalCut = format.cut d.cut_subsystem.cut
+
+        $scope.cut =
+          intact: format.nodes d.cut_subsystem.cut.intact
+          severed: format.nodes d.cut_subsystem.cut.severed
   ]
 
 
