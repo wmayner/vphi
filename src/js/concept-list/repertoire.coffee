@@ -7,6 +7,7 @@ class RepertoireChart
     @_args = args
     @_data = args.data
     config =
+      padding: args.padding
       size:height: args.height
       bindto: args.bindto
       data:
@@ -32,19 +33,20 @@ class RepertoireChart
             position: 'inner-right'
         y:
           min: 0
-          max: 1
+          max: args.y?.max
           tick:
-            values: (i / 5 for i in [0..5])
+            values: args.y?.tick?.values
             count: 6
+            format: (y) -> d3.round(y, 2)
           padding:
-            top: 0
+            top: args.y?.padding?.top
             bottom: 0
       legend:show: false
 
     @_chart = c3.generate(config)
 
   load: (columns) ->
-    @_chart.load
-      columns: columns
+    # Workaround for C3 charts not initially sizing correctly.
+    id = setTimeout (=> @_chart.load(columns: columns)), 0
 
 module.exports = RepertoireChart

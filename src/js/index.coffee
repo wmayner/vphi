@@ -164,6 +164,17 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
       $scope.$on 'vphiDataUpdated', ->
         $scope.concepts = vphiDataService.data.unpartitioned_constellation
         $scope.numNodes = vphiDataService.data.subsystem.node_indices.length
+
+        # Merge all unpartitioned and partitione repertoires and find the max.
+        allRepertoires = (
+          c.cause.repertoire
+            .concat(c.cause.partitioned_repertoire)
+            .concat(c.effect.repertoire)
+            .concat(c.effect.partitioned_repertoire) for c in $scope.concepts
+        )
+        allProbabilities = [].concat.apply([], allRepertoires)
+        $scope.maxProbability = _.max(allProbabilities)
+
         log.debug "CONCEPT_LIST: Updated concept list."
   ]
 
@@ -177,6 +188,7 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
       $scope.smallPhiPast = format.phi concept.phi
       $scope.smallPhiPast = format.phi concept.cause.mip.phi
       $scope.smallPhiFuture = format.phi concept.effect.mip.phi
+
 
       if concept.cause.mip.phi > concept.effect.mip.phi
         $scope.smallPhiPastClass = "bold"
@@ -230,11 +242,29 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
 
   .directive 'vphiRepertoireChart', ->
     link: (scope, element, attrs) ->
+      concept = scope.concept[attrs.direction]
+
+      # Don't scale y axis to probabilities if the largest is greater than the
+      # threshold.
+      if scope.maxProbability > 0.2
+        yAxis =
+          max: 1
+          tick:
+            values: (i / 5 for i in [0..5])
+          padding:top: 0
+
+      padding =
+        top: 0
+        right: 5 * scope.numNodes
+        bottom: 0
+        left: 40
+
       chart = new RepertoireChart
         name: 'P'
         bindto: element[0]
         data: []
         height: 150
+        padding: padding
         colors:
           'Unpartitioned': colors[attrs.direction]
           'Partitioned': colors.repertoire.partitioned
@@ -247,9 +277,8 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
               # works.
               utils.loliIndexToState(x, scope.numNodes).join(', ')
           label: (if attrs.direction is 'cause' then 'Past State' else 'Future State')
+        y: yAxis or undefined
 
-      concept = scope.concept[attrs.direction]
-      log.debug "REPERTOIRE_CHART: Loading new data for concept #{scope.$index} (#{attrs.direction})."
       chart.load [
         ['Unpartitioned'].concat concept.repertoire
         ['Partitioned'].concat concept.partitioned_repertoire
