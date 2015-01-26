@@ -28,10 +28,14 @@ validate = (graph) ->
     throw error.networkSizeLimit(NETWORK_SIZE_LIMIT)
 
 getPyphiNetwork = (graph) ->
-  'tpm': graph.tpm
-  'currentState': graph.currentState
-  'connectivityMatrix': graph.getConnectivityMatrix()
-  'pastState': graph.pastState
+  net =
+    'tpm': graph.tpm
+    'currentState': graph.currentState
+    'connectivityMatrix': graph.getConnectivityMatrix()
+    'pastState': graph.pastState
+  log.debug "PYPHI: Sending network:"
+  log.debug net
+  return net
 
 # Failure callback.
 failure = (err) ->
