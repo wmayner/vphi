@@ -144,13 +144,15 @@ body
                       .vphi-label Partitioned:
                       .math-output(mathjax-bind="partitionedEffectMip")
             .row.clearfix
-              .col-md-6
+              //- Stack repertoire graphs for more width depending on how many
+              //- states are being displayed.
+              div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
                 .repertoire-container
                   .row.clearfix
                     .col-md-12
                       h5.repertoire-title Cause Repertoire
                       .repertoire(vphi-repertoire-chart, direction="cause")
-              .col-md-6
+              div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
                 .repertoire-container
                   .row.clearfix
                     .col-md-12
