@@ -80,7 +80,7 @@ body
         section#output-summary-module.module(ng-controller="vphiOutputSummaryCtrl")
           h2.module-title {{title}} 
             ul.node-list
-              li(ng-repeat="n in nodes") {{n}}
+              li(ng-class="{'on': currentState[n]}", ng-repeat="n in nodes") {{format.node(n)}}
           .row.row-centered.clearfix
             .col-centered
               .summary-items
@@ -124,7 +124,7 @@ body
                       .math-output(mathjax-bind="partitionedCauseMip")
               .col-xs-4
                 ul.node-list.mechanism
-                  li(ng-repeat="n in mechanism") {{n}}
+                  li(ng-class="{'on': currentState[n]}", ng-repeat="n in mechanism") {{format.node(n)}}
                 hr
                 .small-phi
                   .vphi-label φ

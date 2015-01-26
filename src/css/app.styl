@@ -70,10 +70,15 @@ section
     display inline-block
     margin 0 3px
     padding 0.6ex 1.1ex
-    border 1px solid darken(sol_cyan, 5)
+    vertical-align middle
+    font-weight bold
     border-radius 5px
     color sol_background
-    background sol_cyan
+    background sol_base1
+    border 1px solid darken(sol_base1, 10)
+    &.on
+      background sol_cyan
+      border 1px solid darken(sol_cyan, 5)
   &.secondary
     margin 0
     > li

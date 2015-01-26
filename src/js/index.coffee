@@ -56,6 +56,7 @@ window.vphiDataService = angular.module 'vphiDataService', []
           @data.pastState = graphEditor.graph.pastState
           log.debug "DATA_SERVICE: Data:"
           log.debug @data
+          window.phidata = @data
           log.debug "DATA_SERVICE: Broadcasting data update."
           $rootScope.$broadcast 'vphiDataUpdated'
   ]
@@ -121,6 +122,9 @@ window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
     '$scope'
     'vphiDataService'
     ($scope, vphiDataService) ->
+      $scope.format = format
+
+      $scope.currentState = null
       $scope.title = 'Subsystem'
       $scope.nodes = []
       $scope.cut = '–'
@@ -136,7 +140,9 @@ window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
         else
           $scope.title = 'Subsystem'
 
-        $scope.nodes = format.nodes d.subsystem.node_indices
+
+        $scope.currentState = d.currentState
+        $scope.nodes = d.subsystem.node_indices
         $scope.bigPhi = format.phi d.phi
         $scope.numConcepts = d.unpartitioned_constellation.length
 
@@ -160,10 +166,12 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
     ($scope, vphiDataService) ->
       $scope.concepts = null
       $scope.numNodes = null
+      $scope.currentState = null
 
       $scope.$on 'vphiDataUpdated', ->
         $scope.concepts = vphiDataService.data.unpartitioned_constellation
         $scope.numNodes = vphiDataService.data.subsystem.node_indices.length
+        $scope.currentState = vphiDataService.data.currentState
 
         # Merge all unpartitioned and partitione repertoires and find the max.
         allRepertoires = (
@@ -183,7 +191,9 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
     ($scope) ->
       concept = $scope.concept
 
-      $scope.mechanism = (format.node n for n in concept.mechanism)
+      $scope.format = format
+
+      $scope.mechanism = concept.mechanism
       $scope.smallPhi = format.phi concept.phi
       $scope.smallPhiPast = format.phi concept.phi
       $scope.smallPhiPast = format.phi concept.cause.mip.phi
