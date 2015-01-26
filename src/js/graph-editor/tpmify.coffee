@@ -14,9 +14,9 @@ getNewNodeState = (graph, index, state) ->
   # Grab the node.
   node = graph.getNodeByIndex(index)
   # Get the IDs of nodes that are inputs to this one.
-  inputNodeIds = (edge.source._id for edge in graph.getInEdgesOf(node._id))
+  inputNodes = (edge.source for edge in graph.getInEdgesOf(node._id))
   # Get an array of their states.
-  inputs = (state[inputNodeId] for inputNodeId in inputNodeIds)
+  inputs = (state[inputNode.index] for inputNode in inputNodes)
   # Compute the new state of the node by plugging-in the inputs to its
   # mechanism.
   if node.mechanism is '>' or node.mechanism is '<'
