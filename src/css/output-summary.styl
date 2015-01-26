@@ -2,6 +2,11 @@
 
 #output-summary-module
 
+  .module-title
+    $h = 40px
+    line-height $h
+    height $h
+
   .summary-items
     text-align center
     .item
@@ -9,11 +14,15 @@
       margin 15px 15px
 
   #minimal-cut
-    [class^=number]
+
+    .value
       letter-spacing 0.5ex
-      width 225px
-      .cut-symbol
-        padding 0 50px
+
+    .cut-symbol
+      font-size 160%
+      vertical-align middle
+      margin 0 1ex
+
 
   #phi-value
     font-weight bold

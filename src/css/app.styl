@@ -53,26 +53,33 @@ section
 .number-7
   width 6em
 
-.number-2, .number-7
+.value
   background sol_background
   border 1px solid #ddd
   border-radius 5px
-  padding 6px 10px
   text-align center
   display inline-block
+  padding 6px 10px
 
 .node-list
   display inline-block
   padding 0
-  margin 5px 8px
+  margin 0 8px
+  line-height 1
   > li
     display inline-block
-    margin 3px
-    padding 0.3ex 1ex
-    color sol_background
-    background sol_cyan
+    margin 0 3px
+    padding 0.6ex 1.1ex
     border 1px solid darken(sol_cyan, 5)
     border-radius 5px
+    color sol_background
+    background sol_cyan
+  &.secondary
+    margin 0
+    > li
+      color inherit
+      border 1px solid #ddd
+      background sol_background
 
 .btn-primary
   background sol_cyan

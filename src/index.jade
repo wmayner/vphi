@@ -85,17 +85,23 @@ body
             .col-centered
               .summary-items
                 #phi-value.item.well
-                  .vphi-label Φ 
-                  .number-7 {{bigPhi}}
+                  .vphi-label Φ
+                  .value.number-7 {{bigPhi}}
                 #minimal-cut.item.well
                   .vphi-label Minimal cut
-                  .number-7 {{minimalCut}}
+                  span(ng-if="cut.severed")
+                    ul.node-list.secondary
+                      li(ng-repeat="n in cut.severed") {{n}}
+                    span.cut-symbol ⇏
+                    ul.node-list.secondary
+                      li(ng-repeat="n in cut.intact") {{n}}
+                  .value(ng-if="!cut.severed") N/A
                 #num-concepts.item.well
                   .vphi-label # concepts
-                  .number-2 {{numConcepts}}
+                  .value.number-2 {{numConcepts}}
                 #sum-small-phi.item.well
                   .vphi-label Sum of φ
-                  .number-7 {{sumSmallPhi}}
+                  .value.number-7 {{sumSmallPhi}}
     .row.clearfix
       .col-md-12
         section#concept-list-module.module(ng-controller="vphiConceptListCtrl")
@@ -108,7 +114,7 @@ body
                     .small-phi-past
                       .vphi-label(class="{{smallPhiPastClass}}") φ
                         sub p
-                      .number-7 {{smallPhiPast}}
+                      .value.number-7 {{smallPhiPast}}
                   li
                     .small-phi-mips
                       .vphi-label Cause MIP:
@@ -122,14 +128,14 @@ body
                 hr
                 .small-phi
                   .vphi-label φ
-                  .number-7 {{smallPhi}}
+                  .value.number-7 {{smallPhi}}
               .col-xs-4
                 ul.concept-data
                   li
                     .small-phi-future
                       .vphi-label(class="{{smallPhiFutureClass}}") φ
                         sub f
-                      .number-7 {{smallPhiFuture}}
+                      .value.number-7 {{smallPhiFuture}}
                   li
                     .small-phi-mips
                       .vphi-label Effect MIP:
