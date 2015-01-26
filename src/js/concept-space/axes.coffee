@@ -22,10 +22,8 @@ Z_AXIS = new THREE.Vector3(0, 0, 1)
 # Forked from
 # https://github.com/mrdoob/three.js/blob/master/src/extras/helpers/AxisHelper.js
 AxisHelper = (config) ->
+  size = config.size or 1
   coords = config.coords
-  colors = config.colors
-  lineoptions = config.lineoptions
-  size = size or 1
   vertices = new Float32Array([
     0, 0, 0,  coords[0][0], coords[0][1], coords[0][2],
     0, 0, 0,  coords[1][0], coords[1][1], coords[1][2],
@@ -33,9 +31,9 @@ AxisHelper = (config) ->
   ])
   geometry = new THREE.BufferGeometry()
   geometry.addAttribute "position", new THREE.BufferAttribute(vertices, 3)
-  geometry.addAttribute "color", new THREE.BufferAttribute(colors, 3)
-  lineoptions.vertexColors = THREE.VertexColors
-  material = new THREE.LineBasicMaterial(lineoptions)
+  geometry.addAttribute "color", new THREE.BufferAttribute(config.colors, 3)
+  config.lineoptions.vertexColors = THREE.VertexColors
+  material = new THREE.LineBasicMaterial(config.lineoptions)
   THREE.Line.call(this, geometry, material, THREE.LinePieces)
   return
 
@@ -168,15 +166,15 @@ module.exports =
       colors.effect.g / 255
       colors.effect.b / 255
     ]
-    colors = []
+    axisColors = []
     # Build color array, one row per axis.
     for direction in (d.direction for d in renderedDimensions)
       # Double concatenation since each row is a gradient with two RGB
       # colors.
       if direction is 'cause'
-        colors = colors.concat(pastColor).concat(pastColor)
+        axisColors = axisColors.concat(pastColor).concat(pastColor)
       else if direction is 'effect'
-        colors = colors.concat(futureColor).concat(futureColor)
+        axisColors = axisColors.concat(futureColor).concat(futureColor)
       else throw Error("Invalid direction.")
     axes = new AxisHelper(
       coords: [
@@ -184,7 +182,7 @@ module.exports =
         [0, 1, 0]
         [0, 0, 1]
       ]
-      colors: new Float32Array(colors)
+      colors: new Float32Array(axisColors)
       lineoptions: {linewidth: RENDERED_AXIS_LINE_WIDTH}
     )
     scene.add(axes)
