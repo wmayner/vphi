@@ -57,6 +57,11 @@ window.vphiDataService = angular.module 'vphiDataService', []
           log.debug "DATA_SERVICE: Data:"
           log.debug @data
           window.phidata = @data
+
+          # Select the subsystem that was returned
+          graphEditor.graph.setSelectedSubsystem(@data.subsystem.node_indices)
+          graphEditor.update()
+
           log.debug "DATA_SERVICE: Broadcasting data update."
           $rootScope.$broadcast 'vphiDataUpdated'
   ]
@@ -127,7 +132,7 @@ window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
       $scope.currentState = null
       $scope.title = 'Subsystem'
       $scope.nodes = []
-      $scope.cut = '–'
+      $scope.cut = null
       $scope.bigPhi = '–'
       $scope.numConcepts = '–'
       $scope.sumSmallPhi = '–'

@@ -50,8 +50,10 @@ class Graph
       on: 0
       mechanism: 'OR'
       reflexive: false
-      # Threshold for '>' and '<' mechanisms
+      # Threshold for '>' and '<' mechanisms.
       threshold: 2
+      # Marks whether this node is in the currently chosen subsystem.
+      inSubsystem: false
     for key, value of nodeData
       node[key] = value
     @nodeSize++
@@ -372,6 +374,23 @@ class Graph
     old = @currentState
     @currentState = @getNodeProperties('on', [0...@nodeSize])
     llog "  Changed current state from [#{old}] to [#{@currentState}]."
+
+  getSelectedSubsystem: ->
+    subsystemIndices = []
+    @forEachNode (node, id) ->
+      if node.inSubsystem
+        subsystemIndices.push node.index
+    # Use whole system if no subsystem is selected.
+    if subsystemIndices.length is 0
+      subsystemIndices = [0...@nodeSize]
+    return subsystemIndices
+
+  setSelectedSubsystem: (subsystemIndices) ->
+    @forEachNode (node, id) ->
+      if node.index in subsystemIndices
+        node.inSubsystem = true
+      else
+        node.inSubsystem = false
 
   updateTpm: =>
     @tpm = tpmify(this)

@@ -56,11 +56,15 @@
       stroke-width 0
 
   circle.node
-    stroke-width 1.5px
+    stroke none
     cursor pointer
     &.reflexive
       stroke sol_background !important
-      stroke-width 4.5px
+
+  circle.subsystem-marker
+    stroke none
+    fill saturate(sol_blue, 100%)
+    opacity 0.5
 
   text
     font 12px 'Helvetica Neue', sans-serif

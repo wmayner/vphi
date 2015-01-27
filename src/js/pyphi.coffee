@@ -54,13 +54,15 @@ module.exports =
     params = [getPyphiNetwork(graph)]
     return pyphi.call 'main_complex', params, success, failure
 
-  bigMip: (graph, success, subsystemIndices) ->
-    # Use whole system by default.
-    if not subsystemIndices?
-      subsystemIndices = [0...graph.nodeSize]
+  bigMip: (graph, success) ->
+    # Get the selected subsystem.
+    subsystemIndices = graph.getSelectedSubsystem()
+
     validate(graph)
+
     params = [
       subsystemIndices
       getPyphiNetwork(graph)
     ]
+
     return pyphi.call 'big_mip', params, success, failure
