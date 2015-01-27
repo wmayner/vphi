@@ -85,22 +85,23 @@ body
             .col-centered
               .summary-items
                 #phi-value.item.well
-                  .vphi-label Φ
+                  .vphi-label \(\large\Phi\)
                   .value.number-7 {{bigPhi}}
                 #minimal-cut.item.well
                   .vphi-label Minimal cut
-                  span(ng-if="cut.severed")
+                  .value.number-2(ng-if="!cut") –
+                  .value(ng-if="cut.severed.length === 0") N/A
+                  span(ng-if="cut.severed.length > 0")
                     ul.node-list.secondary
                       li(ng-repeat="n in cut.severed") {{n}}
                     span.cut-symbol ⇏
                     ul.node-list.secondary
                       li(ng-repeat="n in cut.intact") {{n}}
-                  .value(ng-if="!cut.severed") N/A
                 #num-concepts.item.well
-                  .vphi-label # concepts
+                  .vphi-label Number of concepts
                   .value.number-2 {{numConcepts}}
                 #sum-small-phi.item.well
-                  .vphi-label Sum of φ
+                  .vphi-label \(\sum\varphi\)
                   .value.number-7 {{sumSmallPhi}}
     .row.clearfix
       .col-md-12
