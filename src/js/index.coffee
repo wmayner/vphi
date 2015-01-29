@@ -24,28 +24,31 @@ window.vphiDataService = angular.module 'vphiDataService', []
   .factory 'vphiDataService', [
     '$rootScope'
     'vphiGraphService'
-    ($rootScope) ->
+    ($rootScope, vphiGraphService) ->
 
       pyphi = require './pyphi'
 
       return new class PhiDataService
         data: null
         calledMethod: null
+        callInProgress: false
 
-        getMainComplex: (success, always) ->
+        mainComplex: (success, always) ->
           method = 'mainComplex'
           @calledMethod = method
           @pyphiCall method, success, always
 
-        getBigMip: (success, always) ->
+        bigMip: (success, always) ->
           method = 'bigMip'
           @calledMethod = method
           @pyphiCall method, success, always
 
         pyphiCall: (method, success, always) ->
           log.debug "DATA_SERVICE: Calling `#{method}`..."
+          @callInProgress = true
           pyphi[method](vphiGraphService.graph, (bigMip) =>
             @update(bigMip)
+            @callInProgress = false
             $rootScope.$apply success
           ).always(-> $rootScope.$apply always)
 
@@ -88,6 +91,7 @@ window.vphiGraphService = angular.module 'vphiGraphService', [
           @graph.onUpdate = @update
 
         update: ->
+          graphEditor.update()
           log.debug "GRAPH_SERVICE: Broadcasting graph update."
           # Since graph updates can trigger more graph updates, we need to use
           # $timeout to allow any $apply calls to finish before broadcasting
@@ -109,6 +113,7 @@ window.vphiGraphEditor = angular.module 'vphiGraphEditor', [
         $scope.currentPastState = vphiGraphService.graph.pastState?.join(', ') or null
         $scope.possiblePastStates = vphiGraphService.graph.getPossiblePastStates()
         $scope.nodes = format.nodes([0...vphiGraphService.graph.nodeSize]).join(', ')
+
       # Intialize.
       update()
 
@@ -134,8 +139,12 @@ window.vphiControls = angular.module 'vphiMainControls', [
       btnSelectedSubsystem = $('#btn-selected-subsystem')
       btnMainComplex = $('#btn-main-complex')
 
+      method2btn =
+        'mainComplex': btnMainComplex
+        'bigMip': btnSelectedSubsystem
+
       $scope.$on 'vphiGraphUpdated', ->
-        if vphiGraphService.graph.pastState
+        if vphiGraphService.graph.pastState and not vphiDataService.callInProgress
           btns.removeClass 'disabled'
         else
           btns.addClass 'disabled'
@@ -147,11 +156,13 @@ window.vphiControls = angular.module 'vphiMainControls', [
         $('#concept-space-loading-spinner').show()
         $('#concept-space-overlay').removeClass 'hidden'
         $('#concept-space-overlay').show()
+        btns.addClass('disabled')
 
       finishLoading = ->
         $('#concept-space-loading-spinner').fadeOut 400, ->
           btnCooldown = false
         $('#concept-space-overlay').fadeOut 400
+        btns.removeClass('disabled')
 
       registerClick = (btn) ->
         btnCooldown = true
@@ -169,18 +180,12 @@ window.vphiControls = angular.module 'vphiMainControls', [
           btn.button 'reset'
           finishLoading()
 
-      $scope.clickSelectedSubsystem = ->
+      $scope.calculate = (method) ->
         return if btnCooldown or not vphiGraphService.graph.pastState
-        registerClick(btnSelectedSubsystem)
-        vphiDataService.getBigMip(
-          success(btnSelectedSubsystem), always(btnSelectedSubsystem)
-        )
-
-      $scope.clickMainComplex = ->
-        return if btnCooldown or not vphiGraphService.graph.pastState
-        registerClick(btnMainComplex)
-        vphiDataService.getMainComplex(
-          success(btnMainComplex), always(btnMainComplex)
+        btn = method2btn[method]
+        registerClick(btn)
+        vphiDataService[method](
+          success(btn), always(btn)
         )
   ]
 

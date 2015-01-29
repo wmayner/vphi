@@ -76,9 +76,9 @@ body
     .row.row-centered.clearfix
       .col-centered
         #main-control-module.module(ng-controller="vphiMainCtrl")
-          button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="clickMainComplex()")
+          button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('mainComplex')")
             | Main Complex
-          button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="clickSelectedSubsystem()")
+          button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('bigMip')")
             | Selected Subsystem
     hr
     .row.clearfix
