@@ -44,7 +44,7 @@
     background lighten(sol_red, 80%)
 
   svg
-    background #000
+    background black
     &:not(.active):not(.shiftkey)
       cursor crosshair
       path
@@ -73,7 +73,7 @@
     stroke none
     stroke sol_background
     stroke-width 2px
-    stroke-dasharray 7, 7
+    stroke-dasharray 7
     fill none
 
   text
@@ -84,3 +84,10 @@
       &.id
         font 14px 'Helvetica Neue', sans-serif
         font-weight bold
+
+  rect.selection-box
+    stroke #fff
+    stroke-width 2
+    stroke-dasharray 6, 8
+    stroke-opacity 0.5
+    fill none

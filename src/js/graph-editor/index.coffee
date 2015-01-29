@@ -41,6 +41,17 @@ resizeCanvas = ->
   update()
   return
 
+# Draggable node selection box
+drag_rect = svg
+  .append 'svg:rect'
+    .attr
+      class: 'selection-box hidden'
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+drag_rect_visible = false
+
 # Line displayed when dragging new nodes.
 drag_line = svg
   .append 'svg:path'
@@ -93,6 +104,7 @@ svg
 
 selected_node = null
 selected_link = null
+mousedown_point = null
 mouseover_link = null
 mousedown_link = null
 mouseover_node = null
@@ -241,10 +253,13 @@ update = ->
       .on 'click', (node) ->
         selected_node = node
         selected_link = null
-        # Don't toggle state if we're dragging a new link or if shift is pressed.
-        unless drag_source or d3.event.shiftKey
+        # Select/deselect node if command is held.
+        if d3.event.metaKey
+          node.inSubsystem = not node.inSubsystem
+        # Don't toggle state if we're dragging a new link or if shift or command is pressed.
+        else unless drag_source or d3.event.shiftKey
           graph.toggleState node
-          update()
+        update()
         return
       .on 'mouseover', (node) ->
         # Only select a node if it's a new one and we haven't just finished
@@ -406,29 +421,31 @@ update = ->
 
 drag = d3.behavior.drag()
   .on 'drag', (d, i) ->
-    console.log "drag called"
     selection = svg.selectAll ".selected"
     if selection[0].indexOf(this) is -1
       selection.classed "selected", false
       selection = d3.select(this)
       selection.classed "selected", true
-
-# svg.call drag
+circleGroup.call(drag)
 
 
 dblclick = (e) ->
+  point = d3.mouse(this)
+  dx = point[0] - mousedown_point[0]
+  dy = point[1] - mousedown_point[1]
+  dragDistance = Math.sqrt(Math.pow(dx, 2), Math.pow(dy, 2))
+  dragThreshold = 5
   return if d3.event.shiftKey or
             mouseover_node or
             mousedown_node or
             mouseover_link or
+            dragDistance > 5 or
             graph.nodeSize >= NETWORK_SIZE_LIMIT
   # Prevent I-bar on drag.
   d3.event.preventDefault()
   # Because :active only works in WebKit?
   svg.attr 'active', true
-  # Insert new node at this point.
-  point = d3.mouse(this)
-  # Add the node and start with it selected.
+  # Insert new node and start with it selected.
   selected_node = graph.addNode
     x: point[0]
     y: point[1]
@@ -437,9 +454,52 @@ dblclick = (e) ->
 
 
 mousemove = ->
-  return unless mousedown_node
-  # Update drag line.
-  drag_line.attr 'd', "M#{mousedown_node.x},#{mousedown_node.y}L#{d3.mouse(this)[0]},#{d3.mouse(this)[1]}"
+  point = d3.mouse(this)
+  if mousedown_node
+    # Update drag line.
+    drag_line.attr 'd', "M#{mousedown_node.x},#{mousedown_node.y}L#{m[0]},#{m[1]}"
+  else
+    # Update selection box.
+    d =
+      x: parseInt(drag_rect.attr('x'), 10)
+      y: parseInt(drag_rect.attr('y'), 10)
+      width: parseInt(drag_rect.attr('width'), 10)
+      height: parseInt(drag_rect.attr('height'), 10)
+
+    move =
+      x: point[0] - d.x
+      y: point[1] - d.y
+
+    if move.x < 1 or (move.x * 2 < d.width)
+      d.x = point[0]
+      d.width -= move.x
+    else
+      d.width = move.x
+
+    if move.y < 1 or (move.y * 2 < d.height)
+      d.y = point[1]
+      d.height -= move.y
+    else
+      d.height = move.y
+
+    drag_rect.attr d
+
+
+    if drag_rect_visible
+      # Select nodes within the selection box
+      d3.selectAll 'circle.node'
+        .each (node, i) ->
+          radius = getRadius(node)
+          nodeInSelectionBox = (
+            node.x + radius >= d.x and
+            node.x - radius <= d.x + d.width and
+            node.y + radius >= d.y and
+            node.y - radius <= d.y + d.height
+          )
+          if nodeInSelectionBox
+            node.inSubsystem = true
+          return
+
   update()
   return
 
@@ -452,6 +512,10 @@ mouseup = ->
     drag_line
       .classed 'hidden', true
       .style 'marker-end', ''
+  else
+    # Hide selection box.
+    drag_rect.classed 'hidden', true
+    drag_rect_visible = false
   # Because :active only works in WebKit?
   svg.classed 'active', false
   # Clear mouse event variables.
@@ -459,8 +523,34 @@ mouseup = ->
 
 
 mousedown = ->
-  selected_node = null unless mousedown_node
-  selected_link = null unless mousedown_link
+  mousedown_point = d3.mouse(this)
+
+  unless mousedown_link
+    # Deselect link.
+    selected_link = null
+
+  unless mousedown_node
+    # Show selection box and redraw it starting at mouse.
+    drag_rect.classed 'hidden', false
+    drag_rect_visible = true
+    selected_node = null
+    drag_rect.attr
+      x: mousedown_point[0]
+      y: mousedown_point[1]
+      width: 0
+      height: 0
+
+  # Reset selection unless clicking on a node or a link, or holding shift or
+  # command.
+  unless mousedown_link or
+         mousedown_node or
+         d3.event.shiftKey or
+         d3.event.metaKey
+    # Deselect nodes.
+    d3.selectAll 'circle.node'
+      .each (node, i) ->
+        node.inSubsystem = false
+
   update()
   return
 
@@ -582,8 +672,8 @@ keydown = ->
         selected_node.fixed = not selected_node.fixed
         update()
       break
-    # a
-    when 65
+    # s
+    when 83
       if selected_node
         # Toggle node inclusion in subsystem
         selected_node.inSubsystem = not selected_node.inSubsystem
