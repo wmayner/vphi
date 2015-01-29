@@ -7,14 +7,13 @@
 utils = require './utils'
 format = require './format'
 colors = require './colors'
-pyphi = require './pyphi'
-graphEditor = require './graph-editor'
 conceptSpace = require './concept-space'
-RepertoireChart = require './concept-list/repertoire'
 
 
 window.vphi = angular.module 'vphi', [
+  'vphiGraphService'
   'vphiDataService'
+  'vphiGraphEditor'
   'vphiMainControls'
   'vphiOutputSummary'
   'vphiConceptList'
@@ -24,9 +23,12 @@ window.vphi = angular.module 'vphi', [
 window.vphiDataService = angular.module 'vphiDataService', []
   .factory 'vphiDataService', [
     '$rootScope'
-    ($rootScope, $scope) ->
-      # TODO handle 0 and 1-node selection as special-cases?
-      new class PhiDataService
+    'vphiGraphService'
+    ($rootScope) ->
+
+      pyphi = require './pyphi'
+
+      return new class PhiDataService
         data: null
         calledMethod: null
 
@@ -42,7 +44,7 @@ window.vphiDataService = angular.module 'vphiDataService', []
 
         pyphiCall: (method, success, always) ->
           log.debug "DATA_SERVICE: Calling `#{method}`..."
-          pyphi[method](graphEditor.graph, (bigMip) =>
+          pyphi[method](vphiGraphService.graph, (bigMip) =>
             @update(bigMip)
             $rootScope.$apply success
           ).always(-> $rootScope.$apply always)
@@ -52,18 +54,71 @@ window.vphiDataService = angular.module 'vphiDataService', []
           @data = bigMip
           # Record current and past state.
           # TODO just attach these to the service.
-          @data.currentState = graphEditor.graph.currentState
-          @data.pastState = graphEditor.graph.pastState
+          @data.currentState = vphiGraphService.graph.currentState
+          @data.pastState = vphiGraphService.graph.pastState
           log.debug "DATA_SERVICE: Data:"
           log.debug @data
           window.phidata = @data
 
           # Select the subsystem that was returned
-          graphEditor.graph.setSelectedSubsystem(@data.subsystem.node_indices)
-          graphEditor.update()
+          vphiGraphService.graph.setSelectedSubsystem(@data.subsystem.node_indices)
+          vphiGraphService.update()
 
           log.debug "DATA_SERVICE: Broadcasting data update."
           $rootScope.$broadcast 'vphiDataUpdated'
+          return
+  ]
+
+
+window.vphiGraphService = angular.module 'vphiGraphService', [
+]
+  .factory 'vphiGraphService', [
+    '$rootScope'
+    '$timeout'
+    ($rootScope, $timeout) ->
+
+      # Initialize the graph editor.
+      graphEditor = require './graph-editor'
+      examples = require './graph-editor/examples'
+
+      return new class PhiGraphService
+        constructor: ->
+          @graph = graphEditor.graph
+          # Inject the event broadcasting hook.
+          @graph.onUpdate = @update
+
+        update: ->
+          log.debug "GRAPH_SERVICE: Broadcasting graph update."
+          # Since graph updates can trigger more graph updates, we need to use
+          # $timeout to allow any $apply calls to finish before broadcasting
+          # another change. Otherwise there may be nested $apply's, which
+          # Angular doesn't allow.
+          $timeout -> $rootScope.$broadcast 'vphiGraphUpdated', 0
+          return
+  ]
+
+
+window.vphiGraphEditor = angular.module 'vphiGraphEditor', [
+  'vphiGraphService'
+]
+  .controller 'vphiGraphEditorCtrl', [
+    '$scope',
+    'vphiGraphService',
+    ($scope, vphiGraphService) ->
+      update = ->
+        $scope.currentPastState = vphiGraphService.graph.pastState?.join(', ') or null
+        $scope.possiblePastStates = vphiGraphService.graph.getPossiblePastStates()
+        $scope.nodes = format.nodes([0...vphiGraphService.graph.nodeSize]).join(', ')
+      # Intialize.
+      update()
+
+      $scope.select = (pastState) ->
+        log.debug "GRAPH_CONTROLS: Setting past state to [#{pastState}]."
+        vphiGraphService.graph.setPastState(pastState)
+
+      $scope.$on 'vphiGraphUpdated', ->
+        log.debug 'GRAPH_CONTROLS: Receieved graph update.'
+        $scope.$apply update
   ]
 
 
@@ -72,10 +127,18 @@ window.vphiControls = angular.module 'vphiMainControls', [
 ]
   .controller 'vphiMainCtrl', [
     '$scope'
+    'vphiGraphService',
     'vphiDataService',
-    ($scope, vphiDataService) ->
+    ($scope, vphiGraphService, vphiDataService) ->
+      btns = $('.btn-calculate')
       btnSelectedSubsystem = $('#btn-selected-subsystem')
       btnMainComplex = $('#btn-main-complex')
+
+      $scope.$on 'vphiGraphUpdated', ->
+        if vphiGraphService.graph.pastState
+          btns.removeClass 'disabled'
+        else
+          btns.addClass 'disabled'
 
       btnCooldown = false
 
@@ -107,14 +170,14 @@ window.vphiControls = angular.module 'vphiMainControls', [
           finishLoading()
 
       $scope.clickSelectedSubsystem = ->
-        return if btnCooldown or not graphEditor.graph.getPossiblePastStates()
+        return if btnCooldown or not vphiGraphService.graph.pastState
         registerClick(btnSelectedSubsystem)
         vphiDataService.getBigMip(
           success(btnSelectedSubsystem), always(btnSelectedSubsystem)
         )
 
       $scope.clickMainComplex = ->
-        return if btnCooldown or not graphEditor.graph.getPossiblePastStates()
+        return if btnCooldown or not vphiGraphService.graph.pastState
         registerClick(btnMainComplex)
         vphiDataService.getMainComplex(
           success(btnMainComplex), always(btnMainComplex)
@@ -256,6 +319,9 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
     ]
 
   .directive 'vphiRepertoireChart', ->
+
+    RepertoireChart = require './concept-list/repertoire'
+
     link: (scope, element, attrs) ->
       concept = scope.concept[attrs.direction]
 

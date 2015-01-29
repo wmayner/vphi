@@ -474,7 +474,7 @@ lastKeyDown = -1
 
 
 logChange = (node, propertyName, property) ->
-  log.debug "Changed node #{selected_node.label} #{propertyName} to " +
+  log.debug "GRAPH_EDITOR: Changed node #{selected_node.label} #{propertyName} to " +
             "#{selected_node[property]}."
 
 

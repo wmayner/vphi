@@ -30,17 +30,23 @@ body
           .row.clearfix
             .col-md-12
               #graph-editor-container(vphi-graph-editor-canvas)
-              button#show-help.btn.btn-md.btn-default(type='button', data-toggle="modal", data-target="#graph-editor-help") Show Controls
-              .control-panel
+              button#show-help.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#graph-editor-help') Show Controls
+              .control-panel(ng-controller='vphiGraphEditorCtrl')
                 .vphi-label Past state:
-                span.dropdown
-                  button#past-state-chooser.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
-                    #selected-past-state 1, 1, 0
+                span.dropdown#past-state-chooser
+                  button#no-possible-past-states.btn.btn-md.btn-default(ng-if="!possiblePastStates") No possible past states
+                  button(ng-if="possiblePastStates").btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                    #current-past-state {{currentPastState}}
                     span.caret
                     span.sr-only Toggle past state selection dropdown
-                  ul#possible-past-states.dropdown-menu(role='menu').dropdown-menu-right
+                  ul#possible-past-states.dropdown-menu.dropdown-menu-right(ng-if="possiblePastStates", role='menu')
+                    //- TODO use table?
                     li
-                      strong A, B, C
+                      a#past-state-list-header
+                        strong {{nodes}}
+                    li.divider
+                    li(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
+                      a {{pastState.join(', ')}}
       .col-md-6
         #concept-space-module.well.module
           h2.module-title Conceptual structure
@@ -70,9 +76,9 @@ body
     .row.row-centered.clearfix
       .col-centered
         #main-control-module.module(ng-controller="vphiMainCtrl")
-          button#btn-main-complex.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="clickMainComplex()")
+          button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="clickMainComplex()")
             | Main Complex
-          button#btn-selected-subsystem.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="clickSelectedSubsystem()")
+          button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="clickSelectedSubsystem()")
             | Selected Subsystem
     hr
     .row.clearfix

@@ -21,19 +21,26 @@
   #show-help
     float left
 
-  ul#possible-past-states
+
+  ul#possible-past-states,
+    text-align center
     margin-top 13px
     font-family mono_font
-    text-align center
 
   #past-state-chooser
+    font-family mono_font
     text-align center
-    #selected-past-state
+    #current-past-state
       display inline-block
       width 200px
-      font-family mono_font
+    #possible-past-states
+      text-align center
     span.caret
       margin-left 15px
+
+  #no-possible-past-states
+    width 249px
+    background lighten(sol_red, 90%)
 
   svg
     background #000

@@ -6,7 +6,6 @@ utils = require '../utils'
 tpmify = require './tpmify'
 graphUtils = require './utils'
 mechanism = require './mechanism'
-controls = require './controls'
 
 
 # Helpers
@@ -28,7 +27,6 @@ class Graph
     @pastState = undefined
     @currentState = undefined
     @tpm = undefined
-    @controls = controls
 
   getNewNodeId: ->
     id = @_newNodeId
@@ -321,7 +319,7 @@ class Graph
 
   getPastState: (node_indices) ->
     if not @pastState
-      return false
+      return null
     return (@pastState[i] for i in node_indices)
 
   getConnectivityMatrix: ->
@@ -358,14 +356,14 @@ class Graph
     old = @pastState
     @pastState = state
     @updateTpm()
-    @controls.update(this)
+    @onUpdate(this)
     llog "Changed past state from [#{old}] to [#{@pastState}]."
 
   updatePastState: ->
     old = @pastState
     possiblePastStates = @getPossiblePastStates()
     if not possiblePastStates
-      @pastState = false
+      @pastState = null
     else
       @pastState = possiblePastStates[0]
     llog "  Changed past state from [#{old}] to [#{@pastState}]."
@@ -396,12 +394,15 @@ class Graph
     @tpm = tpmify(this)
     llog "  Updated TPM."
 
+  # This is a hook to be injected by a consuming service.
+  onUpdate: ->
+
   update: =>
     llog "Updating..."
     @updateCurrentState()
     @updateTpm()
     @updatePastState()
-    @controls.update(this)
+    @onUpdate()
 
 
 module.exports = Graph
