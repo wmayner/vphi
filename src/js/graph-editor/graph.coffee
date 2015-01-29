@@ -376,7 +376,7 @@ class Graph
   getSelectedSubsystem: ->
     subsystemIndices = []
     @forEachNode (node, id) ->
-      if node.inSubsystem
+      if node.selected
         subsystemIndices.push node.index
     # Use whole system if no subsystem is selected.
     if subsystemIndices.length is 0
@@ -386,9 +386,9 @@ class Graph
   setSelectedSubsystem: (subsystemIndices) ->
     @forEachNode (node, id) ->
       if node.index in subsystemIndices
-        node.inSubsystem = true
+        node.selected = true
       else
-        node.inSubsystem = false
+        node.selected = false
 
   updateTpm: =>
     @tpm = tpmify(this)
