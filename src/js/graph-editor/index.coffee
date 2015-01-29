@@ -322,13 +322,11 @@ update = ->
         update()
         return
 
-
   # Show node IDs.
   g.append 'svg:text'
       .attr
         x: 0
         y: -4
-        fill: colors.node.label
         class: 'node-label id'
 
   # Show node mechanisms.
@@ -336,7 +334,6 @@ update = ->
       .attr
         x: 0
         y: 12
-        fill: colors.node.label
         class: 'node-label mechanism'
 
   # Bind the data to the actual circle elements.
@@ -353,9 +350,9 @@ update = ->
           return nodeColor(node).brighter(0.5)
         else
           return nodeColor(node)
-      .classed 'reflexive', (node) ->
-        # Mark reflexive nodes.
-        node.reflexive
+      .classed 'on', (node) -> node.on
+      .classed 'off', (node) -> not node.on
+      .classed 'reflexive', (node) -> node.reflexive
       .attr 'r', (node) ->
         # Strokes are centered on the edge of the shape, so we need to extend
         # the radius by half the desired border width to keep the percieved
@@ -380,6 +377,8 @@ update = ->
         if (node is selected_node)
           return 'scale(1.1)'
   # Update displayed mechanisms and IDs.
+  circleGroup.selectAll 'text'
+    .style 'fill', (node) -> (if node.on then colors.node.label.on else colors.node.label.off)
   circleGroup.select '.node-label.id'
     .text (node) -> node.label
   circleGroup.select '.node-label.mechanism'
