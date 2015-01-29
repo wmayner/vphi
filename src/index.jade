@@ -34,7 +34,7 @@ body
               .control-panel(ng-controller='vphiGraphEditorCtrl')
                 .vphi-label Past state:
                 span.dropdown#past-state-chooser
-                  button#no-possible-past-states.btn.btn-md.btn-default(ng-if="!possiblePastStates") No possible past states
+                  button#no-possible-past-states.btn.btn-md.btn-default.disabled(ng-if="!possiblePastStates") No possible past states
                   button(ng-if="possiblePastStates").btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
                     #current-past-state {{currentPastState}}
                     span.caret
@@ -194,6 +194,7 @@ body
                   li Press <span class="keyboard">b</span> to make the edge <strong>b</strong>idirectional.
                   li Press <span class="keyboard">delete</span> or <span class="keyboard">backspace</span> to delete the edge.
               li <strong>Click anywhere</strong> to deselect edges and nodes.
+              li Use the “Past State” dropdown menu to select the network's past state from among those that could have lead to the current one.
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Close
 
