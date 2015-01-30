@@ -17,6 +17,11 @@ NODE_RADIUS = 25
 REFLEXIVE_NODE_BORDER = 4.5
 SUBSYSTEM_MARKER_BORDER = 8
 
+# New nodes will be connected to neighbors within this radius.
+NEIGHBOR_RADIUS = 75
+# The radius within which to ignore dragging.
+IGNORE_DRAG_THRESHOLD = 10
+
 
 # Globals
 # =====================================================================
@@ -59,6 +64,19 @@ drag_line = svg
       class: 'link dragline hidden'
       stroke: colors.link.line
       d: 'M0,0L0,0'
+
+# Circle indicating radius within which new nodes will form connections.
+neighborCircle = svg
+  .append('svg:circle')
+    .attr
+      class: 'neighbor-circle hidden'
+      r: NEIGHBOR_RADIUS
+# Only display the circle when the mouse is on the canvas.
+svg
+  .on 'mouseover', ->
+    neighborCircle.classed 'hidden', false
+  .on 'mouseout', ->
+    neighborCircle.classed 'hidden', true
 
 # Handles to link and node element groups.
 path = svg
@@ -115,7 +133,7 @@ selected_nodes = []
 
 absorbNextMouseout = false
 
-# Mouse event vars
+# Mouse event vars.
 resetMouseVars = ->
   mousedown_node = null
   mousedown_link = null
@@ -134,6 +152,26 @@ focusNode = (node) ->
 focusLink = (link) ->
   focused_link = link
   focused_node = null
+
+selectNode = (node) ->
+  # Add node to selected node list.
+  selected_nodes.push node
+  # Mark it as selected.
+  node.selected = true
+
+deselectNode = (node) ->
+  # Remove node from selected node list.
+  selected_nodes.splice selected_nodes.indexOf(node), 1
+  # Mark it as not selected.
+  node.selected = false
+
+deltaDistance = (dx, dy) ->
+  Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
+
+distance = (p1, p2) ->
+  dx = p2[0] - p1[0]
+  dy = p2[1] - p1[1]
+  deltaDistance(dx, dy)
 
 getRadius = (node) ->
   r = NODE_RADIUS
@@ -159,17 +197,38 @@ cycleDirection = (sourceId, targetId) ->
            graph.getEdge(targetId, sourceId))
     graph.removeEdge targetId, sourceId
 
+focusNextNode = ->
+  if not focused_node or focused_node.index is graph.nodeSize - 1
+    focusNode(graph.getNodeByIndex 0)
+  else
+    focusNode(graph.getNodeByIndex(focused_node.index + 1))
+
+focusPreviousNode = ->
+  if not focused_node or focused_node.index is 0
+    focusNode(graph.getNodeByIndex(graph.nodeSize - 1))
+  else
+    focusNode(graph.getNodeByIndex(focused_node.index - 1))
+
+nearestNeighbor = (node, nodes) ->
+  nearest = focused_node
+  minDistance = Infinity
+  for n in nodes
+    d = distance [node.x, node.y], [n.x, n.y]
+    if d <= minDistance
+      minDistance = d
+      nearest = n
+  return nearest
 
 # Update force layout (called automatically each iteration).
 # =====================================================================
 tick = ->
   # Draw directed edges with proper padding from node centers.
   path.attr "d", (edge) ->
-    deltaX = edge.target.x - edge.source.x
-    deltaY = edge.target.y - edge.source.y
-    dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
-    normX = deltaX / dist
-    normY = deltaY / dist
+    dx = edge.target.x - edge.source.x
+    dy = edge.target.y - edge.source.y
+    dist = deltaDistance dx, dy
+    normX = dx / dist
+    normY = dy / dist
 
     # Draw the line to the edge of the circle, not the center.
     sourcePadding = getRadius(edge.source)
@@ -194,7 +253,7 @@ tick = ->
 # =====================================================================
 update = ->
 
-  # Update the node and edge list
+  # Update the node and edge list.
   nodes = graph.getNodes()
   links = graph.getDrawableEdges()
 
@@ -272,22 +331,28 @@ update = ->
         update()
         return
       .on 'mouseover', (node) ->
-        # Only select a node if it's a new one and we haven't just finished
+        neighborCircle.classed 'hidden', true
+        # Only focus a node if it's a new one and we haven't just finished
         # dragging a new link.
         unless mousedown_node or node is mouseup_node
           focusNode(node)
           # Enlarge target node.
           d3.select(this).attr 'transform', 'scale(1.1)'
           update()
-        return
         # Update global.
         mouseover_node = node
+        return
       .on 'mouseout', (node) ->
+        # Show neighbor circle if we're not dragging.
+        unless selection_box_visible or d3.event.shiftKey
+          neighborCircle.classed 'hidden', false
+
+        mouseover_node = null
+
         if absorbNextMouseout
           absorbNextMouseout = false
           return
 
-        mouseover_node = null
         # If this is the mouseup node, then we just finished dragging a link.
         if node is mouseup_node then mouseup_node = null
         # Mousedown + mouseout means we're dragging.
@@ -438,34 +503,61 @@ circleGroup.call(drag)
 
 dblclick = (e) ->
   point = d3.mouse(this)
-  dx = point[0] - mousedown_point[0]
-  dy = point[1] - mousedown_point[1]
-  dragDistance = Math.sqrt(Math.pow(dx, 2), Math.pow(dy, 2))
-  dragThreshold = 5
-  return if d3.event.shiftKey or
-            mouseover_node or
-            mousedown_node or
-            mouseover_link or
-            dragDistance > 5 or
-            graph.nodeSize >= NETWORK_SIZE_LIMIT
-  # Prevent I-bar on drag.
-  d3.event.preventDefault()
-  # Because :active only works in WebKit?
-  svg.attr 'active', true
-  # Insert new node and start with it focused.
-  focusNode graph.addNode
-    x: point[0]
-    y: point[1]
-  update()
+
+  neighbors = []
+
+  d3.selectAll 'circle.node'
+    .each (node, i) ->
+      dist = distance(point, [node.x, node.y])
+      neighbors.push node if dist < NEIGHBOR_RADIUS + getRadius(node)
+      return
+
+  dragDistance = 0
+  if mousedown_point
+    dragDistance = distance(point, mousedown_point)
+
+  # Don't create a new node if we're holding shift, dragging, mousing-over a
+  # node or link, or the network size limit has been reached.
+  unless d3.event.shiftKey or
+         mouseover_node or
+         mouseover_link or
+         dragDistance > IGNORE_DRAG_THRESHOLD or
+         graph.nodeSize >= NETWORK_SIZE_LIMIT
+    # Prevent I-bar on drag.
+    d3.event.preventDefault()
+    # Because :active only works in WebKit?
+    svg.attr 'active', true
+    # Insert new node
+    newNode = graph.addNode
+      x: point[0]
+      y: point[1]
+    # Start with the node focused.
+    focusNode(newNode)
+    # Add a bidirectional edge to nearby nodes.
+    for neighbor in neighbors
+      graph.addEdge(newNode._id, neighbor._id)
+      graph.addEdge(neighbor._id, newNode._id)
+    update()
   return
 
 
 mousemove = ->
   point = d3.mouse(this)
+
   if mousedown_node
     # Update drag line.
-    drag_line.attr 'd', "M#{mousedown_node.x},#{mousedown_node.y}L#{m[0]},#{m[1]}"
+    drag_line.attr 'd', "M#{mousedown_node.x},#{mousedown_node.y}L#{point[0]},#{point[1]}"
   else
+    # Update neighbor circle.
+    neighborCircle.attr
+      cx: point[0]
+      cy: point[1]
+    # Hide it if we're mousing over a node or dragging.
+    if mouseover_node or
+        (mousedown_point and
+         distance(point, mousedown_point) > IGNORE_DRAG_THRESHOLD)
+      neighborCircle.classed 'hidden', true
+
     # Update selection box.
     d =
       x: parseInt(drag_rect.attr('x'), 10)
@@ -491,7 +583,6 @@ mousemove = ->
 
     drag_rect.attr d
 
-
     if selection_box_visible
       # Select nodes within the selection box.
       d3.selectAll 'circle.node'
@@ -503,24 +594,17 @@ mousemove = ->
             node.y + radius >= d.y and
             node.y - radius <= d.y + d.height
           )
-          console.log selected_nodes
           if nodeInSelectionBox
             unless node.selected
-              # Focus node.
+              # Focus and select node.
               focusNode(node)
-              # Add node to selected node list.
-              selected_nodes.push node
-              # Mark the node for inclusion in the current subsystem.
-              node.selected = true
+              selectNode(node)
           else
             if node is focused_node
               # Unfocus node and refocus most recently selected node.
               focusNode(selected_nodes[selected_nodes.length - 1])
             if node.selected
-              # Remove node from selected node list.
-              selected_nodes.splice selected_nodes.indexOf(node), 1
-              # Select only nodes within the selection box.
-              node.selected = false
+              deselectNode(node)
           return
 
   update()
@@ -528,8 +612,9 @@ mousemove = ->
 
 
 mouseup = ->
-  # Reset drag source since we're done dragging.
+  # Reset drag source and mousedown point since we're done dragging.
   drag_source = null
+  mousedown_point = null
   if mousedown_node
     # Hide drag line.
     drag_line
@@ -539,6 +624,8 @@ mouseup = ->
     # Hide selection box.
     drag_rect.classed 'hidden', true
     selection_box_visible = false
+    unless mouseover_node
+      neighborCircle.classed 'hidden', false
   # Because :active only works in WebKit?
   svg.classed 'active', false
   # Clear mouse event variables.
@@ -588,8 +675,8 @@ lastKeyDown = -1
 
 
 logChange = (node, propertyName, property) ->
-  log.debug "GRAPH_EDITOR: Changed node #{focused_node.label} #{propertyName} to " +
-            "#{focused_node[property]}."
+  log.debug "GRAPH_EDITOR: Set node #{node.label} #{propertyName} to " +
+            "#{node[property]}."
 
 
 keydown = ->
@@ -615,6 +702,11 @@ keydown = ->
       focusNextNode()
       update()
       break
+    # backspace, delete
+    when 8, 46
+      # Don't go “back” with backspace/delete (too easy to accidentally lose
+      # the page instead of deleting a node).
+      d3.event.preventDefault()
 
   return unless lastKeyDown is -1
   lastKeyDown = d3.event.keyCode
@@ -632,10 +724,14 @@ keydown = ->
     sourceId = ids[0]
     targetId = ids[1]
   switch d3.event.keyCode
-    # backspace, delete
-    when 8, 46
-      d3.event.preventDefault()
-      if focused_node
+    # backspace, delete, d
+    when 8, 46, 68
+      if selected_nodes.length > 0
+        for node in selected_nodes
+          removed = graph.removeNode node._id
+          focusPreviousNode()
+        update()
+      else if focused_node
         removed = graph.removeNode focused_node._id
         focusPreviousNode()
         update()
@@ -645,8 +741,8 @@ keydown = ->
         focused_link = null
         update()
       break
-    # d
-    when 68
+    # c
+    when 67
       if focused_link
         cycleDirection(sourceId, targetId)
         update()
@@ -661,18 +757,29 @@ keydown = ->
     # space
     when 32
       d3.event.preventDefault()
-      if focused_node
+      if selected_nodes.length > 0
+        graph.toggleStates selected_nodes
+        for node in selected_nodes
+          logChange(node, 'state', 'on')
+        update()
+      else if focused_node
         graph.toggleState focused_node
         logChange(focused_node, 'state', 'on')
         update()
       break
     # m
     when 77
-      if focused_node
+      if selected_nodes.length > 0
+        graph.cycleMechanisms selected_nodes
+        for node in selected_nodes
+          logChange(node, 'state', 'on')
+        update()
+      else if focused_node
         graph.cycleMechanism focused_node
         logChange(focused_node, 'mechanism', 'mechanism')
         update()
       break
+    # t
     when 84
       if focused_node
         if focused_node.threshold >= NETWORK_SIZE_LIMIT
@@ -685,14 +792,25 @@ keydown = ->
       break
     # r
     when 82
-      if focused_node
-        graph.toggleReflexivity focused_node
+      if selected_nodes.length > 0
+        graph.toggleSelfLoops selected_nodes
+        for node in selected_nodes
+          logChange(node, 'reflexivity', 'reflexive')
+        update()
+      else if focused_node
+        graph.toggleSelfLoop focused_node
         logChange(focused_node, 'reflexivity', 'reflexive')
         update()
       break
     # f
     when 70
-      if focused_node
+      if selected_nodes.length > 0
+        initial = selected_nodes[0].fixed
+        for node in selected_nodes
+          node.fixed = not initial
+          logChange(node, 'fixed', 'fixed')
+        update()
+      else if focused_node
         # Free/fix node
         focused_node.fixed = not focused_node.fixed
         update()
@@ -700,26 +818,15 @@ keydown = ->
     # s
     when 83
       if focused_node
-        # Toggle node inclusion in subsystem
-        focused_node.selected = not focused_node.selected
+        # Toggle node inclusion in subsystem.
+        if focused_node.selected
+          deselectNode(focused_node)
+        else
+          selectNode(focused_node)
         update()
       break
 
   return
-
-
-focusNextNode = ->
-  if not focused_node or focused_node.index is graph.nodeSize - 1
-    focusNode(graph.getNodeByIndex 0)
-  else
-    focusNode(graph.getNodeByIndex(focused_node.index + 1))
-
-
-focusPreviousNode = ->
-  if not focused_node or focused_node.index is 0
-    focusNode(graph.getNodeByIndex(graph.nodeSize - 1))
-  else
-    focusNode(graph.getNodeByIndex(focused_node.index - 1))
 
 
 keyup = ->
@@ -730,21 +837,6 @@ keyup = ->
         .on 'mousedown.drag', null
         .on 'touchstart.drag', null
     svg.classed('shiftkey', false)
-
-
-nearestNeighbor = (node, nodes) ->
-  nearest = focused_node
-  minDistance = Infinity
-  for n in nodes
-    d = dist [node.x, node.y], [n.x, n.y]
-    if d <= minDistance
-      minDistance = d
-      nearest = n
-  return nearest
-
-
-dist = (p0, p1) ->
-  Math.sqrt(Math.pow(p1[0] - p0[0], 2) + Math.pow(p1[1] - p0[1], 2))
 
 
 # Initialization
@@ -777,7 +869,7 @@ force = d3.layout.force()
 
 # Bind window resize handler.
 $(window).resize resizeCanvas
-# Bind drag handler.
+# Fix nodes when they're dragged.
 drag = force.drag()
   .on 'dragstart', (node) -> node.fixed = true
 # Bind global mouse handlers.

@@ -296,16 +296,39 @@ class Graph
     node.mechanism = mechanism.names[next_index]
     @update()
 
+  cycleMechanisms: (nodes) ->
+    next_index = mechanism.names.indexOf(nodes[0].mechanism) + 1
+    if next_index is mechanism.names.length then next_index = 0
+    for node in nodes
+      node.mechanism = mechanism.names[next_index]
+    @update()
+
   toggleState: (node) ->
     node.on = graphUtils.negate(node.on)
     @update()
 
-  toggleReflexivity: (node) ->
+  toggleStates: (nodes) ->
+    initial = nodes[0].on
+    for node in nodes
+      node.on = graphUtils.negate(initial)
+    @update()
+
+  toggleSelfLoop: (node) ->
     node.reflexive = not node.reflexive
     if node.reflexive
       @addEdge(node._id, node._id)
     else
       @removeEdge(node._id, node._id)
+    @update()
+
+  toggleSelfLoops: (nodes) ->
+    initial = nodes[0].reflexive
+    for node in nodes
+      node.reflexive = not initial
+      if node.reflexive
+        @addEdge(node._id, node._id)
+      else
+        @removeEdge(node._id, node._id)
     @update()
 
   setThreshold: (node, threshold) ->

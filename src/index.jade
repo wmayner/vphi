@@ -177,7 +177,7 @@ body
             ul.commands
               li <strong>Click and drag</strong> to select nodes. Holding <span class="keyboard">shift</span> or <span class="keyboard">command</span> while dragging will add to the selection. 
               li <strong><span class="keyboard">command</span> + click</strong> to select/deselect individual nodes.
-              li <strong>Double-click</strong> to add nodes.
+              li <strong>Double-click</strong> to add nodes. The new node will automatically connect to any nodes within the blue circle around your cursor.
               li <strong>Click and drag from one node to another</strong> to add edges.
               li <strong>Hold <span class="keyboard">shift</span> + click and drag</strong> to reposition nodes. Repositioned nodes will stay fixed in place.
               li <strong>Mouse-over</strong> nodes or edges to focus them. New ones are automatically focused.
@@ -189,12 +189,12 @@ body
                   li Press <span class="keyboard">r</span> to change whether the node has a <strong>r</strong>eflexive edge (self-loop).
                   li Press <span class="keyboard">f</span> to <strong>f</strong>ix the node in place or release it.
                   li Press <span class="keyboard">t</span> to change the node's <strong>t</strong>hreshold. The threshold only has an effect when the mechanism is <span class="keyboard">></span> or <span class="keyboard"><</span>.
-                  li Press <span class="keyboard">delete</span> or <span class="keyboard">backspace</span> to delete the node.
-              li When an edge is selected:
+                  li Press <span class="keyboard">delete</span>, <span class="keyboard">backspace</span>, or <span class="keyboard">d</span> to <strong>d</strong>elete the node.
+              li When an edge is focused:
                 ul
                   li <strong>Click it</strong> or press <span class="keyboard">d</span> to change the <strong>d</strong>irection of the edge.
                   li Press <span class="keyboard">b</span> to make the edge <strong>b</strong>idirectional.
-                  li Press <span class="keyboard">delete</span> or <span class="keyboard">backspace</span> to delete the edge.
+                  li Press <span class="keyboard">delete</span>, <span class="keyboard">backspace</span>, or <span class="keyboard">d</span> to <strong>d</strong>elete the edge.
               li Use the <strong>past state dropdown menu</strong> to select the network's past state from among those that could have lead to the current one.
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Close
