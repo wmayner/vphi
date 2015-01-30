@@ -210,6 +210,21 @@ focusPreviousNode = ->
   else
     focusNode(graph.getNodeByIndex(focused_node.index - 1))
 
+getNeighbors = (point) ->
+  neighbors = []
+  d3.selectAll 'circle.node'
+    .each (node, i) ->
+      dist = distance(point, [node.x, node.y])
+      neighbors.push node if dist < NEIGHBOR_RADIUS + getRadius(node)
+      return
+  return neighbors
+
+isDragging = (point) ->
+  dragDistance = 0
+  if mouseState.downPoint
+    dragDistance = distance(point, mouseState.downPoint)
+  return dragDistance > IGNORE_DRAG_THRESHOLD
+
 nearestNeighbor = (node, nodes) ->
   nearest = focused_node
   minDistance = Infinity
@@ -478,28 +493,16 @@ drag = d3.behavior.drag()
 circleGroup.call(drag)
 
 
-dblclick = (e) ->
+dblclick = ->
+  console.log 'dblclick'
   point = d3.mouse(this)
-
-  neighbors = []
-
-  d3.selectAll 'circle.node'
-    .each (node, i) ->
-      dist = distance(point, [node.x, node.y])
-      neighbors.push node if dist < NEIGHBOR_RADIUS + getRadius(node)
-      return
-
-  dragDistance = 0
-  if mouseState.downPoint
-    dragDistance = distance(point, mouseState.downPoint)
-
   # Don't create a new node if we're holding shift/meta, dragging, mousing-over
   # a node or link, or the network size limit has been reached.
   unless d3.event.shiftKey or
          d3.event.metaKey or
          mouseState.overNode or
          mouseState.overLink or
-         dragDistance > IGNORE_DRAG_THRESHOLD or
+         isDragging(point) or
          graph.nodeSize >= NETWORK_SIZE_LIMIT
     d3.event.preventDefault()
     # Insert new node
@@ -509,10 +512,23 @@ dblclick = (e) ->
     # Start with the node focused.
     focusNode(newNode)
     # Add a bidirectional edge to nearby nodes.
-    for neighbor in neighbors
-      graph.addEdge(newNode._id, neighbor._id)
-      graph.addEdge(neighbor._id, newNode._id)
+    for neighbor in getNeighbors(point)
+      unless newNode is neighbor
+        graph.addEdge(newNode._id, neighbor._id)
+        graph.addEdge(neighbor._id, newNode._id)
     update()
+  return
+
+
+click = ->
+  console.log 'click'
+  point = d3.mouse(this)
+  if d3.event.metaKey and not isDragging(point) and not mouseState.overNode
+    neighbors = getNeighbors(point)
+    for i in neighbors
+      for j in neighbors
+        graph.addEdge(i._id, j._id) unless i is j
+  update()
   return
 
 
@@ -825,6 +841,7 @@ drag = force.drag()
 # Bind global mouse handlers.
 svg
     .on 'dblclick', dblclick
+    .on 'click', click
     .on 'mousemove', mousemove
     .on 'mousedown', mousedown
     .on 'mouseup', mouseup
