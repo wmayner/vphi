@@ -494,7 +494,6 @@ circleGroup.call(drag)
 
 
 dblclick = ->
-  console.log 'dblclick'
   point = d3.mouse(this)
   # Don't create a new node if we're holding shift/meta, dragging, mousing-over
   # a node or link, or the network size limit has been reached.
@@ -518,7 +517,6 @@ dblclick = ->
 
 
 click = ->
-  console.log 'click'
   point = d3.mouse(this)
   if d3.event.metaKey and not isDragging(point) and not mouseState.overNode
     neighbors = getNeighbors(point)
