@@ -33,7 +33,7 @@ class Graph
     @_newNodeId++
     return id
 
-  addNode: (nodeData = {}) ->
+  _addNode: (nodeData = {}) ->
     ###
     _Returns:_ the node object. Feel free to attach additional custom
     properties on it for graph algorithms' needs. **Undefined if node id
@@ -52,13 +52,33 @@ class Graph
       threshold: 2
       # Marks whether this node is in the currently chosen subsystem.
       inSubsystem: false
+
     for key, value of nodeData
-      node[key] = value
+      unless key is 'neighbors'
+        node[key] = value
+
     @nodeSize++
     @_nodes[node._id] = node
+
+    if nodeData.neighbors
+      for neighbor in nodeData.neighbors
+        @_addEdge(node._id, neighbor._id)
+        @_addEdge(neighbor._id, node._id)
+
     llog "Added node #{node._id}."
-    @update()
     return node
+
+  addNode: (node) ->
+    newNode = @_addNode(node)
+    @update()
+    return newNode
+
+  addNodes: (nodes) ->
+    newNodes = []
+    for node in nodes
+      newNodes.push @_addNode(node)
+    @update()
+    return newNodes
 
   getNode: (id) ->
     ###
@@ -79,7 +99,7 @@ class Graph
         result = node
     return result
 
-  removeNode: (id) ->
+  _removeNode: (id) ->
     ###
     _Returns:_ the node object removed, or undefined if it didn't exist in the
     first place.
@@ -91,9 +111,9 @@ class Graph
       return
     else
       for own outEdgeId of nodeToRemove._outEdges
-        @removeEdge id, outEdgeId
+        @_removeEdge id, outEdgeId
       for own inEdgeId of nodeToRemove._inEdges
-        @removeEdge inEdgeId, id
+        @_removeEdge inEdgeId, id
       @nodeSize--
       delete @_nodes[id]
     # Reassign indices/labels so they're always consecutive integers/letters.
@@ -102,10 +122,21 @@ class Graph
         node.index--
         node.label = utils.LABEL[node.index]
     llog "  Removed node #{id}."
-    @update()
     return nodeToRemove
 
-  addEdge: (sourceId, targetId, weight = 1) ->
+  removeNode: (id) ->
+    removedNode = @_removeNode(id)
+    @update()
+    return removedNode
+
+  removeNodes: (ids) ->
+    removedNodes = []
+    for id in ids
+      removedNodes.push @_removeNode(id)
+    @update()
+    return removedNodes
+
+  _addEdge: (sourceId, targetId, weight = 1) ->
     ###
     `source` and `target` are the node id specified when it was created using
     `addNode()`. `weight` is optional and defaults to 1. Ignoring it
@@ -135,8 +166,11 @@ class Graph
       fromNode.reflexive = true
     @edgeSize++
     llog "Added edge #{sourceId},#{targetId}."
-    @update()
     return edgeToAdd
+
+  addEdge: (sourceId, targetId, weight = 1) ->
+    @_addEdge(sourceId, targetId, weight = 1)
+    @update()
 
   getEdge: (sourceId, targetId) ->
     ###
@@ -148,7 +182,7 @@ class Graph
     if not fromNode or not toNode then return
     else return fromNode._outEdges[targetId]
 
-  removeEdge: (sourceId, targetId) ->
+  _removeEdge: (sourceId, targetId) ->
     ###
     _Returns:_ the edge object removed, or undefined of edge wasn't found.
     ###
@@ -170,8 +204,11 @@ class Graph
       delete reverseEdge.bidirectional
     @edgeSize--
     llog "  Removed edge #{sourceId},#{targetId}."
-    @update()
     return edgeToDelete
+
+  removeEdge: (sourceId, targetId) ->
+    @_removeEdge(sourceId, targetId)
+    @update()
 
   getInEdgesOf: (nodeId) ->
     ###
@@ -316,9 +353,9 @@ class Graph
   toggleSelfLoop: (node) ->
     node.reflexive = not node.reflexive
     if node.reflexive
-      @addEdge(node._id, node._id)
+      @_addEdge(node._id, node._id)
     else
-      @removeEdge(node._id, node._id)
+      @_removeEdge(node._id, node._id)
     @update()
 
   toggleSelfLoops: (nodes) ->
@@ -326,9 +363,9 @@ class Graph
     for node in nodes
       node.reflexive = not initial
       if node.reflexive
-        @addEdge(node._id, node._id)
+        @_addEdge(node._id, node._id)
       else
-        @removeEdge(node._id, node._id)
+        @_removeEdge(node._id, node._id)
     @update()
 
   setThreshold: (node, threshold) ->

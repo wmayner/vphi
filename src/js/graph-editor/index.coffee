@@ -505,17 +505,14 @@ dblclick = ->
          isDragging(point) or
          graph.nodeSize >= NETWORK_SIZE_LIMIT
     d3.event.preventDefault()
-    # Insert new node
-    newNode = graph.addNode
+    # Insert new node, connecting it to nearby nodes.
+    newNode =
       x: point[0]
       y: point[1]
+      neighbors: getNeighbors(point)
+    newNode = graph.addNode(newNode)
     # Start with the node focused.
     focusNode(newNode)
-    # Add a bidirectional edge to nearby nodes.
-    for neighbor in getNeighbors(point)
-      unless newNode is neighbor
-        graph.addEdge(newNode._id, neighbor._id)
-        graph.addEdge(neighbor._id, newNode._id)
     update()
   return
 
@@ -693,9 +690,8 @@ keydown = ->
     # backspace, delete, d
     when 8, 46, 68
       if selectedNodes.length > 0
-        for node in selectedNodes
-          removed = graph.removeNode node._id
-          focusPreviousNode()
+        graph.removeNodes (node._id for node in selectedNodes)
+        focusPreviousNode()
         update()
       else if focused_node
         removed = graph.removeNode focused_node._id
