@@ -451,9 +451,44 @@ class Graph
       else
         node.selected = false
 
-  updateTpm: =>
+  updateTpm: ->
     @tpm = tpmify(this)
     llog "  Updated TPM."
+
+  _nodeToJSON: (node) ->
+    # Copy node object, then delete circular references.
+    jsonNode = {}
+    for own key, val of node
+      jsonNode[key] = val
+    delete jsonNode._id
+    delete jsonNode._inEdges
+    delete jsonNode._outEdges
+    return jsonNode
+
+  toJSON: ->
+    jsonNodes = []
+    @forEachNode (node, id) =>
+      jsonNodes.push @_nodeToJSON node
+    data =
+      nodes: jsonNodes
+      connectivityMatrix: @getConnectivityMatrix()
+    return JSON.stringify data
+
+  loadJSON: (json) ->
+    # This must be used on an empty graph.
+    if @nodeSize > 0
+      log.error "Graph.loadJSON must be used on an empty graph."
+      return
+    json = JSON.parse(json)
+    # Add nodes.
+    for node in json.nodes
+      @_addNode(node)
+    # Add edges.
+    for row, i in json.connectivityMatrix
+      for elt, j in row
+        if elt then @_addEdge(i, j)
+    @update()
+    return
 
   # This is a hook to be injected by a consuming service.
   onUpdate: ->

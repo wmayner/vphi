@@ -4,6 +4,7 @@
 
 colors = require '../colors'
 utils = require './utils'
+Graph = require './graph'
 
 
 NETWORK_SIZE_LIMIT = 10
@@ -857,5 +858,16 @@ d3.select document
 update()
 
 
-exports.graph = graph
-exports.update = update
+class GraphEditor
+  constructor: (@graph) ->
+
+  update: update
+
+  load: (jsonGraph) ->
+    graph = new Graph()
+    @graph = graph
+    @graph.loadJSON(jsonGraph)
+    update()
+    return
+
+module.exports = new GraphEditor(graph)

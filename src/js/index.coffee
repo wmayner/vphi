@@ -5,7 +5,6 @@
 'use strict'
 
 utils = require './utils'
-format = require './format'
 colors = require './colors'
 conceptSpace = require './concept-space'
 
@@ -13,6 +12,7 @@ conceptSpace = require './concept-space'
 window.vphi = angular.module 'vphi', [
   'vphiGraphService'
   'vphiDataService'
+  'vphiFormatterService'
   'vphiGraphEditor'
   'vphiMainControls'
   'vphiOutputSummary'
@@ -86,12 +86,23 @@ window.vphiGraphService = angular.module 'vphiGraphService', [
 
       return new class PhiGraphService
         constructor: ->
+          console.log 'PhiGraphService.constructor'
+          # Load previous graph if available.
+          storedGraph = localStorage.getItem 'vphiGraph'
+          if storedGraph
+            console.log "LOADING"
+            graphEditor.load(storedGraph)
+          # Grab reference to the graph.
           @graph = graphEditor.graph
+          console.log @graph
           # Inject the event broadcasting hook.
           @graph.onUpdate = @update
 
-        update: ->
+        update: =>
+          console.log 'PhiDataService.update'
           graphEditor.update()
+          console.log @graph
+          localStorage.setItem('vphiGraph', @graph.toJSON())
           log.debug "GRAPH_SERVICE: Broadcasting graph update."
           # Since graph updates can trigger more graph updates, we need to use
           # $timeout to allow any $apply calls to finish before broadcasting
@@ -101,14 +112,14 @@ window.vphiGraphService = angular.module 'vphiGraphService', [
           return
   ]
 
-
 window.vphiGraphEditor = angular.module 'vphiGraphEditor', [
   'vphiGraphService'
 ]
   .controller 'vphiGraphEditorCtrl', [
-    '$scope',
-    'vphiGraphService',
-    ($scope, vphiGraphService) ->
+    '$scope'
+    'vphiGraphService'
+    'vphiFormatterService'
+    ($scope, vphiGraphService, format) ->
       update = ->
         $scope.currentPastState = vphiGraphService.graph.pastState?.join(', ') or null
         $scope.possiblePastStates = vphiGraphService.graph.getPossiblePastStates()
@@ -127,13 +138,28 @@ window.vphiGraphEditor = angular.module 'vphiGraphEditor', [
   ]
 
 
+window.vphiFormatterService = angular.module 'vphiFormatterService', [
+]
+  .factory 'vphiFormatterService', [
+    'vphiGraphService'
+    (vphiGraphService) ->
+      PRECISION = 6
+      return new class PhiFormatter
+        constructor: ->
+        node: (index) -> vphiGraphService.graph.getNodeByIndex(index).label
+        nodes: (node_indices) -> (@node(i) for i in node_indices)
+        phi: (phiValue) -> d3.round(phiValue, PRECISION)
+        latexNodes: (nodeArray) -> @nodes(nodeArray).join('') or '[\\,]'
+  ]
+
+
 window.vphiControls = angular.module 'vphiMainControls', [
   'vphiDataService'
 ]
   .controller 'vphiMainCtrl', [
     '$scope'
-    'vphiGraphService',
-    'vphiDataService',
+    'vphiGraphService'
+    'vphiDataService'
     ($scope, vphiGraphService, vphiDataService) ->
       btns = $('.btn-calculate')
       btnSelectedSubsystem = $('#btn-selected-subsystem')
@@ -194,7 +220,8 @@ window.vphiOutputSummary = angular.module 'vphiOutputSummary', []
   .controller 'vphiOutputSummaryCtrl', [
     '$scope'
     'vphiDataService'
-    ($scope, vphiDataService) ->
+    'vphiFormatterService'
+    ($scope, vphiDataService, format) ->
       $scope.format = format
 
       $scope.currentState = null
@@ -261,7 +288,8 @@ window.vphiConceptList = angular.module 'vphiConceptList', [
 
   .controller 'vphiConceptCtrl', [
     '$scope'
-    ($scope) ->
+    'vphiFormatterService'
+    ($scope, format) ->
       concept = $scope.concept
 
       $scope.format = format
