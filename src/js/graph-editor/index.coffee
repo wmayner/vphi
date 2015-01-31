@@ -281,7 +281,7 @@ update = ->
   # Show/hide neighbor circle.
   neighborCircle.classed 'hidden', ->
     not state.onCanvas or
-    state.selecting or
+    state.dragging or
     state.linking or
     state.overNode
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -315,7 +315,7 @@ update = ->
         state.overLink = edge.key
         # Only focus link if we're not dragging a new one and not selecting
         # nodes.
-        unless state.linking or state.selecting
+        unless state.dragging
           focusLink(edge.key)
         update()
         return
@@ -368,13 +368,14 @@ update = ->
         update()
         return
       .on 'mouseleave', (node) ->
-        state.overNode = null
-        state.upNode = null
         state.justLinked = false
+        state.upNode = null
         unless state.downNode
           state.linking = false
         update()
         return
+      .on 'mouseout', (node) ->
+        state.overNode = null
       .on 'mousedown', (node) ->
         state.downNode = node
         focusNode(node)
@@ -386,7 +387,6 @@ update = ->
         update()
         return
       .on 'mouseup', (node) ->
-        console.log 'node mouseup'
         if state.linking and not (node is state.downNode)
           state.justLinked = true
           edge = graph.addEdge state.downNode._id, node._id
@@ -394,7 +394,6 @@ update = ->
             edge = graph.getEdge state.downNode._id, node._id
           focusLink(edge.key)
         state.upNode = node
-        state.downNode = null
         update()
         return
       .on 'click', (node) ->
@@ -505,7 +504,7 @@ dblclick = ->
          d3.event.metaKey or
          state.overNode or
          state.overLink or
-         isDragging(point) or
+         state.dragging or
          graph.nodeSize >= NETWORK_SIZE_LIMIT
     d3.event.preventDefault()
     # Insert new node, connecting it to nearby nodes.
@@ -522,7 +521,7 @@ dblclick = ->
 
 click = ->
   point = d3.mouse(this)
-  if d3.event.metaKey and not isDragging(point) and not state.overNode
+  if d3.event.metaKey and not state.dragging and not state.overNode
     neighbors = getNeighbors(point)
     for i in neighbors
       for j in neighbors
@@ -533,6 +532,8 @@ click = ->
 
 mousemove = ->
   point = d3.mouse(this)
+  if isDragging(point)
+    state.dragging = true
 
   # Update neighbor circle.
   neighborCircle.attr
@@ -569,7 +570,7 @@ mousemove = ->
 
   drag_rect.attr d
 
-  if state.selecting
+  if state.selecting and state.dragging
     # Select nodes within the selection box.
     d3.selectAll 'circle.node'
       .each (node, i) ->
@@ -600,7 +601,9 @@ mousemove = ->
 mouseup = ->
   state.linking = false
   state.selecting = false
+  state.dragging = false
   state.downNode = null
+  state.downPoint = null
   # Because :active only works in WebKit?
   svg.classed 'active', false
   update()
