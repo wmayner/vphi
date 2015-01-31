@@ -65,7 +65,7 @@ class Graph
         @_addEdge(node._id, neighbor._id)
         @_addEdge(neighbor._id, node._id)
 
-    llog "Added node #{node._id}."
+    llog "Added node #{node.index}."
     return node
 
   addNode: (node) ->
@@ -105,11 +105,11 @@ class Graph
     first place.
     ###
     nodeToRemove = @_nodes[id]
-    llog "Removing node #{id}..."
     if not nodeToRemove
-      llog "  Node #{id} doesn't exist."
+      llog "  Node with ID #{id} doesn't exist."
       return
     else
+      llog "Removing node #{nodeToRemove.index}..."
       for own outEdgeId of nodeToRemove._outEdges
         @_removeEdge id, outEdgeId
       for own inEdgeId of nodeToRemove._inEdges
@@ -121,7 +121,7 @@ class Graph
       if node.index > nodeToRemove.index
         node.index--
         node.label = utils.LABEL[node.index]
-    llog "  Removed node #{id}."
+    llog "  Removed node #{node.index}."
     return nodeToRemove
 
   removeNode: (id) ->
@@ -148,12 +148,14 @@ class Graph
     of id `source` or `target` aren't found, or if an edge already exists
     between the two nodes.
     ###
-    if @getEdge sourceId, targetId
-      llog "Edge #{sourceId},#{targetId} already exists."
-      return
     fromNode = @_nodes[sourceId]
     toNode = @_nodes[targetId]
-    if not fromNode or not toNode then return
+    if not fromNode or not toNode
+      llog "Node(s) don't exist; can't add edge."
+      return
+    if @getEdge sourceId, targetId
+      llog "Edge (#{fromNode.index}, #{toNode.index}) already exists."
+      return
     edgeToAdd =
       weight: weight
       source: fromNode
@@ -165,7 +167,7 @@ class Graph
     if sourceId is targetId
       fromNode.reflexive = true
     @edgeSize++
-    llog "Added edge #{sourceId},#{targetId}."
+    llog "Added edge (#{fromNode.index}, #{toNode.index})."
     return edgeToAdd
 
   addEdge: (sourceId, targetId, weight = 1) ->
@@ -186,12 +188,11 @@ class Graph
     ###
     _Returns:_ the edge object removed, or undefined of edge wasn't found.
     ###
-    llog "Removed edge #{sourceId},#{targetId}..."
+    edgeToDelete = @getEdge sourceId, targetId
     fromNode = @_nodes[sourceId]
     toNode = @_nodes[targetId]
-    edgeToDelete = @getEdge sourceId, targetId
     if not edgeToDelete
-      llog "  Edge #{sourceId},#{targetId} doesn't exist."
+      llog "  Edge (#{fromNode.index}, #{toNode.index}) doesn't exist."
       return
     delete fromNode._outEdges[targetId]
     delete toNode._inEdges[sourceId]
@@ -203,7 +204,7 @@ class Graph
     if reverseEdge
       delete reverseEdge.bidirectional
     @edgeSize--
-    llog "  Removed edge #{sourceId},#{targetId}."
+    llog "  Removed edge (#{fromNode.index}, #{toNode.index})."
     return edgeToDelete
 
   removeEdge: (sourceId, targetId) ->
