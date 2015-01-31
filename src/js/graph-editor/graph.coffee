@@ -65,7 +65,7 @@ class Graph
         @_addEdge(node._id, neighbor._id)
         @_addEdge(neighbor._id, node._id)
 
-    llog "Added node #{node.index}."
+    llog "Added node #{node.label}."
     return node
 
   addNode: (node) ->
@@ -108,7 +108,7 @@ class Graph
       llog "  Node with ID #{id} doesn't exist."
       return
     else
-      llog "Removing node #{nodeToRemove.index}..."
+      llog "Removing node #{nodeToRemove.label}..."
       for own outEdgeId of nodeToRemove._outEdges
         @_removeEdge nodeToRemove._id, outEdgeId
       for own inEdgeId of nodeToRemove._inEdges
@@ -120,7 +120,7 @@ class Graph
       if node.index > nodeToRemove.index
         node.index--
         node.label = utils.LABEL[node.index]
-    llog "  Removed node #{nodeToRemove.index}."
+    llog "  Removed node #{nodeToRemove.label}."
     return nodeToRemove
 
   removeNode: (node) ->
@@ -153,7 +153,7 @@ class Graph
       llog "Node(s) don't exist; can't add edge."
       return
     if @getEdge sourceId, targetId
-      llog "Edge (#{fromNode.index}, #{toNode.index}) already exists."
+      llog "Edge (#{fromNode.label}, #{toNode.label}) already exists."
       return
     edgeToAdd =
       weight: weight
@@ -166,7 +166,7 @@ class Graph
     if sourceId is targetId
       fromNode.reflexive = true
     @edgeSize++
-    llog "Added edge (#{fromNode.index}, #{toNode.index})."
+    llog "Added edge (#{fromNode.label}, #{toNode.label})."
     return edgeToAdd
 
   addEdge: (sourceId, targetId, weight = 1) ->
@@ -191,7 +191,7 @@ class Graph
     fromNode = @_nodes[sourceId]
     toNode = @_nodes[targetId]
     if not edgeToDelete
-      llog "  Edge (#{fromNode.index}, #{toNode.index}) doesn't exist."
+      llog "  Edge (#{fromNode.label}, #{toNode.label}) doesn't exist."
       return
     delete fromNode._outEdges[targetId]
     delete toNode._inEdges[sourceId]
@@ -203,7 +203,7 @@ class Graph
     if reverseEdge
       delete reverseEdge.bidirectional
     @edgeSize--
-    llog "  Removed edge (#{fromNode.index}, #{toNode.index})."
+    llog "  Removed edge (#{fromNode.label}, #{toNode.label})."
     return edgeToDelete
 
   removeEdge: (sourceId, targetId) ->

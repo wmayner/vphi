@@ -688,11 +688,11 @@ keydown = ->
     # backspace, delete, d
     when 8, 46, 68
       if selectedNodes.length > 0
-        graph.removeNodes (node._id for node in selectedNodes)
+        graph.removeNodes selectedNodes
         focusPreviousNode()
         update()
       else if focused_node
-        removed = graph.removeNode focused_node._id
+        removed = graph.removeNode focused_node
         focusPreviousNode()
         update()
       else if focused_link
