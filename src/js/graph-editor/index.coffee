@@ -74,9 +74,9 @@ neighborCircle = svg
 # Only display the circle when the mouse is on the canvas.
 svg
   .on 'mouseenter', ->
-    mouseState.onCanvas = true
+    state.onCanvas = true
   .on 'mouseleave', ->
-    mouseState.onCanvas = false
+    state.onCanvas = false
 
 # Handles to link and node element groups.
 path = svg
@@ -123,7 +123,7 @@ svg
 focused_node = null
 focused_link = null
 selectedNodes = []
-mouseState =
+state =
   onCanvas: false
   downPoint: null
   overNode: null
@@ -133,6 +133,7 @@ mouseState =
   downLink: null
   selecting: false
   linking: false
+  justLinked: false
 
 
 # Helpers
@@ -221,8 +222,8 @@ getNeighbors = (point) ->
 
 isDragging = (point) ->
   dragDistance = 0
-  if mouseState.downPoint
-    dragDistance = distance(point, mouseState.downPoint)
+  if state.downPoint
+    dragDistance = distance(point, state.downPoint)
   return dragDistance > IGNORE_DRAG_THRESHOLD
 
 nearestNeighbor = (node, nodes) ->
@@ -273,16 +274,16 @@ update = ->
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Show/hide drag line.
   drag_line
-    .classed 'hidden', not mouseState.linking
-    .style 'marker-end', (if mouseState.linking then 'url(#end-arrow)' else '')
+    .classed 'hidden', not state.linking
+    .style 'marker-end', (if state.linking then 'url(#end-arrow)' else '')
   # Show/hide selection box.
-  drag_rect.classed 'hidden', not mouseState.selecting
+  drag_rect.classed 'hidden', not state.selecting
   # Show/hide neighbor circle.
   neighborCircle.classed 'hidden', ->
-    not mouseState.onCanvas or
-    mouseState.selecting or
-    mouseState.linking or
-    mouseState.overNode
+    not state.onCanvas or
+    state.selecting or
+    state.linking or
+    state.overNode
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # Update the node and edge list.
@@ -311,19 +312,19 @@ update = ->
       .style 'marker-end', (edge) ->
         'url(#end-arrow)'
       .on 'mouseover', (edge) ->
-        mouseState.overLink = edge.key
+        state.overLink = edge.key
         # Only focus link if we're not dragging a new one and not selecting
         # nodes.
-        unless mouseState.linking or mouseState.selecting
+        unless state.linking or state.selecting
           focusLink(edge.key)
         update()
         return
       .on 'mouseout', (edge) ->
-        mouseState.overLink = false
+        state.overLink = false
         update()
         return
       .on 'mousedown', (edge) ->
-        mouseState.downLink = edge.key
+        state.downLink = edge.key
         update()
         return
       .on 'mouseup', (edge) ->
@@ -357,24 +358,25 @@ update = ->
         class: 'node'
         r: NODE_RADIUS
       .on 'mouseover', (node) ->
-        mouseState.overNode = node
+        state.overNode = node
         # Only focus a node if it's a new one and we haven't just finished
         # dragging a new link.
-        unless mouseState.linking or node is mouseState.upNode
+        unless state.linking or state.justLinked or node is state.upNode
           focusNode(node)
           # Enlarge target node.
           d3.select(this).attr 'transform', 'scale(1.1)'
         update()
         return
-      .on 'mouseout', (node) ->
-        mouseState.overNode = null
-        mouseState.upNode = null
-        unless mouseState.downNode
-          mouseState.linking = false
+      .on 'mouseleave', (node) ->
+        state.overNode = null
+        state.upNode = null
+        state.justLinked = false
+        unless state.downNode
+          state.linking = false
         update()
         return
       .on 'mousedown', (node) ->
-        mouseState.downNode = node
+        state.downNode = node
         focusNode(node)
         unless d3.event.shiftKey
           # Reset drag line.
@@ -384,19 +386,21 @@ update = ->
         update()
         return
       .on 'mouseup', (node) ->
-        if mouseState.linking and not (node is mouseState.downNode)
-          edge = graph.addEdge mouseState.downNode._id, node._id
+        console.log 'node mouseup'
+        if state.linking and not (node is state.downNode)
+          state.justLinked = true
+          edge = graph.addEdge state.downNode._id, node._id
           if not edge?
-            edge = graph.getEdge mouseState.downNode._id, node._id
+            edge = graph.getEdge state.downNode._id, node._id
           focusLink(edge.key)
-        mouseState.upNode = node
-        mouseState.downNode = null
+        state.upNode = node
+        state.downNode = null
         update()
         return
       .on 'click', (node) ->
         if d3.event.shiftKey or d3.event.metaKey
           toggleSelect(node)
-        else unless mouseState.linking
+        else unless state.linking
           graph.toggleState node
         update()
         return
@@ -499,8 +503,8 @@ dblclick = ->
   # a node or link, or the network size limit has been reached.
   unless d3.event.shiftKey or
          d3.event.metaKey or
-         mouseState.overNode or
-         mouseState.overLink or
+         state.overNode or
+         state.overLink or
          isDragging(point) or
          graph.nodeSize >= NETWORK_SIZE_LIMIT
     d3.event.preventDefault()
@@ -518,7 +522,7 @@ dblclick = ->
 
 click = ->
   point = d3.mouse(this)
-  if d3.event.metaKey and not isDragging(point) and not mouseState.overNode
+  if d3.event.metaKey and not isDragging(point) and not state.overNode
     neighbors = getNeighbors(point)
     for i in neighbors
       for j in neighbors
@@ -536,7 +540,7 @@ mousemove = ->
     cy: point[1]
 
   # Update drag line.
-  n = mouseState.downNode
+  n = state.downNode
   if n
     drag_line.attr 'd', "M#{n.x},#{n.y}L#{point[0]},#{point[1]}"
 
@@ -565,7 +569,7 @@ mousemove = ->
 
   drag_rect.attr d
 
-  if mouseState.selecting
+  if state.selecting
     # Select nodes within the selection box.
     d3.selectAll 'circle.node'
       .each (node, i) ->
@@ -594,27 +598,27 @@ mousemove = ->
 
 
 mouseup = ->
-  mouseState.linking = false
-  mouseState.selecting = false
-  mouseState.downNode = null
+  state.linking = false
+  state.selecting = false
+  state.downNode = null
   # Because :active only works in WebKit?
   svg.classed 'active', false
   update()
 
 mousedown = ->
-  mouseState.downPoint = d3.mouse(this)
+  state.downPoint = d3.mouse(this)
 
-  if mouseState.downNode and not d3.event.shiftKey
-    mouseState.linking = true
+  if state.downNode and not d3.event.shiftKey
+    state.linking = true
   else
-    mouseState.selecting = true
+    state.selecting = true
     # Unfocus nodes and edges.
     focused_link = null
     focused_node = null
     # Redraw selection box starting at mouse.
     drag_rect.attr
-      x: mouseState.downPoint[0]
-      y: mouseState.downPoint[1]
+      x: state.downPoint[0]
+      y: state.downPoint[1]
       width: 0
       height: 0
     # Clear selection unless holding Shift or Command/Alt.
