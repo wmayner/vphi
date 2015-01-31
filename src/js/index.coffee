@@ -6,6 +6,7 @@
 
 utils = require './utils'
 colors = require './colors'
+formatter = require './format'
 conceptSpace = require './concept-space'
 
 
@@ -142,14 +143,7 @@ window.vphiFormatterService = angular.module 'vphiFormatterService', [
 ]
   .factory 'vphiFormatterService', [
     'vphiGraphService'
-    (vphiGraphService) ->
-      PRECISION = 6
-      return new class PhiFormatter
-        constructor: ->
-        node: (index) -> vphiGraphService.graph.getNodeByIndex(index).label
-        nodes: (node_indices) -> (@node(i) for i in node_indices)
-        phi: (phiValue) -> d3.round(phiValue, PRECISION)
-        latexNodes: (nodeArray) -> @nodes(nodeArray).join('') or '[\\,]'
+    (vphiGraphService) -> formatter
   ]
 
 
