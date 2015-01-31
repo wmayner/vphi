@@ -99,40 +99,39 @@ class Graph
         result = node
     return result
 
-  _removeNode: (id) ->
+  _removeNode: (nodeToRemove) ->
     ###
     _Returns:_ the node object removed, or undefined if it didn't exist in the
     first place.
     ###
-    nodeToRemove = @_nodes[id]
     if not nodeToRemove
       llog "  Node with ID #{id} doesn't exist."
       return
     else
       llog "Removing node #{nodeToRemove.index}..."
       for own outEdgeId of nodeToRemove._outEdges
-        @_removeEdge id, outEdgeId
+        @_removeEdge nodeToRemove._id, outEdgeId
       for own inEdgeId of nodeToRemove._inEdges
-        @_removeEdge inEdgeId, id
+        @_removeEdge inEdgeId, nodeToRemove._id
       @nodeSize--
-      delete @_nodes[id]
+      delete @_nodes[nodeToRemove._id]
     # Reassign indices/labels so they're always consecutive integers/letters.
     @forEachNode (node) ->
       if node.index > nodeToRemove.index
         node.index--
         node.label = utils.LABEL[node.index]
-    llog "  Removed node #{node.index}."
+    llog "  Removed node #{nodeToRemove.index}."
     return nodeToRemove
 
-  removeNode: (id) ->
-    removedNode = @_removeNode(id)
+  removeNode: (node) ->
+    removedNode = @_removeNode(node)
     @update()
     return removedNode
 
-  removeNodes: (ids) ->
+  removeNodes: (nodes) ->
     removedNodes = []
-    for id in ids
-      removedNodes.push @_removeNode(id)
+    for node in nodes
+      removedNodes.push @_removeNode(node)
     @update()
     return removedNodes
 
