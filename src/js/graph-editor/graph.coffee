@@ -104,8 +104,8 @@ class Graph
     _Returns:_ the node object removed, or undefined if it didn't exist in the
     first place.
     ###
-    if not nodeToRemove
-      llog "  Node with ID #{id} doesn't exist."
+    if not @getNode(nodeToRemove._id)
+      llog "  Node #{nodeToRemove.label} is not in the graph."
       return
     else
       llog "Removing node #{nodeToRemove.label}..."

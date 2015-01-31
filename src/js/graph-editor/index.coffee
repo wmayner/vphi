@@ -281,9 +281,10 @@ update = ->
   # Show/hide neighbor circle.
   neighborCircle.classed 'hidden', ->
     not state.onCanvas or
+    state.overNode or
     state.dragging or
     state.linking or
-    state.overNode
+    state.justLinked
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   # Update the node and edge list.
@@ -696,6 +697,7 @@ keydown = ->
     when 8, 46, 68
       if selectedNodes.length > 0
         graph.removeNodes selectedNodes
+        selectedNodes = []
         focusPreviousNode()
         update()
       else if focused_node
