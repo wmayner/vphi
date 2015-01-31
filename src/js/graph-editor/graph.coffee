@@ -60,12 +60,13 @@ class Graph
     @nodeSize++
     @_nodes[node._id] = node
 
+    llog "Added node #{node.label}."
+
     if nodeData.neighbors
       for neighbor in nodeData.neighbors
         @_addEdge(node._id, neighbor._id)
         @_addEdge(neighbor._id, node._id)
 
-    llog "Added node #{node.label}."
     return node
 
   addNode: (node) ->
@@ -191,7 +192,7 @@ class Graph
     fromNode = @_nodes[sourceId]
     toNode = @_nodes[targetId]
     if not edgeToDelete
-      llog "  Edge (#{fromNode.label}, #{toNode.label}) doesn't exist."
+      llog "Edge (#{fromNode.label}, #{toNode.label}) doesn't exist."
       return
     delete fromNode._outEdges[targetId]
     delete toNode._inEdges[sourceId]
@@ -203,7 +204,7 @@ class Graph
     if reverseEdge
       delete reverseEdge.bidirectional
     @edgeSize--
-    llog "  Removed edge (#{fromNode.label}, #{toNode.label})."
+    llog "Removed edge (#{fromNode.label}, #{toNode.label})."
     return edgeToDelete
 
   removeEdge: (sourceId, targetId) ->
