@@ -35,7 +35,7 @@ body
                 .vphi-label Past state:
                 span.dropdown#past-state-chooser
                   button#no-possible-past-states.btn.btn-md.btn-default.disabled(ng-if="!possiblePastStates") No possible past states
-                  button(ng-if="possiblePastStates").btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                  button.btn.btn-md.btn-default.dropdown-toggle(ng-if="possiblePastStates", type='button', data-toggle='dropdown', aria-expanded='false')
                     #current-past-state {{currentPastState}}
                     span.caret
                     span.sr-only Toggle past state selection dropdown
