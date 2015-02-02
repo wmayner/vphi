@@ -45,7 +45,7 @@ compileStylus = (input, outputDir) ->
 runBrowserify = (input, output) ->
   mkdirp path.dirname(output), (err) ->
     browserify = './node_modules/browserify/bin/cmd.js'
-    cmd = sh.exec "#{browserify} --transform coffeeify --extension='.coffee' --no-cache #{input} > #{output}"
+    cmd = sh.exec "#{browserify} --no-cache --transform coffeeify --extension='.coffee' #{input} > #{output}"
     gutil.log cmd.stdout
     gutil.log "  [browserify] Compiled #{input} to #{output}"
 
@@ -75,14 +75,13 @@ gulp.task 'clean', ['clean-html', 'clean-js', 'clean-css']
 # Build
 ###
 
-gulp.task 'jade', ['clean-html'], -> compileJade JADE_DIR, APP_DIR
+gulp.task 'jade', ['clean-html'], ->
+  compileJade JADE_DIR, APP_DIR
 
 gulp.task 'stylus', ['clean-css'], ->
   compileStylus "#{STYLUS_DIR}/app.styl", "#{APP_DIR}/css"
 
-gulp.task 'coffee', ['clean-js'], -> compileCoffee COFFEE_DIR, LIB_DIR
-
-gulp.task 'browserify', ->
+gulp.task 'browserify', ['clean-js'], ->
   runBrowserify ENTRYPOINT, "#{APP_DIR}/js/app.js",
 
 # Build everything
@@ -105,7 +104,7 @@ gulp.task 'watch-coffee', ['browserify'], ->
     .on('error', gutil.log)
 
 # Watch everything
-gulp.task 'watch', ['build', 'watch-jade', 'watch-stylus', 'watch-coffee']
+gulp.task 'watch', ['clean', 'build', 'watch-jade', 'watch-stylus', 'watch-coffee']
 
 # Watch everything by default
 gulp.task 'default', ['watch']
