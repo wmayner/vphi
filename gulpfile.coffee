@@ -12,8 +12,6 @@ SRC_DIR = './src'
 LIB_DIR = './lib'
 APP_DIR = './app'
 
-ENTRYPOINT = "#{LIB_DIR}/index.js"
-
 # TODO watch stylus
 STYLUS_DIR = "#{SRC_DIR}/css"
 STYLUS = "#{STYLUS_DIR}/**/*.styl"
@@ -23,6 +21,8 @@ JADE = "#{JADE_DIR}/**/*.jade"
 
 COFFEE_DIR = "#{SRC_DIR}/js"
 COFFEE = "#{COFFEE_DIR}/**/*.coffee"
+
+ENTRYPOINT = "#{COFFEE_DIR}/index.coffee"
 
 ###
 Helpers
@@ -42,16 +42,10 @@ compileStylus = (input, outputDir) ->
       gutil.log err if err
       gutil.log "  [stylus] Compiled #{input} to #{outputDir}"
 
-compileCoffee = (inputDir, outputDir) ->
-  coffee = './node_modules/coffee-script/bin/coffee'
-  cmd = sh.exec "#{coffee} -c -o #{outputDir} #{inputDir}"
-  gutil.log cmd.stdout
-  gutil.log "  [coffee] Compiled #{inputDir} to #{outputDir}"
-
 runBrowserify = (input, output) ->
   mkdirp path.dirname(output), (err) ->
     browserify = './node_modules/browserify/bin/cmd.js'
-    cmd = sh.exec "#{browserify} #{input} --no-cache -o #{output}"
+    cmd = sh.exec "#{browserify} --transform coffeeify --extension='.coffee' --no-cache #{input} > #{output}"
     gutil.log cmd.stdout
     gutil.log "  [browserify] Compiled #{input} to #{output}"
 
@@ -66,7 +60,6 @@ gulp.task 'clean-html', ->
 
 gulp.task 'clean-js', ->
   gulp.src([
-      "#{LIB_DIR}/*"
       "#{APP_DIR}/js/*.js"
   ], {read: false}).pipe(rimraf())
 
@@ -89,7 +82,7 @@ gulp.task 'stylus', ['clean-css'], ->
 
 gulp.task 'coffee', ['clean-js'], -> compileCoffee COFFEE_DIR, LIB_DIR
 
-gulp.task 'browserify', ['coffee'], ->
+gulp.task 'browserify', ->
   runBrowserify ENTRYPOINT, "#{APP_DIR}/js/app.js",
 
 # Build everything
