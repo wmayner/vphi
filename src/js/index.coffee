@@ -19,6 +19,7 @@ window.vphi = angular.module 'vphi', [
   'vphiOutputSummary'
   'vphiConceptList'
 ]
+  .constant 'version', require('../../package.json').version
 
 
 window.vphiDataService = angular.module 'vphiDataService', []
