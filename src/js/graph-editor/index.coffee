@@ -76,8 +76,10 @@ neighborCircle = svg
 svg
   .on 'mouseenter', ->
     state.onCanvas = true
+    updateMouseElements()
   .on 'mouseleave', ->
     state.onCanvas = false
+    updateMouseElements()
 
 # Handles to link and node element groups.
 path = svg
@@ -139,6 +141,22 @@ state =
 
 # Helpers
 # =====================================================================
+
+# Update mouse-related elements based on mouse state.
+updateMouseElements = ->
+  # Show/hide drag line.
+  drag_line
+    .classed 'hidden', not state.linking
+    .style 'marker-end', (if state.linking then 'url(#end-arrow)' else '')
+  # Show/hide selection box.
+  drag_rect.classed 'hidden', not state.selecting
+  # Show/hide neighbor circle.
+  neighborCircle.classed 'hidden', ->
+    not state.onCanvas or
+    state.overNode or
+    state.dragging or
+    state.linking or
+    state.justLinked
 
 nodeColor = (node) -> (if node.on then colors.node.on else colors.node.off)
 
@@ -271,22 +289,7 @@ tick = ->
 # =====================================================================
 update = ->
 
-  # Update mouse-related elements based on mouse state.
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # Show/hide drag line.
-  drag_line
-    .classed 'hidden', not state.linking
-    .style 'marker-end', (if state.linking then 'url(#end-arrow)' else '')
-  # Show/hide selection box.
-  drag_rect.classed 'hidden', not state.selecting
-  # Show/hide neighbor circle.
-  neighborCircle.classed 'hidden', ->
-    not state.onCanvas or
-    state.overNode or
-    state.dragging or
-    state.linking or
-    state.justLinked
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  updateMouseElements()
 
   # Update the node and edge list.
   nodes = graph.getNodes()
@@ -323,11 +326,11 @@ update = ->
         return
       .on 'mouseout', (edge) ->
         state.overLink = false
-        update()
+        updateMouseElements()
         return
       .on 'mousedown', (edge) ->
         state.downLink = edge.key
-        update()
+        updateMouseElements()
         return
       .on 'mouseup', (edge) ->
         focusLink(edge.key)
@@ -374,7 +377,7 @@ update = ->
         state.upNode = null
         unless state.downNode
           state.linking = false
-        update()
+        updateMouseElements()
         return
       .on 'mouseout', (node) ->
         state.overNode = null
