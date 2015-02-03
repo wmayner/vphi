@@ -31,7 +31,7 @@ body
             .col-md-12
               #graph-editor-container(vphi-graph-editor-canvas)
               button#show-help.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#graph-editor-help') Show Controls
-              .control-panel(ng-controller='vphiGraphEditorCtrl')
+              .control-panel(ng-controller='graphEditor.controlPanelCtrl')
                 .vphi-label Past state:
                 span.dropdown#past-state-chooser
                   button#no-possible-past-states.btn.btn-md.btn-default.disabled(ng-if="!possiblePastStates") No possible past states
@@ -75,7 +75,7 @@ body
     hr
     .row.row-centered.clearfix
       .col-centered
-        #main-control-module.module(ng-controller="vphiMainCtrl")
+        #main-control-module.module(ng-controller="controlPanelCtrl")
           button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('mainComplex')")
             | Main Complex
           button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('bigMip')")
@@ -83,7 +83,7 @@ body
     hr
     .row.clearfix
       .col-md-12
-        section#output-summary-module.module(ng-controller="vphiOutputSummaryCtrl")
+        section#output-summary-module.module(ng-controller="outputSummaryCtrl")
           h2.module-title {{title}} 
             ul.node-list
               li(ng-class="{'on': currentState[n]}", ng-repeat="n in nodes") {{format.node(n)}}
@@ -111,9 +111,9 @@ body
                   .value.number-7 {{sumSmallPhi}}
     .row.clearfix
       .col-md-12
-        section#concept-list-module.module(ng-controller="vphiConceptListCtrl")
+        section#concept-list-module.module(ng-controller="conceptListCtrl")
           h2.module-title Concepts
-          .concept.well(ng-controller="vphiConceptCtrl" ng-repeat="concept in concepts", id="concept-{{$index}}")
+          .concept.well(ng-controller="conceptList.conceptCtrl" ng-repeat="concept in concepts", id="concept-{{$index}}")
             .row.row-centered.clearfix
               .col-xs-4
                 ul.concept-data
@@ -158,13 +158,13 @@ body
                   .row.clearfix
                     .col-md-12
                       h5.repertoire-title Cause Repertoire
-                      .repertoire(vphi-repertoire-chart, direction="cause")
+                      .repertoire(repertoire-chart, direction="cause")
               div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
                 .repertoire-container
                   .row.clearfix
                     .col-md-12
                       h5.repertoire-title Effect Repertoire
-                      .repertoire(vphi-repertoire-chart, direction="effect")
+                      .repertoire(repertoire-chart, direction="effect")
 
   #graph-editor-help.modal.fade
     .modal-dialog

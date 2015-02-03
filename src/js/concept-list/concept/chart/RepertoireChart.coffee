@@ -1,5 +1,6 @@
+'use strict'
 ###
-# concept-list/repertoire.coffee
+# concept-list/chart/ChartDirective.coffee
 ###
 
 class RepertoireChart
