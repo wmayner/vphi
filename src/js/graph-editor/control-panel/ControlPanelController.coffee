@@ -3,13 +3,13 @@
 # graph-editor/control-panel/ControlPanelController.coffee
 ###
 
-graph = require '../../services/graph'
-format = require '../../services/format'
+graphService = require '../../services/graph'
+formatService = require '../../services/format'
 
 module.exports =  [
   '$scope'
-  graph.name
-  format.name
+  graphService.name
+  formatService.name
   ($scope, graph, format) ->
     update = ->
       $scope.currentPastState = graph.pastState?.join(', ') or null
@@ -23,7 +23,7 @@ module.exports =  [
       log.debug "GRAPH_CONTROLS: Setting past state to [#{pastState}]."
       graph.setPastState(pastState)
 
-    $scope.$on 'vphiGraphUpdated', ->
+    $scope.$on (graphService.name + '.updated'), ->
       log.debug 'GRAPH_CONTROLS: Receieved graph update.'
-      $scope.$apply update
+      update()
 ]

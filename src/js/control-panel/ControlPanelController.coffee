@@ -3,13 +3,13 @@
 # control-panel/ControlPanelController.coffee
 ###
 
-graph = require '../services/graph'
-compute = require '../services/compute'
+graphService = require '../services/graph'
+computeService = require '../services/compute'
 
 module.exports = [
   '$scope'
-  graph.name
-  compute.name
+  graphService.name
+  computeService.name
   ($scope, graph, compute) ->
     btns = $('.btn-calculate')
     btnSelectedSubsystem = $('#btn-selected-subsystem')
@@ -19,7 +19,7 @@ module.exports = [
       'mainComplex': btnMainComplex
       'bigMip': btnSelectedSubsystem
 
-    $scope.$on 'vphiGraphUpdated', ->
+    $scope.$on (graphService.name + '.updated'), ->
       if graph.pastState and not compute.callInProgress
         btns.removeClass 'disabled'
       else

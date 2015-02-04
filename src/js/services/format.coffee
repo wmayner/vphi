@@ -7,8 +7,9 @@ graph = require './graph'
 
 PRECISION = 6
 
-module.exports = angular.module 'vphi.services.format', []
-  .factory 'vphi.services.format', [
+name = 'vphi.services.format'
+module.exports = angular.module name, []
+  .factory name, [
     graph.name
     (graph) ->
       return new class FormatService

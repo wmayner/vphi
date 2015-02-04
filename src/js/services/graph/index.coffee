@@ -6,8 +6,9 @@
 graphEditor = require '../../graph-editor'
 examples = require '../../graph-editor/examples'
 
-module.exports = angular.module 'vphi.services.graph', []
-  .factory  'vphi.services.graph', [
+name = 'vphi.services.graph'
+module.exports = angular.module name, []
+  .factory name, [
     '$rootScope'
     '$timeout'
     ($rootScope, $timeout) ->
@@ -26,7 +27,7 @@ module.exports = angular.module 'vphi.services.graph', []
         # $timeout to allow any $apply calls to finish before broadcasting
         # another change. Otherwise there may be nested $apply's, which Angular
         # doesn't allow.
-        $timeout -> $rootScope.$broadcast 'vphiGraphUpdated', 0
+        $timeout -> $rootScope.$broadcast (name + '.updated'), 0
         return
 
       return graph

@@ -3,13 +3,13 @@
 # output-summary/index.coffee
 ###
 
-compute = require '../services/compute'
-format = require '../services/format'
+computeService = require '../services/compute'
+formatService = require '../services/format'
 
 module.exports = [
   '$scope'
-  compute.name
-  format.name
+  computeService.name
+  formatService.name
   ($scope, compute, format) ->
     $scope.format = format
 
@@ -21,7 +21,7 @@ module.exports = [
     $scope.numConcepts = '–'
     $scope.sumSmallPhi = '–'
 
-    $scope.$on 'vphiDataUpdated', ->
+    $scope.$on (computeService.name + '.updated'), ->
       d = compute.data
 
       if compute.calledMethod is 'mainComplex'

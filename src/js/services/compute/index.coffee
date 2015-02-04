@@ -6,8 +6,9 @@
 pyphi = require './pyphi'
 graph = require '../graph'
 
-module.exports = angular.module 'vphi.services.compute', []
-  .factory 'vphi.services.compute', [
+name = 'vphi.services.compute'
+module.exports = angular.module name, []
+  .factory name, [
     '$rootScope'
     graph.name
     ($rootScope, graph) ->
@@ -51,6 +52,6 @@ module.exports = angular.module 'vphi.services.compute', []
           graph.update()
 
           log.debug "DATA_SERVICE: Broadcasting data update."
-          $rootScope.$broadcast 'vphiDataUpdated'
+          $rootScope.$broadcast (name + '.updated')
           return
   ]

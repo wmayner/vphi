@@ -3,17 +3,17 @@
 # concept-list/ConceptListCtrl.coffee
 ###
 
-compute = require '../services/compute'
+computeService = require '../services/compute'
 
 module.exports = [
   '$scope'
-  compute.name
+  computeService.name
   ($scope, compute) ->
     $scope.concepts = null
     $scope.numNodes = null
     $scope.currentState = null
 
-    $scope.$on 'vphiDataUpdated', ->
+    $scope.$on (computeService.name + '.updated'), ->
       $scope.concepts = compute.data.unpartitioned_constellation
       $scope.numNodes = compute.data.subsystem.node_indices.length
       $scope.currentState = compute.data.currentState
