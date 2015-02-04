@@ -666,18 +666,8 @@ keydown = ->
       focusPreviousNode()
       update()
       break
-    # Up arrow.
-    when 38
-      focusPreviousNode()
-      update()
-      break
     # Right arrow.
     when 39
-      focusNextNode()
-      update()
-      break
-    # Down arrow.
-    when 40
       focusNextNode()
       update()
       break
