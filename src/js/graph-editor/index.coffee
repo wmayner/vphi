@@ -156,7 +156,8 @@ updateMouseElements = ->
     state.overNode or
     state.dragging or
     state.linking or
-    state.justLinked
+    state.justLinked or
+    d3.event.shiftKey
 
 nodeColor = (node) -> (if node.on then colors.node.on else colors.node.off)
 
@@ -392,6 +393,8 @@ update = ->
         update()
         return
       .on 'mouseup', (node) ->
+        if state.dragging
+          state.justDragged = true
         if state.linking and not (node is state.downNode)
           state.justLinked = true
           edge = graph.addEdge state.downNode._id, node._id
@@ -402,9 +405,9 @@ update = ->
         update()
         return
       .on 'click', (node) ->
-        if d3.event.shiftKey or d3.event.metaKey
+        if (d3.event.shiftKey or d3.event.metaKey) and not state.justDragged
           toggleSelect(node)
-        else unless state.linking
+        else unless state.linking or state.justDragged
           graph.toggleState node
         update()
         return
@@ -595,7 +598,7 @@ mousemove = ->
           if node is focused_node
             # Unfocus node and refocus most recently selected node.
             focusNode(selectedNodes[selectedNodes.length - 1])
-          if node.selected
+          if node.selected and not d3.event.shiftKey
             deselectNode(node)
         return
 
@@ -614,9 +617,12 @@ mouseup = ->
   update()
 
 mousedown = ->
+  state.justDragged = false
   state.downPoint = d3.mouse(this)
 
-  if state.downNode and not d3.event.shiftKey
+  return if d3.event.shiftKey and state.overNode
+
+  if state.downNode
     state.linking = true
   else
     state.selecting = true
@@ -687,6 +693,7 @@ keydown = ->
   # shift
   if d3.event.keyCode is 16
     circleGroup.call force.drag
+    updateMouseElements()
 
   return if not focused_node and not focused_link
 
@@ -804,6 +811,7 @@ keydown = ->
 
 keyup = ->
   lastKeyDown = -1
+  updateMouseElements()
   # Stop dragging when shift is released.
   if d3.event.keyCode is 16
     circleGroup
