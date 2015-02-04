@@ -1,6 +1,6 @@
 'use strict'
 ###
-# concept-list/concept/MathjaxBindDirective.coffee
+# concept-list/concept/mathjax/MathjaxBindDirective.coffee
 ###
 
 module.exports = ->
@@ -10,10 +10,10 @@ module.exports = ->
     '$element'
     '$attrs'
     ($scope, $element, $attrs) ->
-      $scope.$watch $attrs.mathjaxBind, (value) ->
+      $scope.$watch $attrs.mathjaxBind, (texExpression) ->
         $script = angular.element("<script type='math/tex'>")
-          .html(value or "")
+          .html(texExpression or "")
         $element.html("")
         $element.append($script)
-        MathJax.Hub.Queue ['Reprocess', MathJax.Hub, $element[0]]
+        MathJax.Hub.Queue ['Typeset', MathJax.Hub, $element[0]]
   ]
