@@ -36,8 +36,12 @@ module.exports = angular.module name, []
             $rootScope.$apply success
             # Typeset the concept list after it's loaded.
             MathJax.Hub.Queue ['Typeset', MathJax.Hub, 'concept-list-module']
-            # Show it after typesetting.
-            MathJax.Hub.Queue -> $('#concept-list-module').removeClass('hidden')
+            MathJax.Hub.Queue ->
+              # Show it after typesetting.
+              $('#concept-list-module').removeClass('hidden')
+              # Need this to force the charts to recalculate their width after
+              # the MathJax is rendered.
+              $(window).trigger('resize')
           ).always(-> $rootScope.$apply always)
 
         update: (bigMip) =>
