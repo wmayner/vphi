@@ -4,13 +4,14 @@
 
 solarized = require './solarized'
 
-
-white = d3.rgb 255, 255, 255
 black = d3.rgb 0, 0, 0
+white = d3.rgb 255, 255, 255
 yellow = d3.rgb 255, 255, 50
 
 module.exports =
   solarized: solarized
+  black: black
+  white: white
   node:
     on: solarized.cyan
     off: solarized.base1

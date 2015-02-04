@@ -34,6 +34,12 @@ svg = d3.select CONTAINER_SELECTOR
       width: width
       height: height
       align: 'center'
+# Paint the background black.
+svg.append 'rect'
+  .attr
+    width: width
+    height: height
+    fill: colors.black
 
 # Dynamically resize SVG canvas width.
 resizeCanvas = ->

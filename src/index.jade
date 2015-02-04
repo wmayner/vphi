@@ -15,12 +15,8 @@ head
   //- Online/Offline
   //- link(href='bower_components/c3/c3.css', rel='stylesheet', type='text/css')
   link(href='//cdnjs.cloudflare.com/ajax/libs/c3/0.4.8/c3.min.css', rel='stylesheet', type='text/css')
-  
-  link(href='/css/app.css', rel='stylesheet', type='text/css')
 
-  //- Online/Offline
-  //- script(src='/bower_components/angular/angular.js')
-  script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js")
+  link(href='/css/app.css', rel='stylesheet', type='text/css')
 body
   #top-wrapper.container-fluid
     .row.clearfix
@@ -51,6 +47,7 @@ body
                       a {{pastState.join(', ')}}
               .control-group#graph-editor-buttons.btn-toolbar(role='toolbar')
                 button#show-controls.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#graph-editor-help') Show Controls
+                button#export-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
       .col-md-6
         #concept-space-module.well.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure
@@ -214,6 +211,10 @@ body
   script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
   //- script(src='/bower_components/jquery/jquery.min.js')
 
+  //- Online/Offline
+  //- script(src='/bower_components/angular/angular.js')
+  script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js")
+
   //- TODO minify?
   script(src='/js/lib/jquery.jsonrpcclient.js')
   //- script(src='/bower_components/jquery-jsonrpcclient/jquery.jsonrpcclient.js')
@@ -238,6 +239,8 @@ body
 
   script(src='/js/lib/OrbitControls.js')
   script(src='/js/lib/Detector.js')
+  script(src='/js/lib/FileSaver.js')
+  script(src='/js/lib/angular-downloadsvg-directive.min.js')
 
   //- Online/Offline
   script(src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
