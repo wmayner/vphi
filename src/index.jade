@@ -29,7 +29,8 @@ body
           h2.module-title Network
           .row.clearfix
             .col-md-12
-              #graph-editor-container(vphi-graph-editor-canvas)
+              #graph-editor-container
+                #graph-editor(graph-editor)
               button#show-help.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#graph-editor-help') Show Controls
               .control-panel(ng-controller='graphEditor.controlPanelCtrl')
                 .vphi-label Past state:
@@ -48,11 +49,12 @@ body
                     li(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
                       a {{pastState.join(', ')}}
       .col-md-6
-        #concept-space-module.well.module
+        #concept-space-module.well.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure
           .row.clearfix
             .col-md-12
               #concept-space-container
+                #concept-space(concept-space)
                 #concept-space-overlay.hidden &nbsp;
               #concept-space-loading-spinner.hidden
                 .tetrominos
@@ -62,16 +64,16 @@ body
                   .tetromino.box4
           .row.row-centered.clearfix
             .col-centered
-              .control-panel.btn-toolbar(role='toolbar')
+              .control-panel.btn-toolbar(ng-controller='conceptSpace.controlPanelCtrl', role='toolbar')
                 .btn-group.pull-right
-                  button#reset-camera.btn.btn-md.btn-default(type='button')
+                  button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
                     | Reset Camera
-                  button#switch-view.btn.btn-md.btn-default(type='button')
-                    | Switch View
-                  button#toggle-grids.btn.btn-md.btn-default(type='button')
+                  button.btn.btn-md.btn-default(ng-click='toggleGrids()', type='button')
                     | Toggle Grids
-                  button#toggle-ignored-axes.btn.btn-md.btn-default(type='button')
+                  button.btn.btn-md.btn-default(ng-click='toggleIgnoredAxes()', type='button')
                     | Toggle Ignored Axes
+                  button.btn.btn-md.btn-default(ng-click='switchView()', type='button')
+                    | Switch View
     hr
     .row.row-centered.clearfix
       .col-centered
