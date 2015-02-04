@@ -2,7 +2,7 @@
 # concept-space/axes.coffee
 ###
 
-colors = require '../colors'
+colors = require '../../colors'
 rotate = require './rotate'
 
 π = Math.PI

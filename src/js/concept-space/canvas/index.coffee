@@ -1,15 +1,14 @@
 ###
-# concept-space/joined-view.coffee
+# concept-space/canvas/index.coffee
 #
-# Returns a scene initialized with all the static stuff necessary to represent
-# concept space.
+# Returns a THREE.js scene initialized with all the static stuff necessary to
+# represent concept space.
 ###
 
-format = require '../format'
 axes = require './axes'
 Label = require './label'
 utils = require './utils'
-globalUtils = require '../utils'
+globalUtils = require '../../utils'
 
 
 π = Math.PI
@@ -44,9 +43,8 @@ getRenderedDimensions = (constellation, numNodes) ->
   return renderedDimensions
 
 
-class JoinedView
-  constructor: (width, height) ->
-
+class ConceptSpaceCanvas
+  constructor: (@format) ->
     @scene = scene
 
     @ignoredAxes = []
@@ -58,10 +56,9 @@ class JoinedView
       alpha: false
       devicePixelRatio: window.devicePixelRatio or 1
     )
-    @renderer.setSize(width, height)
 
     # Initialize the camera.
-    @camera = new THREE.PerspectiveCamera(20, width / height, 0.0001, 1000)
+    @camera = new THREE.PerspectiveCamera(20, 1, 0.0001, 1000)
     @scene.add(@camera)
     @camera.position.set(4, 4, 4)
 
@@ -80,7 +77,7 @@ class JoinedView
     @controls.addEventListener 'change', @render
 
     # Start with the default focal point and camera position.
-    @resetControls()
+    @resetCamera()
 
     # ~~~~~~~~~
     # Lighting.
@@ -126,7 +123,7 @@ class JoinedView
   mechanismLabel: (mechanism) ->
     return ("<span class='mechanism-node " +
       "#{if @bigMip.currentState[i] then 'on' else 'off'}'>" +
-      "#{format.node(i)}</span>" for i in mechanism).join('')
+      "#{@format.node(i)}</span>" for i in mechanism).join('')
 
   drawConcept: (concept, dimensions, radiusScale, labelScale) ->
     radius = radiusScale(concept.phi)
@@ -191,7 +188,7 @@ class JoinedView
     @render()
     return
 
-  resetControls: ->
+  resetCamera: ->
     @controls.reset()
     @controls.target = @scene.position
     @render()
@@ -258,4 +255,4 @@ class JoinedView
     return
 
 
-module.exports = JoinedView
+module.exports = ConceptSpaceCanvas
