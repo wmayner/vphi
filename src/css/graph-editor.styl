@@ -6,42 +6,49 @@
     li
       margin 7px 0
 
+#graph-editor-container
+  margin-bottom 15px
+
 #graph-editor-module
+  padding-bottom 10px
 
-  padding-bottom 21px
+#graph-editor-buttons
+  float left
 
-  #graph-editor-container
-    margin-bottom 17px
+#past-state-panel
+  float right
 
-  .control-panel
-    text-align right
-    float right
-    width 60%
+//- phone
+@media (max-width: phone_max) {
+  #graph-editor-buttons, #past-state-panel {
+    float none
+  }
+  #past-state-dropdown, #no-past-states {
+    width 100%
+  }
+}
 
-  #show-help
-    float left
+ul#past-states,
+  text-align center
+  margin-top 13px
+  font-family mono_font
 
-
-  ul#possible-past-states,
+#past-state-chooser
+  font-family mono_font
+  text-align center
+  #current-past-state
+    display inline-block
+  #past-states
     text-align center
-    margin-top 13px
-    font-family mono_font
+  span.caret
+    margin-left 15px
 
-  #past-state-chooser
-    font-family mono_font
-    text-align center
-    #current-past-state
-      display inline-block
-      width 200px
-    #possible-past-states
-      text-align center
-    span.caret
-      margin-left 15px
+#no-past-states
+  opacity 1
+  background lighten(sol_red, 80%)
 
-  #no-possible-past-states
-    width 249px
-    opacity 1
-    background lighten(sol_red, 80%)
+#graph-editor-module
+  padding-bottom 10px
 
   svg
     background black

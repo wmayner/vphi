@@ -1,6 +1,7 @@
 @import url('http://fonts.googleapis.com/css?family=Droid+Sans+Mono|Open+Sans:300,400,700')
 base_font = 'Open Sans', 'Helvetica Neue', 'Helvetica'
 mono_font = 'Droid Sans Mono', 'Monaco', 'Menlo', 'Courier New', monospace
+phone_max = 641px
 
 @import "colors"
 
@@ -12,6 +13,10 @@ body
   padding-top 40px
   font-family base_font
   background sol_background
+  //- phone
+  @media (max-width: phone_max) {
+    font-size 12px
+  }
 
 .bold
   font-weight bold
@@ -29,7 +34,7 @@ span.keyboard
   padding 0.5px 5px
   margin 0 2px
 
-.row-centered
+.centered
   text-align center
 
 .col-centered
@@ -50,23 +55,38 @@ section
   margin-top 10px
   .module-title
     margin-bottom 25px
+    @media (max-width: phone_max) {
+      margin-bottom 10px
+    }
+
+.control-panel
+  text-align center
+  .vphi-label
+    margin-bottom 1ex
+    margin-top 1ex
+  .control-group
+    text-align center
+    >.btn
+      margin-left 10px
+      margin-bottom 10px
+      &:first-of-type
+        margin-left 0
+    //- phone
+    @media (max-width: phone_max) {
+      margin-top 1em
+      &:first-of-type {
+        margin-top 0
+      }
+    }
 
 .number-2
-  width 3.5em
+  width 3.0em
 
 .number-7
-  width 7.5em
+  width 6.8em
 
 .number-2, .number-7
   letter-spacing 0.2ex
-
-.value
-  background sol_background
-  border 1px solid #ddd
-  border-radius 5px
-  text-align center
-  display inline-block
-  padding 6px 10px
 
 .node-list
   display inline-block
@@ -75,7 +95,7 @@ section
   line-height 1
   > li
     display inline-block
-    margin 0 3px
+    margin 0.1ex 0.3ex
     padding 0.6ex 1.1ex
     vertical-align middle
     font-weight bold
@@ -93,16 +113,24 @@ section
       border 1px solid #ddd
       background sol_background
 
-.btn-primary
-  background sol_cyan
-
 .vphi-label
   display inline-block
   font-size 120%
   line-height 100%
   vertical-align middle
   text-align right
-  margin 0 0.6em 0 0
+  margin 0 0.6em 1ex 0.6em
+
+.vphi-value
+  background sol_background
+  border 1px solid #ddd
+  border-radius 5px
+  text-align center
+  display inline-block
+  padding 6px 10px
+
+.btn-primary
+  background sol_cyan
 
 canvas, svg
   border-radius 5px
