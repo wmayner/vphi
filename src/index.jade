@@ -93,7 +93,7 @@ body
             .col-centered
               .summary-items
                 #phi-value.item.well
-                  .vphi-label \(\large\Phi\)
+                  .vphi-label \( \large \Phi \)
                   .value.number-7 {{bigPhi}}
                 #minimal-cut.item.well
                   .vphi-label Minimal cut
@@ -109,49 +109,47 @@ body
                   .vphi-label Number of concepts
                   .value.number-2 {{numConcepts}}
                 #sum-small-phi.item.well
-                  .vphi-label \(\sum\varphi\)
+                  .vphi-label \( \sum\varphi \)
                   .value.number-7 {{sumSmallPhi}}
     .row.clearfix
       .col-md-12
-        section#concept-list-module.module(ng-controller="conceptListCtrl")
+        section#concept-list-module.module.hidden(ng-controller='conceptListCtrl')
           h2.module-title Concepts
-          .concept.well(ng-controller="conceptList.conceptCtrl" ng-repeat="concept in concepts", id="concept-{{$index}}")
+          .concept.well(ng-controller='conceptList.conceptCtrl' ng-repeat='concept in concepts', id="concept-{{$index}}")
             .row.row-centered.clearfix
               .col-xs-4
                 ul.concept-data
                   li
                     .small-phi-past
-                      .vphi-label(class="{{smallPhiPastClass}}") φ
-                        sub p
+                      .vphi-label(class='{{smallPhiPastClass}}') \( \varphi_{p} \)
                       .value.number-7 {{smallPhiPast}}
                   li
                     .small-phi-mips
                       .vphi-label Cause MIP:
-                      .math-output(mathjax-bind="causeMip")
+                      .math-output \( {{causeMip}} \)
                       span.hidden-xs.spacer &nbsp;
                       .vphi-label Partitioned:
-                      .math-output(mathjax-bind="partitionedCauseMip")
+                      .math-output \( {{partitionedCauseMip}} \)
               .col-xs-4
                 ul.node-list.mechanism
                   li(ng-class="{'on': currentState[n]}", ng-repeat="n in mechanism") {{format.node(n)}}
                 hr
                 .small-phi
-                  .vphi-label φ
+                  .vphi-label \( \large \varphi \)
                   .value.number-7 {{smallPhi}}
               .col-xs-4
                 ul.concept-data
                   li
                     .small-phi-future
-                      .vphi-label(class="{{smallPhiFutureClass}}") φ
-                        sub f
+                      .vphi-label(class="{{smallPhiFutureClass}}") \( \varphi_{f} \)
                       .value.number-7 {{smallPhiFuture}}
                   li
                     .small-phi-mips
                       .vphi-label Effect MIP:
-                      .math-output(mathjax-bind="effectMip")
+                      .math-output \( {{effectMip}} \)
                       span.hidden-xs.spacer &nbsp;
                       .vphi-label Partitioned:
-                      .math-output(mathjax-bind="partitionedEffectMip")
+                      .math-output \( {{partitionedEffectMip}} \)
             .row.clearfix
               //- Stack repertoire graphs for more width depending on how many
               //- states are being displayed.

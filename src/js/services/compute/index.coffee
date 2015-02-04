@@ -34,6 +34,10 @@ module.exports = angular.module name, []
             @update(bigMip)
             @callInProgress = false
             $rootScope.$apply success
+            # Typeset the concept list after it's loaded.
+            MathJax.Hub.Queue ['Typeset', MathJax.Hub, 'concept-list-module']
+            # Show it after typesetting.
+            MathJax.Hub.Queue -> $('#concept-list-module').removeClass('hidden')
           ).always(-> $rootScope.$apply always)
 
         update: (bigMip) =>
