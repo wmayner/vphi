@@ -7,6 +7,7 @@ utils = require './utils'
 Graph = require './graph'
 
 
+# TODO get from angular
 NETWORK_SIZE_LIMIT = 10
 CONTAINER_SELECTOR = '#graph-editor-container'
 
@@ -164,7 +165,7 @@ updateMouseElements = ->
     state.dragging or
     state.linking or
     state.justLinked or
-    d3.event.shiftKey
+    d3.event?.shiftKey
 
 nodeColor = (node) -> (if node.on then colors.node.on else colors.node.off)
 
