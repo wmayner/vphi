@@ -12,11 +12,17 @@
 #graph-editor-module
   padding-bottom 10px
 
+  .control-group
+    float left
+    @media (max-width: md_max) {
+      float none
+    }
+
+#past-state-panel
+  margin-bottom 15px
+
 //- phone
 @media (max-width: phone_max) {
-  #graph-editor-buttons, #past-state-panel {
-    float none
-  }
   #past-state-dropdown, #no-past-states {
     width 100%
   }
@@ -42,7 +48,6 @@ ul#past-states,
   background lighten(sol_red, 80%)
 
 #graph-editor-module
-  padding-bottom 10px
 
   svg
     &:not(.active):not(.shiftkey)

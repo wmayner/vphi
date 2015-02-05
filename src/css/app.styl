@@ -2,6 +2,7 @@
 base_font = 'Open Sans', 'Helvetica Neue', 'Helvetica'
 mono_font = 'Droid Sans Mono', 'Monaco', 'Menlo', 'Courier New', monospace
 phone_max = 641px
+md_max = 992px
 
 @import "colors"
 
@@ -64,16 +65,8 @@ section
     margin-bottom 1ex
     margin-top 1ex
   .control-group
-    text-align center
     .btn-group
       margin-bottom 15px
-    //- phone
-    @media (max-width: phone_max) {
-      margin-top 1em
-      &:first-of-type {
-        margin-top 0
-      }
-    }
 
 .number-2
   width 3.0em

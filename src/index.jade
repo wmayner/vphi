@@ -24,13 +24,13 @@ body
         #graph-editor-module.module
           h2.module-title Network
           .row.clearfix
-            .col-md-12
+            .col-xs-12
               #graph-editor-container
                 #graph-editor(graph-editor)
           .control-panel(ng-controller='graphEditor.controlPanelCtrl')
             .row.clearfix
-              .col-md-12
-                .control-group.pull-left#graph-editor-buttons.btn-toolbar(role='toolbar')
+              .col-xs-12
+                .control-group#graph-editor-buttons.btn-toolbar(role='toolbar')
                   .btn-group
                     button#show-controls.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#graph-editor-help') Show Controls
                   .btn-group
@@ -39,8 +39,8 @@ body
                     button#export-network(ng-click='import()', type='button').btn.btn-md.btn-default Import
                     button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export
             .row.clearfix
-              .col-md-12
-                .control-group#past-state-panel.pull-left
+              .col-xs-12
+                .control-group#past-state-panel
                   .vphi-label Past state:
                   span.dropdown#past-state-chooser
                     button#no-past-states.btn.btn-md.btn-default.disabled(ng-if="!possiblePastStates") No possible past states
@@ -72,7 +72,7 @@ body
                   .tetromino.box4
           .row.clearfix.control-panel
             .col-md-12
-              .control-group.pull-right.btn-toolbar(ng-controller='conceptSpace.controlPanelCtrl', role='toolbar')
+              .control-group.btn-toolbar(ng-controller='conceptSpace.controlPanelCtrl', role='toolbar')
                 .btn-group
                   button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
                     | Reset Camera
@@ -94,12 +94,14 @@ body
     .row.clearfix
       .col-md-12
         section#output-summary-module.module(ng-controller="outputSummaryCtrl")
-          h2.module-title {{title}} 
-            span.vphi-value.number-2(ng-if="nodes.length <= 0") –
-            ul.node-list
-              li(ng-class="{'on': currentState[n]}", ng-repeat="n in nodes") {{format.node(n)}}
+          .row.clearfix
+            .col-md-12
+              h2.module-title {{title}} 
+                span.vphi-value.number-2(ng-if="nodes.length <= 0") –
+                ul.node-list
+                  li(ng-class="{'on': currentState[n]}", ng-repeat="n in nodes") {{format.node(n)}}
           .row.centered.clearfix
-            .col-centered
+            .col-md-12
               .summary-items.well
                 #phi-value.item
                   .vphi-label \( \large \Phi \)
