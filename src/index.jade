@@ -47,7 +47,8 @@ body
                       a {{pastState.join(', ')}}
               .control-group#graph-editor-buttons.btn-toolbar(role='toolbar')
                 button#show-controls.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#graph-editor-help') Show Controls
-                button#export-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
+                button#save-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
+                button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export Network
       .col-md-6
         #concept-space-module.well.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure
