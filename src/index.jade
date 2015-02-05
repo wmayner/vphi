@@ -21,36 +21,43 @@ body
   #top-wrapper.container-fluid
     .row.clearfix
       .col-md-6
-        #graph-editor-module.well.module
+        #graph-editor-module.module
           h2.module-title Network
           .row.clearfix
             .col-md-12
               #graph-editor-container
                 #graph-editor(graph-editor)
-          .row.clearfix.control-panel(ng-controller='graphEditor.controlPanelCtrl')
-            .col-md-12
-              .control-group#past-state-panel
-                .vphi-label Past state:
-                span.dropdown#past-state-chooser
-                  button#no-past-states.btn.btn-md.btn-default.disabled(ng-if="!possiblePastStates") No possible past states
-                  button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-if="possiblePastStates", type='button', data-toggle='dropdown', aria-expanded='false')
-                    #current-past-state {{currentPastState}}
-                    span.caret
-                    span.sr-only Toggle past state selection dropdown
-                  ul#past-states.dropdown-menu.dropdown-menu-right(ng-if="possiblePastStates", role='menu')
-                    //- TODO use table?
-                    li
-                      a#past-state-list-header
-                        strong {{nodes}}
-                    li.divider
-                    li(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
-                      a {{pastState.join(', ')}}
-              .control-group#graph-editor-buttons.btn-toolbar(role='toolbar')
-                button#show-controls.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#graph-editor-help') Show Controls
-                button#save-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
-                button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export Network
+          .control-panel(ng-controller='graphEditor.controlPanelCtrl')
+            .row.clearfix
+              .col-md-12
+                .control-group.pull-left#graph-editor-buttons.btn-toolbar(role='toolbar')
+                  .btn-group
+                    button#show-controls.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#graph-editor-help') Show Controls
+                  .btn-group
+                    button#save-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
+                  .btn-group
+                    button#export-network(ng-click='import()', type='button').btn.btn-md.btn-default Import
+                    button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export
+            .row.clearfix
+              .col-md-12
+                .control-group#past-state-panel.pull-left
+                  .vphi-label Past state:
+                  span.dropdown#past-state-chooser
+                    button#no-past-states.btn.btn-md.btn-default.disabled(ng-if="!possiblePastStates") No possible past states
+                    button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-if="possiblePastStates", type='button', data-toggle='dropdown', aria-expanded='false')
+                      #current-past-state {{currentPastState}}
+                      span.caret
+                      span.sr-only Toggle past state selection dropdown
+                    ul#past-states.dropdown-menu.dropdown-menu-right(ng-if="possiblePastStates", role='menu')
+                      //- TODO use table?
+                      li
+                        a#past-state-list-header
+                          strong {{nodes}}
+                      li.divider
+                      li(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
+                        a {{pastState.join(', ')}}
       .col-md-6
-        #concept-space-module.well.module(ng-controller='conceptSpaceCtrl')
+        #concept-space-module.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure
           .row.clearfix
             .col-md-12
@@ -64,17 +71,19 @@ body
                   .tetromino.box3
                   .tetromino.box4
           .row.clearfix.control-panel
-            .col-xs-12
-              .control-group.btn-toolbar(ng-controller='conceptSpace.controlPanelCtrl', role='toolbar')
-                button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
-                  | Reset Camera
-                button.btn.btn-md.btn-default(ng-click='toggleGrids()', type='button')
-                  | Toggle Grids
-                button.btn.btn-md.btn-default(ng-click='toggleIgnoredAxes()', type='button')
-                  | Toggle Ignored Axes
-                button.btn.btn-md.btn-default(ng-click='switchView()', type='button')
-                  | Switch View
-    hr
+            .col-md-12
+              .control-group.pull-right.btn-toolbar(ng-controller='conceptSpace.controlPanelCtrl', role='toolbar')
+                .btn-group
+                  button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
+                    | Reset Camera
+                .btn-group
+                  button.btn.btn-md.btn-default(ng-click='toggleGrids()', type='button')
+                    | Toggle Grids
+                  button.btn.btn-md.btn-default(ng-click='toggleIgnoredAxes()', type='button')
+                    | Toggle Ignored Axes
+                .btn-group
+                  button.btn.btn-md.btn-default(ng-click='switchView()', type='button')
+                    | Switch View
     .row.centered.clearfix
       .col-centered
         #main-control-module.module(ng-controller="controlPanelCtrl")
@@ -82,20 +91,20 @@ body
             | Main Complex
           button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('bigMip')")
             | Selected Subsystem
-    hr
     .row.clearfix
       .col-md-12
         section#output-summary-module.module(ng-controller="outputSummaryCtrl")
           h2.module-title {{title}} 
+            span.vphi-value.number-2(ng-if="nodes.length <= 0") –
             ul.node-list
               li(ng-class="{'on': currentState[n]}", ng-repeat="n in nodes") {{format.node(n)}}
           .row.centered.clearfix
             .col-centered
-              .summary-items
-                #phi-value.item.well
+              .summary-items.well
+                #phi-value.item
                   .vphi-label \( \large \Phi \)
                   .vphi-value.number-7 {{bigPhi}}
-                #minimal-cut.item.well
+                #minimal-cut.item
                   .vphi-label Minimal cut
                   .vphi-value.number-2(ng-if="!cut") –
                   .vphi-value(ng-if="cut.severed.length === 0") N/A
@@ -105,10 +114,10 @@ body
                     span.cut-symbol ⇏
                     ul.node-list.secondary
                       li(ng-repeat="n in cut.intact") {{n}}
-                #num-concepts.item.well
+                #num-concepts.item
                   .vphi-label Number of concepts
                   .vphi-value.number-2 {{numConcepts}}
-                #sum-small-phi.item.well
+                #sum-small-phi.item
                   .vphi-label \( \sum\varphi \)
                   .vphi-value.number-7 {{sumSmallPhi}}
     .row.clearfix
