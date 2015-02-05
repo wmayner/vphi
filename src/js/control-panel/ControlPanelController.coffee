@@ -63,6 +63,4 @@ module.exports = [
       compute[method](
         success(btn), always(btn)
       )
-
-    setTimeout (-> $scope.calculate('bigMip')), 50
 ]
