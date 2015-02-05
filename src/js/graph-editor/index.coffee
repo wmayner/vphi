@@ -35,7 +35,7 @@ svg = d3.select CONTAINER_SELECTOR
       height: height
       align: 'center'
 # Paint the background black.
-svg.append 'rect'
+background = svg.append 'rect'
   .attr
     width: width
     height: height
@@ -47,6 +47,7 @@ resizeCanvas = ->
   width = $container.width()
   # Update SVG dimensions
   svg.attr 'width', width
+  background.attr 'width', width
   # Update force layout dimensions
   force.size [width, height]
   # Redraw graph

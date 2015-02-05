@@ -28,6 +28,8 @@ module.exports =  [
       blob = new Blob [graph.toJSON()]
       window.saveAs blob, 'network.json'
 
+    $scope.import = ->
+
     $scope.$on (graphService.name + '.updated'), ->
       log.debug 'GRAPH_CONTROLS: Receieved graph update.'
       update()
