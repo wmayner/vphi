@@ -15,3 +15,4 @@ angular.module 'vphi', [
   require('./concept-list').name
 ]
   .constant 'version', require('../../package.json').version
+  .constant 'NETWORK_SIZE_LIMIT', 10

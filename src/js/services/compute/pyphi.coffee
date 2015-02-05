@@ -4,9 +4,6 @@
 # API for PyPhi's RPC server.
 ###
 
-error = require './errors'
-
-
 # TODO*** change endpoint
 pyphi = new $.JsonRpcClient({
   # ajaxUrl: 'http://127.0.0.1:5000/'
@@ -15,18 +12,6 @@ pyphi = new $.JsonRpcClient({
   timeout: 43200000
 })
 
-
-NETWORK_SIZE_LIMIT = 10
-
-
-validate = (graph) ->
-  # Get the current state and connectivity matrix.
-  if not graph.pastState
-    # TODO display error
-    throw error.stateUnreachable()
-  # Check for too-large networks
-  if graph.nodeSize > NETWORK_SIZE_LIMIT
-    throw error.networkSizeLimit(NETWORK_SIZE_LIMIT)
 
 getPyphiNetwork = (graph) ->
   net =
@@ -46,20 +31,16 @@ failure = (err) ->
 module.exports =
 
   complexes: (graph, success) ->
-    validate(graph)
     params = [getPyphiNetwork(graph)]
     return pyphi.call 'complexes', params, success, failure
 
   mainComplex: (graph, success) ->
-    validate(graph)
     params = [getPyphiNetwork(graph)]
     return pyphi.call 'main_complex', params, success, failure
 
   bigMip: (graph, success) ->
     # Get the selected subsystem.
     subsystemIndices = graph.getSelectedSubsystem()
-
-    validate(graph)
 
     params = [
       subsystemIndices

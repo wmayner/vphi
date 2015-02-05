@@ -11,7 +11,21 @@ module.exports = angular.module name, []
   .factory name, [
     '$rootScope'
     graph.name
-    ($rootScope, graph) ->
+    'NETWORK_SIZE_LIMIT'
+    ($rootScope, graph, NETWORK_SIZE_LIMIT) ->
+      isValid = (graph) ->
+        if not graph.pastState
+          log.info "PYPHI: Current state cannot be reached by any past state; not " +
+                   "sending request."
+          return false
+        if graph.nodeSize > NETWORK_SIZE_LIMIT
+          log.error "Network cannot have more than #{NETWORK_SIZE_LIMIT} nodes."
+          return false
+        if graph.nodeSize is 0
+          log.info "PYPHI: Network is empty; not sending request."
+          return false
+        return true
+
       return new class PhiDataService
         data: null
         calledMethod: null
@@ -28,6 +42,9 @@ module.exports = angular.module name, []
           @pyphiCall method, success, always
 
         pyphiCall: (method, success, always) ->
+          if not isValid(graph)
+            always()
+            return
           log.debug "DATA_SERVICE: Calling `#{method}`..."
           @callInProgress = true
           pyphi[method](graph, (bigMip) =>
