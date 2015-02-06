@@ -21,9 +21,12 @@ module.exports = [
 
     # Disable buttons if the graph has no possible past state or if there's
     # already a calculation in progress.
-    $scope.isDisabled = compute.callInProgress or not graph.pastState
-    $scope.$on (graphService.name + '.updated'), ->
-      $scope.isDisabled = compute.callInProgress or not graph.pastState
+    updateButtonState = ->
+      $scope.isDisabled = compute.callInProgress or
+                          not graph.pastState or
+                          graph.nodeSize is 0
+    updateButtonState()
+    $scope.$on (graphService.name + '.updated'), updateButtonState
 
     btnCooldown = false
 
