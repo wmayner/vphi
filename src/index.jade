@@ -26,7 +26,7 @@ body
           .row.clearfix
             .col-xs-12
               #graph-editor-container
-                #graph-editor(graph-editor)
+                graph-editor
           .control-panel(ng-controller='graphEditor.controlPanelCtrl')
             .row.clearfix
               .col-xs-12
@@ -43,12 +43,12 @@ body
                 .control-group#past-state-panel
                   .vphi-label Past state:
                   span.dropdown#past-state-chooser
-                    button#no-past-states.btn.btn-md.btn-default.disabled(ng-if="!possiblePastStates") No possible past states
-                    button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-if="possiblePastStates", type='button', data-toggle='dropdown', aria-expanded='false')
+                    button#no-past-states.btn.btn-md.btn-default.disabled(ng-hide="possiblePastStates") No possible past states
+                    button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-show="possiblePastStates", type='button', data-toggle='dropdown', aria-expanded='false')
                       #current-past-state {{currentPastState}}
                       span.caret
                       span.sr-only Toggle past state selection dropdown
-                    ul#past-states.dropdown-menu.dropdown-menu-right(ng-if="possiblePastStates", role='menu')
+                    ul#past-states.dropdown-menu.dropdown-menu-right(ng-show="possiblePastStates", role='menu')
                       //- TODO use table?
                       li
                         a#past-state-list-header
@@ -87,9 +87,9 @@ body
     .row.centered.clearfix
       .col-centered
         #main-control-module.module(ng-controller="controlPanelCtrl")
-          button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('mainComplex')")
+          button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('mainComplex')", ng-disabled="isDisabled")
             | Main Complex
-          button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('bigMip')")
+          button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('bigMip')", ng-disabled="isDisabled")
             | Selected Subsystem
     .row.clearfix
       .col-md-12
@@ -97,7 +97,7 @@ body
           .row.clearfix
             .col-md-12
               h2.module-title {{title}} 
-                span.vphi-value.number-2(ng-if="nodes.length <= 0") –
+                span.vphi-value.number-2(ng-hide="nodes.length > 0") –
                 ul.node-list
                   li(ng-class="{'on': currentState[n]}", ng-repeat="n in nodes") {{format.node(n)}}
           .row.centered.clearfix
@@ -108,9 +108,9 @@ body
                   .vphi-value.number-7 {{bigPhi}}
                 #minimal-cut.item
                   .vphi-label Minimal cut
-                  .vphi-value.number-2(ng-if="!cut") –
-                  .vphi-value(ng-if="cut.severed.length === 0") N/A
-                  span(ng-if="cut.severed.length > 0")
+                  .vphi-value.number-2(ng-hide="cut") –
+                  .vphi-value(ng-hide="cut.severed.length > 0") N/A
+                  span(ng-show="cut.severed.length > 0")
                     ul.node-list.secondary
                       li(ng-repeat="n in cut.severed") {{n}}
                     span.cut-symbol ⇏
@@ -132,7 +132,7 @@ body
                 ul.concept-data
                   li
                     .small-phi-past
-                      .vphi-label(class='{{smallPhiPastClass}}') \( \varphi_{p} \)
+                      .vphi-label(ng-class="{bold: concept.cause.mip.phi >  concept.effect.mip.phi}") \( \varphi_{p} \)
                       .vphi-value.number-7 {{smallPhiPast}}
                   li
                     .row
@@ -145,7 +145,7 @@ body
                           .math-output \( {{partitionedCauseMip}} \)
               .col-xs-4
                 ul.node-list.mechanism
-                  li(ng-class="{'on': currentState[n]}", ng-repeat="n in mechanism") {{format.node(n)}}
+                  li(ng-class="{on: currentState[n]}", ng-repeat="n in mechanism") {{format.node(n)}}
                 hr
                 .small-phi
                   .vphi-label \( \varphi \)
@@ -154,7 +154,7 @@ body
                 ul.concept-data
                   li
                     .small-phi-future
-                      .vphi-label(class="{{smallPhiFutureClass}}") \( \varphi_{f} \)
+                      .vphi-label(ng-class="{bold: concept.cause.mip.phi < concept.effect.mip.phi}") \( \varphi_{f} \)
                       .vphi-value.number-7 {{smallPhiFuture}}
                   li
                     .row
@@ -168,13 +168,13 @@ body
             .row.clearfix
               //- Stack repertoire graphs for more width depending on how many
               //- states are being displayed.
-              div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
+              div(ng-class="{col-md-12: numNodes > 5, col-md-6: numNodes <= 5}")
                 .repertoire-container
                   .row.clearfix
                     .col-md-12
                       h5.repertoire-title Cause Repertoire
                       .repertoire(repertoire-chart, direction="cause")
-              div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
+              div(ng-class="{col-md-12: numNodes > 5, col-md-6: numNodes <= 5}")
                 .repertoire-container
                   .row.clearfix
                     .col-md-12

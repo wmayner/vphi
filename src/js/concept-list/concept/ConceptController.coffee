@@ -19,12 +19,7 @@ module.exports = [
     $scope.smallPhiPast = format.phi concept.cause.mip.phi
     $scope.smallPhiFuture = format.phi concept.effect.mip.phi
 
-
-    if concept.cause.mip.phi > concept.effect.mip.phi
-      $scope.smallPhiPastClass = "bold"
-    else
-      $scope.smallPhiFutureClass = "bold"
-
+    # TODO replace with directives and templates
     $scope.causeMip = "\\frac{" +
       format.latexNodes(concept.effect.mip.mechanism) + "^{c}" +
       "}{" +

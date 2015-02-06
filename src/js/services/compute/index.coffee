@@ -29,7 +29,7 @@ module.exports = angular.module name, []
       return new class PhiDataService
         data: null
         calledMethod: null
-        callIeProgress: false
+        callInProgress: false
 
         mainComplex: (success, always) ->
           method = 'mainComplex'
