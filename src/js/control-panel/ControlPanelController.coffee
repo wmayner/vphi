@@ -19,14 +19,15 @@ module.exports = [
       'mainComplex': btnMainComplex
       'bigMip': btnSelectedSubsystem
 
+    # Disable buttons if the graph has no possible past state or if there's
+    # already a calculation in progress.
+    $scope.isDisabled = compute.callInProgress or not graph.pastState
     $scope.$on (graphService.name + '.updated'), ->
-      if graph.pastState and not compute.callInProgress
-        btns.removeClass 'disabled'
-      else
-        btns.addClass 'disabled'
+      $scope.isDisabled = compute.callInProgress or not graph.pastState
 
     btnCooldown = false
 
+    # TODO use directives to manupulate the DOM
     startLoading = ->
       $('#concept-space-loading-spinner').removeClass 'hidden'
       $('#concept-space-loading-spinner').show()
