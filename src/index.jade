@@ -38,24 +38,33 @@ body
                   .btn-group
                     button#export-network(ng-click='import()', type='button').btn.btn-md.btn-default Import
                     button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export
+                  .btn-group
+                    button#example-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false') Load Example
+                      span.caret
+                      span.sr-only Toggle example selection dropdown menu
+                    ul#examples.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='example-dropdown')
+                      li(ng-repeat='example in examples', ng-click='load(example)')
+                        a {{example}}
             .row.clearfix
               .col-xs-12
                 .control-group#past-state-panel
                   .vphi-label Past state:
                   span.dropdown#past-state-chooser
                     button#no-past-states.btn.btn-md.btn-default.disabled(ng-hide="possiblePastStates") No possible past states
-                    button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-show="possiblePastStates", type='button', data-toggle='dropdown', aria-expanded='false')
-                      #current-past-state {{currentPastState}}
-                      span.caret
-                      span.sr-only Toggle past state selection dropdown
-                    ul#past-states.dropdown-menu.dropdown-menu-right(ng-show="possiblePastStates", role='menu')
-                      //- TODO use table?
-                      li
-                        a#past-state-list-header
-                          strong {{nodes}}
-                      li.divider
-                      li(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
-                        a {{pastState.join(', ')}}
+                    span(ng-show="possiblePastStates")
+                      button#empty-past-state.btn.btn-md.btn-default(ng-hide="currentPastState.length > 0") –
+                      button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-show="possiblePastStates && currentPastState.length > 0", type='button', data-toggle='dropdown', aria-expanded='false')
+                        span#current-past-state {{currentPastState}}
+                        span.caret
+                        span.sr-only Toggle past state selection dropdown menu
+                      ul#past-states.dropdown-menu.dropdown-menu-right(ng-show="possiblePastStates", role='menu', aria-labelledby='past-state-dropdown')
+                        //- TODO use table?
+                        li
+                          a#past-state-list-header
+                            strong {{nodes}}
+                        li.divider
+                        li(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
+                          a {{pastState.join(', ')}}
       .col-md-6
         #concept-space-module.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure

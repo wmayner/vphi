@@ -11,13 +11,6 @@ module.exports =  [
   graphService.name
   formatService.name
   ($scope, graph, format) ->
-    update = ->
-      $scope.currentPastState = graph.pastState?.join(', ') or null
-      $scope.possiblePastStates = graph.getPossiblePastStates()
-      $scope.nodes = format.nodes([0...graph.nodeSize]).join(', ')
-
-    # Intialize.
-    update()
 
     $scope.select = (pastState) ->
       log.debug "GRAPH_CONTROLS: Setting past state to [#{pastState}]."
@@ -29,7 +22,16 @@ module.exports =  [
 
     $scope.import = ->
 
+    update = ->
+      $scope.currentPastState = graph.pastState?.join(', ') or null
+      $scope.possiblePastStates = graph.getPossiblePastStates()
+      $scope.nodes = format.nodes([0...graph.nodeSize]).join(', ')
+
     $scope.$on (graphService.name + '.updated'), ->
       log.debug 'GRAPH_CONTROLS: Receieved graph update.'
       update()
+
+    # Intialize.
+    update()
+
 ]
