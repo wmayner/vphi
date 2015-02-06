@@ -24,7 +24,6 @@ module.exports =  [
       graph.setPastState(pastState)
 
     $scope.export = ->
-      console.log 'export!'
       blob = new Blob [graph.toJSON()]
       window.saveAs blob, 'network.json'
 

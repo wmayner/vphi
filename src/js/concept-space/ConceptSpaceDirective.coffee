@@ -3,6 +3,7 @@
 # concept-space/ConceptSpaceDirective.coffee
 ###
 
+# TODO use angular constant
 HEIGHT = 500
 
 # Check for lack of WebGL support.
