@@ -1,8 +1,8 @@
 ###
-# graph-editor/graph.coffee
+# services/graph/graph.coffee
 ###
 
-utils = require '../utils'
+utils = require '../../utils'
 tpmify = require './tpmify'
 graphUtils = require './utils'
 mechanism = require './mechanism'

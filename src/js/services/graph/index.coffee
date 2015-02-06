@@ -3,8 +3,8 @@
 # services/graph/index.coffee
 ###
 
-graphEditor = require '../../graph-editor'
-examples = require '../../graph-editor/examples'
+Graph = require './graph'
+examples = require './examples'
 
 name = 'vphi.services.graph'
 module.exports = angular.module name, []
@@ -15,12 +15,13 @@ module.exports = angular.module name, []
       # Load previous graph if available.
       storedGraph = localStorage.getItem 'graph'
       if storedGraph
-        graphEditor.load(storedGraph)
-      # Grab reference to the graph.
-      graph = graphEditor.graph
+        graph = new Graph()
+        graph.loadJSON(storedGraph)
+      else
+        graph = examples.paper()
+
       # Inject the event broadcasting hook.
       graph.onUpdate = ->
-        graphEditor.update()
         localStorage.setItem('graph', graph.toJSON())
         log.debug "GRAPH_SERVICE: Broadcasting graph update."
         # Since a graph update can trigger more graph updates, we need to use
@@ -30,5 +31,6 @@ module.exports = angular.module name, []
         $timeout -> $rootScope.$broadcast (name + '.updated'), 0
         return
 
+      # TODO don't expose graph; make a public api here
       return graph
   ]

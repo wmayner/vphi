@@ -8,7 +8,7 @@ angular.module 'vphi', [
   require('./services/compute').name
   require('./services/format').name
   require('./services/graph').name
-  require('./graph-editor/control-panel').name
+  require('./graph-editor').name
   require('./concept-space').name
   require('./control-panel').name
   require('./output-summary').name
@@ -16,3 +16,4 @@ angular.module 'vphi', [
 ]
   .constant 'version', require('../../package.json').version
   .constant 'NETWORK_SIZE_LIMIT', 10
+  .constant 'CANVAS_HEIGHT', 500

@@ -1,12 +1,15 @@
 ###
-Convert a network of mechanisms and edges into a Transition Probability
-Matrix. This is a mapping from all possible network states to their following
-states.
-
-Unless otherwise noted, a `state` is a object mapping node IDs to a state (either 0 or 1).
+# services/graph/tpmify.coffee
+#
+# Convert a network of mechanisms and edges into a Transition Probability
+# Matrix. This is a mapping from all possible network states to their following
+# states.
+#
+# Unless otherwise noted, a `state` is a object mapping node IDs to a state
+# (either 0 or 1).
 ###
 
-utils = require '../utils'
+utils = require '../../utils'
 mechanism = require './mechanism'
 
 # Get the state of a node in the next timestep, given the current state of the graph.

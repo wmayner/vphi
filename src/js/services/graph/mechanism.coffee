@@ -1,5 +1,5 @@
 ###
-# graph-editor/mechanism.coffee
+# services/graph/mechanism.coffee
 ###
 
 utils = require './utils'
