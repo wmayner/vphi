@@ -109,7 +109,7 @@ body
                 #minimal-cut.item
                   .vphi-label Minimal cut
                   .vphi-value.number-2(ng-hide="cut") –
-                  .vphi-value(ng-hide="cut.severed.length > 0") N/A
+                  .vphi-value(ng-if="cut.severed.length <= 0") N/A
                   span(ng-show="cut.severed.length > 0")
                     ul.node-list.secondary
                       li(ng-repeat="n in cut.severed") {{n}}
