@@ -141,7 +141,7 @@ body
                 ul.concept-data
                   li
                     .small-phi-past
-                      .vphi-label(ng-class="{bold: concept.cause.mip.phi >  concept.effect.mip.phi}") \( \varphi_{p} \)
+                      .vphi-label(ng-class="{'bold': concept.cause.mip.phi >  concept.effect.mip.phi}") \( \varphi_{p} \)
                       .vphi-value.number-7 {{smallPhiPast}}
                   li
                     .row
@@ -154,7 +154,7 @@ body
                           .math-output \( {{partitionedCauseMip}} \)
               .col-xs-4
                 ul.node-list.mechanism
-                  li(ng-class="{on: currentState[n]}", ng-repeat="n in mechanism") {{format.node(n)}}
+                  li(ng-class="{'on': currentState[n]}", ng-repeat="n in mechanism") {{format.node(n)}}
                 hr
                 .small-phi
                   .vphi-label \( \varphi \)
@@ -163,7 +163,7 @@ body
                 ul.concept-data
                   li
                     .small-phi-future
-                      .vphi-label(ng-class="{bold: concept.cause.mip.phi < concept.effect.mip.phi}") \( \varphi_{f} \)
+                      .vphi-label(ng-class="{'bold': concept.cause.mip.phi < concept.effect.mip.phi}") \( \varphi_{f} \)
                       .vphi-value.number-7 {{smallPhiFuture}}
                   li
                     .row
@@ -177,16 +177,16 @@ body
             .row.clearfix
               //- Stack repertoire charts for more width depending on how many
               //- states are being displayed.
-              div(ng-class="{col-md-12: numNodes > 5, col-md-6: numNodes <= 5}")
+              div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
                 .repertoire-container
                   .row.clearfix
-                    .col-md-12
+                    .col-md-6
                       h5.repertoire-title Cause Repertoire
                       .repertoire(repertoire-chart, direction="cause")
-              div(ng-class="{col-md-12: numNodes > 5, col-md-6: numNodes <= 5}")
+              div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
                 .repertoire-container
                   .row.clearfix
-                    .col-md-12
+                    .col-md-6
                       h5.repertoire-title Effect Repertoire
                       .repertoire(repertoire-chart, direction="effect")
 
