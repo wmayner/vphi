@@ -3,17 +3,17 @@
 # services/format.coffee
 ###
 
-graph = require './graph'
+network = require './network'
 
 PRECISION = 6
 
 name = 'vphi.services.format'
 module.exports = angular.module name, []
   .factory name, [
-    graph.name
-    (graph) ->
+    network.name
+    (network) ->
       return new class FormatService
-        node: (index) -> graph.getNodeByIndex(index).label
+        node: (index) -> network.getNodeByIndex(index).label
 
         nodes: (node_indices) -> (@node(i) for i in node_indices)
 

@@ -3,12 +3,11 @@
 # index.coffee
 ###
 
-# TODO angularify graph editor, depend on control panel within
 angular.module 'vphi', [
   require('./services/compute').name
   require('./services/format').name
-  require('./services/graph').name
-  require('./graph-editor').name
+  require('./services/network').name
+  require('./network-editor').name
   require('./concept-space').name
   require('./control-panel').name
   require('./output-summary').name

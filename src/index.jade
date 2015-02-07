@@ -21,18 +21,18 @@ body
   #top-wrapper.container-fluid
     .row.clearfix
       .col-md-6
-        #graph-editor-module.module
+        #network-editor-module.module
           h2.module-title Network
           .row.clearfix
             .col-xs-12
-              #graph-editor-container
-                graph-editor
-          .control-panel(ng-controller='graphEditor.controlPanelCtrl')
+              #network-editor-container
+                network-editor
+          .control-panel(ng-controller='networkEditor.controlPanelCtrl')
             .row.clearfix
               .col-xs-12
-                .control-group#graph-editor-buttons.btn-toolbar(role='toolbar')
+                .control-group#network-editor-buttons.btn-toolbar(role='toolbar')
                   .btn-group
-                    button#show-controls.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#graph-editor-help') Show Controls
+                    button#show-controls.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#network-editor-help') Show Controls
                   .btn-group
                     button#save-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
                   .btn-group
@@ -175,7 +175,7 @@ body
                           .vphi-label Partitioned:
                           .math-output \( {{partitionedEffectMip}} \)
             .row.clearfix
-              //- Stack repertoire graphs for more width depending on how many
+              //- Stack repertoire charts for more width depending on how many
               //- states are being displayed.
               div(ng-class="{col-md-12: numNodes > 5, col-md-6: numNodes <= 5}")
                 .repertoire-container
@@ -190,13 +190,13 @@ body
                       h5.repertoire-title Effect Repertoire
                       .repertoire(repertoire-chart, direction="effect")
 
-  #graph-editor-help.modal.fade
+  #network-editor-help.modal.fade
     .modal-dialog
         .modal-content
           .modal-header
             button.close(type='button', data-dismiss='modal', aria-label='Close')
               span(aria-hidden='true') &times;
-            h4.modal-title Graph-editing controls
+            h4.modal-title Network-editing controls
           .modal-body
             ul.commands
               li <strong>Click and drag</strong> to select nodes. Holding <span class="keyboard">shift</span> or <span class="keyboard">command</span> while dragging will add to the selection. 

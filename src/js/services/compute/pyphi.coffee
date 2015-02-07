@@ -13,12 +13,12 @@ pyphi = new $.JsonRpcClient({
 })
 
 
-getPyphiNetwork = (graph) ->
+getPyphiNetwork = (network) ->
   net =
-    'tpm': graph.tpm
-    'currentState': graph.currentState
-    'connectivityMatrix': graph.getConnectivityMatrix()
-    'pastState': graph.pastState
+    'tpm': network.tpm
+    'currentState': network.currentState
+    'connectivityMatrix': network.getConnectivityMatrix()
+    'pastState': network.pastState
   log.debug "PYPHI: Sending network:"
   log.debug net
   return net
@@ -30,21 +30,21 @@ failure = (err) ->
 
 module.exports =
 
-  complexes: (graph, success) ->
-    params = [getPyphiNetwork(graph)]
+  complexes: (network, success) ->
+    params = [getPyphiNetwork(network)]
     return pyphi.call 'complexes', params, success, failure
 
-  mainComplex: (graph, success) ->
-    params = [getPyphiNetwork(graph)]
+  mainComplex: (network, success) ->
+    params = [getPyphiNetwork(network)]
     return pyphi.call 'main_complex', params, success, failure
 
-  bigMip: (graph, success) ->
+  bigMip: (network, success) ->
     # Get the selected subsystem.
-    subsystemIndices = graph.getSelectedSubsystem()
+    subsystemIndices = network.getSelectedSubsystem()
 
     params = [
       subsystemIndices
-      getPyphiNetwork(graph)
+      getPyphiNetwork(network)
     ]
 
     return pyphi.call 'big_mip', params, success, failure

@@ -12,12 +12,14 @@
 utils = require '../../utils'
 mechanism = require './mechanism'
 
+# TODO put this in network service?
+
 # Get the state of a node in the next timestep, given the current state of the graph.
-getNewNodeState = (graph, index, state) ->
+getNextNodeState = (network, index, state) ->
   # Grab the node.
-  node = graph.getNodeByIndex(index)
+  node = network.getNodeByIndex(index)
   # Get the IDs of nodes that are inputs to this one.
-  inputNodes = (edge.source for edge in graph.getInEdgesOf(node._id))
+  inputNodes = (edge.source for edge in network.graph.getInEdgesOf(node._id))
   # Get an array of their states.
   inputs = (state[inputNode.index] for inputNode in inputNodes)
   # Compute the new state of the node by plugging-in the inputs to its
@@ -28,13 +30,13 @@ getNewNodeState = (graph, index, state) ->
     return mechanism.functions[node.mechanism](inputs)
 
 # Get a map from nodes to their next states.
-getNextNetworkState = (graph, state) ->
-  return graph.mapByIndex (node) -> getNewNodeState(graph, node.index, state)
+getNextNetworkState = (network, state) ->
+  return network.mapByIndex (node) -> getNextNodeState(network, node.index, state)
 
 # TPMify!
-module.exports = (graph) ->
+module.exports = (network) ->
   tpm = []
-  for i in [0...Math.pow(2, graph.nodeSize)]
-    state = utils.holiIndexToState(i, graph.nodeSize)
-    tpm.push getNextNetworkState(graph, state)
+  for i in [0...Math.pow(2, network.size())]
+    state = utils.holiIndexToState(i, network.size())
+    tpm.push getNextNetworkState(network, state)
   return tpm

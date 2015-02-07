@@ -1,10 +1,10 @@
 'use strict'
 ###
-# concept-space/GraphEditorDirective.coffee
+# concept-space/NetworkEditorDirective.coffee
 ###
 
 colors = require '../colors'
-graph = require '../services/graph'
+networkService = require '../services/network'
 
 
 NODE_RADIUS = 25
@@ -16,12 +16,13 @@ NEIGHBOR_RADIUS = 90
 # The radius within which to ignore dragging.
 IGNORE_DRAG_THRESHOLD = 10
 
+# TODO use indices instead of ids throughout (refactor network service as well)
 
 module.exports = [
-  graph.name
+  networkService.name
   'CANVAS_HEIGHT'
   'NETWORK_SIZE_LIMIT'
-  (graph, CANVAS_HEIGHT, NETWORK_SIZE_LIMIT) ->
+  (network, CANVAS_HEIGHT, NETWORK_SIZE_LIMIT) ->
     link: (scope, element, attrs) ->
 
       # State
@@ -105,7 +106,7 @@ module.exports = [
         .append 'svg:g'
           .selectAll 'g'
 
-      # Define arrow markers for graph links.
+      # Define arrow markers for network links.
       svg
         .append 'svg:defs'
         .append 'svg:marker'
@@ -202,30 +203,30 @@ module.exports = [
       cycleDirection = (sourceId, targetId) ->
         # Cycle through link directions:
         # Original to reverse
-        if (graph.getEdge(sourceId, targetId) and
-            not graph.getEdge(targetId, sourceId))
-          graph.removeEdge sourceId, targetId
-          graph.addEdge targetId, sourceId
+        if (network.getEdge(sourceId, targetId) and
+            not network.getEdge(targetId, sourceId))
+          network.removeEdge sourceId, targetId
+          network.addEdge targetId, sourceId
         # Reverse to bidirectional
-        else if (graph.getEdge(targetId, sourceId) and
-                 not graph.getEdge(sourceId, targetId))
-          graph.addEdge sourceId, targetId
+        else if (network.getEdge(targetId, sourceId) and
+                 not network.getEdge(sourceId, targetId))
+          network.addEdge sourceId, targetId
         # Bidirectional to original
-        else if (graph.getEdge(sourceId, targetId) and
-                 graph.getEdge(targetId, sourceId))
-          graph.removeEdge targetId, sourceId
+        else if (network.getEdge(sourceId, targetId) and
+                 network.getEdge(targetId, sourceId))
+          network.removeEdge targetId, sourceId
 
       focusNextNode = ->
-        if not focusedNode or focusedNode.index is graph.nodeSize - 1
-          focusNode(graph.getNodeByIndex 0)
+        if not focusedNode or focusedNode.index is network.size() - 1
+          focusNode(network.getNodeByIndex 0)
         else
-          focusNode(graph.getNodeByIndex(focusedNode.index + 1))
+          focusNode(network.getNodeByIndex(focusedNode.index + 1))
 
       focusPreviousNode = ->
         if not focusedNode or focusedNode.index is 0
-          focusNode(graph.getNodeByIndex(graph.nodeSize - 1))
+          focusNode(network.getNodeByIndex(network.size() - 1))
         else
-          focusNode(graph.getNodeByIndex(focusedNode.index - 1))
+          focusNode(network.getNodeByIndex(focusedNode.index - 1))
 
       getNeighbors = (point) ->
         neighbors = []
@@ -261,7 +262,7 @@ module.exports = [
         return nearest
 
       logChange = (node, propertyName, property) ->
-        log.debug "GRAPH_EDITOR: Set node #{node.label} #{propertyName} to " +
+        log.debug "network_EDITOR: Set node #{node.label} #{propertyName} to " +
                   "#{node[property]}."
 
 
@@ -273,15 +274,15 @@ module.exports = [
         updateMouseElements()
 
         # Update the node and edge list.
-        nodes = graph.getNodes()
-        links = graph.getDrawableEdges()
+        nodes = network.getNodes()
+        links = network.getDrawableEdges()
 
         # Bind newly-fetched links to path selection.
         path = path.data(links)
         # Update existing links.
         path
             .classed 'focused', (edge) ->
-              graph.isSameLink(edge.key, focusedLink)
+              network.isSameLink(edge.key, focusedLink)
             .style 'marker-start', (edge) ->
               (if edge.bidirectional then 'url(#start-arrow)' else "")
             .style 'marker-end', (edge) ->
@@ -292,7 +293,7 @@ module.exports = [
             .attr 'class', 'link'
             .attr 'stroke', colors.link.line
             .classed 'focused', (edge) ->
-              graph.isSameLink(edge.key, focusedLink)
+              network.isSameLink(edge.key, focusedLink)
             .style 'marker-start', (edge) ->
               (if edge.bidirectional then 'url(#start-arrow)' else '')
             .style 'marker-end', (edge) ->
@@ -328,7 +329,7 @@ module.exports = [
         path.exit().remove()
 
         # Bind newly-fetched nodes to circle selection.
-        # NB: Nodes are known by the graph's internal ID, not by d3 index!
+        # NB: Nodes are known by the network's internal ID, not by d3 index!
         circleGroup = circleGroup.data nodes, (d) -> d._id
 
         # Add new nodes.
@@ -379,9 +380,9 @@ module.exports = [
                 mouseState.justDragged = true
               if mouseState.linking and not (node is mouseState.downNode)
                 mouseState.justLinked = true
-                edge = graph.addEdge mouseState.downNode._id, node._id
+                edge = network.addEdge mouseState.downNode._id, node._id
                 if not edge?
-                  edge = graph.getEdge mouseState.downNode._id, node._id
+                  edge = network.getEdge mouseState.downNode._id, node._id
                 focusLink(edge.key)
               mouseState.upNode = node
               update()
@@ -391,7 +392,7 @@ module.exports = [
                   not mouseState.justDragged)
                 toggleSelect(node)
               else unless mouseState.linking or mouseState.justDragged
-                graph.toggleState node
+                network.toggleState node
               update()
               return
 
@@ -473,7 +474,7 @@ module.exports = [
           .nodes nodes
           .links links
 
-        # Set the graph in motion.
+        # Set the network in motion.
         force.start()
         return
 
@@ -492,14 +493,14 @@ module.exports = [
                    mouseState.overNode or
                    mouseState.overLink or
                    mouseState.dragging or
-                   graph.nodeSize >= NETWORK_SIZE_LIMIT
+                   network.size() >= NETWORK_SIZE_LIMIT
               d3.event.preventDefault()
               # Insert new node, connecting it to nearby nodes.
               newNode =
                 x: point[0]
                 y: point[1]
                 neighbors: getNeighbors(point)
-              newNode = graph.addNode(newNode)
+              newNode = network.addNode(newNode)
               # Start with the node focused.
               focusNode(newNode)
               update()
@@ -510,9 +511,11 @@ module.exports = [
                 not mouseState.dragging and
                 not mouseState.overNode)
               neighbors = getNeighbors(point)
+              edges = []
               for i in neighbors
                 for j in neighbors
-                  graph.addEdge(i._id, j._id) unless i is j
+                  edges.push [i._id, j._id] unless i is j
+              network.addEdges(edges)
             update()
             return
           .on 'mousemove', ->
@@ -661,17 +664,17 @@ module.exports = [
               # backspace, delete, d
               when 8, 46, 68
                 if selectedNodes.length > 0
-                  graph.removeNodes selectedNodes
+                  network.removeNodes selectedNodes
                   selectedNodes = []
                   focusPreviousNode()
                   update()
                 else if focusedNode
-                  removed = graph.removeNode focusedNode
+                  removed = network.removeNode focusedNode
                   focusPreviousNode()
                   update()
                 else if focusedLink
-                  graph.removeEdge sourceId, targetId
-                  graph.removeEdge targetId, sourceId
+                  network.removeEdge sourceId, targetId
+                  network.removeEdge targetId, sourceId
                   focusedLink = null
                   update()
                 break
@@ -684,32 +687,32 @@ module.exports = [
               # b
               when 66
                 if focusedLink
-                  graph.addEdge sourceId, targetId
-                  graph.addEdge targetId, sourceId
+                  network.addEdge sourceId, targetId
+                  network.addEdge targetId, sourceId
                   update()
                 break
               # space
               when 32
                 d3.event.preventDefault()
                 if selectedNodes.length > 0
-                  graph.toggleStates selectedNodes
+                  network.toggleStates selectedNodes
                   for node in selectedNodes
                     logChange(node, 'state', 'on')
                   update()
                 else if focusedNode
-                  graph.toggleState focusedNode
+                  network.toggleState focusedNode
                   logChange(focusedNode, 'state', 'on')
                   update()
                 break
               # m
               when 77
                 if selectedNodes.length > 0
-                  graph.cycleMechanisms selectedNodes
+                  network.cycleMechanisms selectedNodes
                   for node in selectedNodes
                     logChange(node, 'state', 'on')
                   update()
                 else if focusedNode
-                  graph.cycleMechanism focusedNode
+                  network.cycleMechanism focusedNode
                   logChange(focusedNode, 'mechanism', 'mechanism')
                   update()
                 break
@@ -720,19 +723,19 @@ module.exports = [
                     newThreshold = 0
                   else
                     newThreshold = focusedNode.threshold + 1
-                  graph.setThreshold focusedNode, newThreshold
+                  network.setThreshold focusedNode, newThreshold
                   logChange(focusedNode, 'threshold', 'threshold')
                   update()
                 break
               # r
               when 82
                 if selectedNodes.length > 0
-                  graph.toggleSelfLoops selectedNodes
+                  network.toggleSelfLoops selectedNodes
                   for node in selectedNodes
                     logChange(node, 'reflexivity', 'reflexive')
                   update()
                 else if focusedNode
-                  graph.toggleSelfLoop focusedNode
+                  network.toggleSelfLoop focusedNode
                   logChange(focusedNode, 'reflexivity', 'reflexive')
                   update()
                 break
@@ -817,7 +820,7 @@ module.exports = [
         background.attr 'width', width
         # Update force layout dimensions
         force.size [width, CANVAS_HEIGHT]
-        # Redraw graph
+        # Redraw network
         update()
         return
 
@@ -827,5 +830,9 @@ module.exports = [
 
       # Go go go!
       update()
+
+      # TODO! now that this is here, reduce calls to update if possible
+      # Update when network is updated.
+      scope.$on (networkService.name + '.updated'), update
 
 ]

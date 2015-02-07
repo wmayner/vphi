@@ -3,14 +3,14 @@
 # control-panel/ControlPanelController.coffee
 ###
 
-graphService = require '../services/graph'
+networkService = require '../services/network'
 computeService = require '../services/compute'
 
 module.exports = [
   '$scope'
-  graphService.name
+  networkService.name
   computeService.name
-  ($scope, graph, compute) ->
+  ($scope, network, compute) ->
     btns = $('.btn-calculate')
     btnSelectedSubsystem = $('#btn-selected-subsystem')
     btnMainComplex = $('#btn-main-complex')
@@ -19,14 +19,14 @@ module.exports = [
       'mainComplex': btnMainComplex
       'bigMip': btnSelectedSubsystem
 
-    # Disable buttons if the graph has no possible past state or if there's
+    # Disable buttons if the network has no possible past state or if there's
     # already a calculation in progress.
     updateButtonState = ->
       $scope.isDisabled = compute.callInProgress or
-                          not graph.pastState or
-                          graph.nodeSize is 0
+                          not network.pastState or
+                          network.size() is 0
     updateButtonState()
-    $scope.$on (graphService.name + '.updated'), updateButtonState
+    $scope.$on (networkService.name + '.updated'), updateButtonState
 
     btnCooldown = false
 
@@ -61,7 +61,7 @@ module.exports = [
         finishLoading()
 
     $scope.calculate = (method) ->
-      return if btnCooldown or not graph.pastState
+      return if btnCooldown or not network.pastState
       btn = method2btn[method]
       registerClick(btn)
       compute[method](

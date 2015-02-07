@@ -1,6 +1,6 @@
 'use strict'
 ###
-# graph-editor/GraphEditorController.coffee
+# network-editor/NetworkEditorController.coffee
 ###
 
 module.exports = [

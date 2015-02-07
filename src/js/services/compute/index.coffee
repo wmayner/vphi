@@ -4,24 +4,24 @@
 ###
 
 pyphi = require './pyphi'
-graph = require '../graph'
+networkService = require '../network'
 
 name = 'vphi.services.compute'
 module.exports = angular.module name, []
   .factory name, [
     '$rootScope'
-    graph.name
+    networkService.name
     'NETWORK_SIZE_LIMIT'
-    ($rootScope, graph, NETWORK_SIZE_LIMIT) ->
-      isValid = (graph) ->
-        if not graph.pastState
+    ($rootScope, network, NETWORK_SIZE_LIMIT) ->
+      isValid = (network) ->
+        if not network.pastState
           log.info "PYPHI: Current state cannot be reached by any past state; not " +
                    "sending request."
           return false
-        if graph.nodeSize > NETWORK_SIZE_LIMIT
+        if network.size() > NETWORK_SIZE_LIMIT
           log.error "Network cannot have more than #{NETWORK_SIZE_LIMIT} nodes."
           return false
-        if graph.nodeSize is 0
+        if network.size() is 0
           log.info "PYPHI: Network is empty; not sending request."
           return false
         return true
@@ -42,12 +42,12 @@ module.exports = angular.module name, []
           @pyphiCall method, success, always
 
         pyphiCall: (method, success, always) ->
-          if not isValid(graph)
+          if not isValid(network)
             always()
             return
           log.debug "DATA_SERVICE: Calling `#{method}`..."
           @callInProgress = true
-          pyphi[method](graph, (bigMip) =>
+          pyphi[method](network, (bigMip) =>
             @update(bigMip)
             @callInProgress = false
             $rootScope.$apply success
@@ -66,15 +66,15 @@ module.exports = angular.module name, []
           @data = bigMip
           # Record current and past state.
           # TODO just attach these to the service.
-          @data.currentState = graph.currentState
-          @data.pastState = graph.pastState
+          @data.currentState = network.currentState
+          @data.pastState = network.pastState
           log.debug "DATA_SERVICE: Data:"
           log.debug @data
           phidata = @data
 
           # Select the subsystem that was returned
-          graph.setSelectedSubsystem(@data.subsystem.node_indices)
-          graph.update()
+          network.setSelectedSubsystem(@data.subsystem.node_indices)
+          network.update()
 
           log.debug "DATA_SERVICE: Broadcasting data update."
           $rootScope.$broadcast (name + '.updated')
