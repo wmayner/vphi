@@ -223,9 +223,8 @@ module.exports = angular.module name, []
         setPastState: (state) =>
           old = @pastState
           @pastState = state
-          @updateTpm()
-          broadcast()
           llog "Changed past state from [#{old}] to [#{@pastState}]."
+          @update()
           return
 
         # TODO have special 'IN' mechanism, that doesn't restrict past state?
@@ -253,8 +252,12 @@ module.exports = angular.module name, []
           return result
 
         updatePastState: ->
-          old = @pastState
           possiblePastStates = @getPossiblePastStates()
+
+          return if @pastState.join('') in
+            (s.join('') for s in possiblePastStates)
+
+          old = @pastState
           if not possiblePastStates
             @pastState = null
           else
@@ -298,6 +301,8 @@ module.exports = angular.module name, []
           data =
             nodes: jsonNodes
             connectivityMatrix: @getConnectivityMatrix()
+            pastState: @pastState
+          console.log data
           return JSON.stringify data
 
         loadJSON: (json) ->
@@ -310,6 +315,8 @@ module.exports = angular.module name, []
           for row, i in json.connectivityMatrix
             for elt, j in row
               if elt then @addEdge(i, j)
+          # Set past state.
+          @pastState = json.pastState
           @update()
           return
 
