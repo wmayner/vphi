@@ -33,9 +33,8 @@ module.exports = angular.module name, []
         $timeout -> $rootScope.$broadcast (name + '.updated'), 0
 
       getAllStates = (numNodes) ->
-        return (
-          commonUtils.holiIndexToState(i, numNodes) for i in [0...Math.pow(2, numNodes)]
-        )
+        (commonUtils.holiIndexToState(i, numNodes) \
+         for i in [0...Math.pow(2, numNodes)])
 
       reverseEdgeKey = (key) ->
         if not key?
