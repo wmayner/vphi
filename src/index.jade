@@ -90,9 +90,9 @@ body
                     | Toggle Grids
                   button.btn.btn-md.btn-default(ng-click='toggleIgnoredAxes()', type='button')
                     | Toggle Ignored Axes
-                .btn-group
-                  button.btn.btn-md.btn-default(ng-click='switchView()', type='button')
-                    | Switch View
+                // .btn-group
+                //   button.btn.btn-md.btn-default(ng-click='switchView()', type='button')
+                //     | Switch View
     .row.centered.clearfix
       .col-centered
         #main-control-module.module(ng-controller="controlPanelCtrl")
@@ -179,16 +179,12 @@ body
               //- states are being displayed.
               div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
                 .repertoire-container
-                  .row.clearfix
-                    .col-md-6
-                      h5.repertoire-title Cause Repertoire
-                      .repertoire(repertoire-chart, direction="cause")
+                  h5.repertoire-title Cause Repertoire
+                  .repertoire(repertoire-chart, direction="cause")
               div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
                 .repertoire-container
-                  .row.clearfix
-                    .col-md-6
-                      h5.repertoire-title Effect Repertoire
-                      .repertoire(repertoire-chart, direction="effect")
+                  h5.repertoire-title Effect Repertoire
+                  .repertoire(repertoire-chart, direction="effect")
 
   #network-editor-help.modal.fade
     .modal-dialog
