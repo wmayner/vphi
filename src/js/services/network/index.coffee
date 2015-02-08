@@ -58,13 +58,10 @@ module.exports = angular.module name, []
 
       network = new class Network
         constructor: (@graph = new Graph()) ->
-
           # TODO refactor tpmify
           @tpm = tpmify this
           @currentState = []
           @pastState = @getPossiblePastStates()[0]
-
-          @update()
 
         size: -> @graph.numNodes
 
@@ -297,7 +294,7 @@ module.exports = angular.module name, []
 
         toJSON: ->
           jsonNodes = []
-          @graph.forEachNode (node, id) =>
+          @graph.forEachNode (node, id) ->
             jsonNodes.push nodeToJSON(node)
           data =
             nodes: jsonNodes
@@ -329,7 +326,7 @@ module.exports = angular.module name, []
           @updateTpm()
           @updatePastState()
           broadcast()
-          localStorage.setItem('network', @toJSON())
+          localStorage.setItem 'network', @toJSON()
           return
 
       # ========================================================================
@@ -340,7 +337,7 @@ module.exports = angular.module name, []
       if storedNetwork
         network.loadJSON storedNetwork
       else
-        network.loadExample 'IIT 2014 Paper'
+        network.loadExample network.exampleNames[0]
 
       return network
   ]

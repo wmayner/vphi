@@ -14,7 +14,7 @@ class Graph
   constructor: ->
     @_nodes = {}
     @numNodes = 0
-    @edgeSize = 0
+    @numEdges = 0
     @_newNodeId = 0
 
   getNewNodeId: ->
@@ -124,7 +124,7 @@ class Graph
     # Set the node's reflexive bit to true if the edge is a self-loop.
     if sourceId is targetId
       fromNode.reflexive = true
-    @edgeSize++
+    @numEdges++
     llog "Added edge (#{fromNode.label}, #{toNode.label})."
     return edgeToAdd
 
@@ -157,7 +157,7 @@ class Graph
     reverseEdge = @getEdge(targetId, sourceId)
     if reverseEdge
       delete reverseEdge.bidirectional
-    @edgeSize--
+    @numEdges--
     llog "Removed edge (#{fromNode.label}, #{toNode.label})."
     return edgeToDelete
 
