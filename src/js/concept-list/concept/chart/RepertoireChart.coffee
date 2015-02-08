@@ -48,6 +48,10 @@ class RepertoireChart
 
   load: (columns) ->
     # Workaround for C3 charts not initially sizing correctly.
-    id = setTimeout (=> @_chart.load(columns: columns)), 0
+    id = setTimeout (
+      =>
+        @_chart.load(columns: columns)
+        $(window).trigger('resize')
+      ), 0
 
 module.exports = RepertoireChart
