@@ -23,7 +23,7 @@ module.exports = ->
     padding =
       top: 0
       right: 5 * scope.numNodes
-      bottom: 0
+      bottom: 5
       left: 40
 
     chart = new RepertoireChart
