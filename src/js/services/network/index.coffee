@@ -302,7 +302,6 @@ module.exports = angular.module name, []
             nodes: jsonNodes
             connectivityMatrix: @getConnectivityMatrix()
             pastState: @pastState
-          console.log data
           return JSON.stringify data
 
         loadJSON: (json) ->
