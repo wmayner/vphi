@@ -11,8 +11,6 @@ module.exports = [
   computeService.name
   formatService.name
   ($scope, compute, format) ->
-    $scope.format = format
-
     $scope.currentState = null
     $scope.title = 'Subsystem'
     $scope.nodes = []
@@ -29,9 +27,8 @@ module.exports = [
       else
         $scope.title = 'Subsystem'
 
-
       $scope.currentState = d.currentState
-      $scope.nodes = d.subsystem.node_indices
+      $scope.nodes = (format.node(i) for i in d.subsystem.node_indices)
       $scope.bigPhi = format.phi d.phi
       $scope.numConcepts = d.unpartitioned_constellation.length
 

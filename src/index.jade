@@ -108,7 +108,7 @@ body
               h2.module-title {{title}} 
                 span.vphi-value.number-2(ng-hide="nodes.length > 0") –
                 ul.node-list
-                  li(ng-class="{'on': currentState[n]}", ng-repeat="n in nodes") {{format.node(n)}}
+                  li(ng-class="{'on': currentState[n]}", ng-repeat="node in nodes") {{node}}
           .row.centered.clearfix
             .col-md-12
               .summary-items.well
