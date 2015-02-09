@@ -6,5 +6,6 @@
 module.exports = angular.module 'vphi.networkEditor.controlPanel', [
   # SVG Downloader
   'hc.downloader'
+  'angularFileUpload'
 ]
   .controller 'networkEditor.controlPanelCtrl', require './ControlPanelController'
