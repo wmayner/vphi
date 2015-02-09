@@ -36,7 +36,7 @@ body
                   .btn-group
                     button#save-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
                   .btn-group
-                    button#export-network(ng-click='import()', type='button').btn.btn-md.btn-default Import
+                    button#import-network(ng-file-select, ng-model='files', allow-dir='false', type='button').btn.btn-md.btn-default Import
                     button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export
                   .btn-group
                     button#example-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false') Load Example
@@ -59,11 +59,10 @@ body
                         span.sr-only Toggle past state selection dropdown menu
                       ul#past-states.dropdown-menu.dropdown-menu-right(ng-show="possiblePastStates", role='menu', aria-labelledby='past-state-dropdown')
                         //- TODO use table?
-                        li
-                          a#past-state-list-header
-                            strong {{nodes}}
+                        li#past-state-list-header
+                          strong {{nodes}}
                         li.divider
-                        li(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
+                        li.past-state(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
                           a {{pastState.join(', ')}}
       .col-md-6
         #concept-space-module.module(ng-controller='conceptSpaceCtrl')
@@ -258,6 +257,7 @@ body
   script(src='/js/lib/Detector.js')
   script(src='/js/lib/FileSaver.js')
   script(src='/js/lib/angular-downloadsvg-directive.min.js')
+  script(src='/js/lib/angular-file-upload.min.js')
 
   //- Online/Offline
   script(src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
