@@ -286,11 +286,14 @@ module.exports = angular.module name, []
         updatePastState: ->
           possiblePastStates = @getPossiblePastStates()
 
+          # If there are no possible past states, set to null.
           if not possiblePastStates
             @pastState = null
           else
-            return if @pastState and @pastState.join('') in
-              (s.join('') for s in possiblePastStates)
+            # Return if the current past state is possible.
+            return if (@pastState and @pastState.join('') in
+              (s.join('') for s in possiblePastStates))
+            # Otherwise, set to the first possible one.
             old = @pastState
             @pastState = possiblePastStates[0]
             llog "  Changed past state from [#{old}] to [#{@pastState}]."
