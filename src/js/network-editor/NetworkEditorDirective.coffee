@@ -795,9 +795,9 @@ module.exports = [
               targetPadding = getRadius(edge.target)
 
               # Paddding for arrowheads.
-              targetPadding += 5
+              targetPadding += 7
               if edge.bidirectional
-                sourcePadding += 5
+                sourcePadding += 7
 
               sourceX = edge.source.x + (sourcePadding * normX)
               sourceY = edge.source.y + (sourcePadding * normY)
