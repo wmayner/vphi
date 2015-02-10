@@ -34,7 +34,7 @@ module.exports =  [
           log.warn "Cannot import a network file without the '.json' extension."
 
     $scope.export = ->
-      blob = new Blob [network.toJSON()]
+      blob = new Blob [network.toJSON()], {type: 'application/json'}
       window.saveAs blob, 'network.json'
 
     $scope.examples = network.exampleNames
