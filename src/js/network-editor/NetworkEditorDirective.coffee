@@ -29,7 +29,7 @@ module.exports = [
       # =====================================================================
 
       focusedNode = null
-      focusedLink = null
+      focusedEdge = null
       selectedNodes = []
       # Only respond once per keydown.
       lastKeyDown = -1
@@ -106,7 +106,7 @@ module.exports = [
         .append 'svg:g'
           .selectAll 'g'
 
-      # Define arrow markers for network links.
+      # Define arrow markers for network edges.
       svg
         .append 'svg:defs'
         .append 'svg:marker'
@@ -168,10 +168,10 @@ module.exports = [
 
       focusNode = (node) ->
         focusedNode = node
-        focusedLink = null
+        focusedEdge = null
 
-      focusLink = (link) ->
-        focusedLink = link
+      focusEdge = (edge) ->
+        focusedEdge = edge
         focusedNode = null
 
       selectNode = (node) ->
@@ -200,21 +200,21 @@ module.exports = [
           r += NODE_RADIUS * 0.1
         return r
 
-      cycleDirection = (sourceId, targetId) ->
+      cycleDirection = (source, target) ->
         # Cycle through link directions:
         # Original to reverse
-        if (network.getEdge(sourceId, targetId) and
-            not network.getEdge(targetId, sourceId))
-          network.removeEdge sourceId, targetId
-          network.addEdge targetId, sourceId
+        if (network.getEdge(source, target) and
+            not network.getEdge(target, source))
+          network.removeEdge source, target
+          network.addEdge target, source
         # Reverse to bidirectional
-        else if (network.getEdge(targetId, sourceId) and
-                 not network.getEdge(sourceId, targetId))
-          network.addEdge sourceId, targetId
+        else if (network.getEdge(target, source) and
+                 not network.getEdge(source, target))
+          network.addEdge source, target
         # Bidirectional to original
-        else if (network.getEdge(sourceId, targetId) and
-                 network.getEdge(targetId, sourceId))
-          network.removeEdge targetId, sourceId
+        else if (network.getEdge(source, target) and
+                 network.getEdge(target, source))
+          network.removeEdge target, source
 
       focusNextNode = ->
         if not focusedNode or focusedNode.index is network.size() - 1
@@ -275,35 +275,35 @@ module.exports = [
 
         # Update the node and edge list.
         nodes = network.getNodes()
-        links = network.getDrawableEdges()
+        edges = network.getDrawableEdges()
 
-        # Bind newly-fetched links to path selection.
-        path = path.data(links)
-        # Update existing links.
+        # Bind newly-fetched edges to path selection.
+        path = path.data(edges)
+        # Update existing edges.
         path
             .classed 'focused', (edge) ->
-              network.isSameLink(edge.key, focusedLink)
+              network.isSameLink(edge, focusedEdge)
             .style 'marker-start', (edge) ->
               (if edge.bidirectional then 'url(#start-arrow)' else "")
             .style 'marker-end', (edge) ->
               'url(#end-arrow)'
-        # Add new links.
+        # Add new edges.
         path.enter()
           .append 'svg:path'
             .attr 'class', 'link'
             .attr 'stroke', colors.link.line
             .classed 'focused', (edge) ->
-              network.isSameLink(edge.key, focusedLink)
+              network.isSameLink(edge, focusedEdge)
             .style 'marker-start', (edge) ->
               (if edge.bidirectional then 'url(#start-arrow)' else '')
             .style 'marker-end', (edge) ->
               'url(#end-arrow)'
             .on 'mouseover', (edge) ->
-              mouseState.overLink = edge.key
+              mouseState.overLink = edge
               # Only focus link if we're not dragging a new one and not
               # selecting nodes.
               unless mouseState.dragging
-                focusLink(edge.key)
+                focusEdge(edge)
               update()
               return
             .on 'mouseout', (edge) ->
@@ -311,21 +311,18 @@ module.exports = [
               updateMouseElements()
               return
             .on 'mousedown', (edge) ->
-              mouseState.downLink = edge.key
+              mouseState.downLink = edge
               updateMouseElements()
               return
             .on 'mouseup', (edge) ->
-              focusLink(edge.key)
+              focusEdge(edge)
               update()
               return
             .on 'click', (edge) ->
-              ids = edge.key.split ','
-              sourceId = ids[0]
-              targetId = ids[1]
-              cycleDirection(sourceId, targetId)
+              cycleDirection(edge.source, edge.target)
               update()
               return
-        # Remove old links.
+        # Remove old edges.
         path.exit().remove()
 
         # Bind newly-fetched nodes to circle selection.
@@ -380,10 +377,10 @@ module.exports = [
                 mouseState.justDragged = true
               if mouseState.linking and not (node is mouseState.downNode)
                 mouseState.justLinked = true
-                edge = network.addEdge mouseState.downNode._id, node._id
+                edge = network.addEdge mouseState.downNode, node
                 if not edge?
-                  edge = network.getEdge mouseState.downNode._id, node._id
-                focusLink(edge.key)
+                  edge = network.getEdge mouseState.downNode, node
+                focusEdge(edge)
               mouseState.upNode = node
               update()
               return
@@ -469,10 +466,10 @@ module.exports = [
         # Remove old nodes.
         circleGroup.exit().remove()
 
-        # Rebind the nodes and links to the force layout.
+        # Rebind the nodes and edges to the force layout.
         force
           .nodes nodes
-          .links links
+          .links edges
 
         # Set the network in motion.
         force.start()
@@ -514,7 +511,7 @@ module.exports = [
               edges = []
               for i in neighbors
                 for j in neighbors
-                  edges.push [i._id, j._id] unless i is j
+                  edges.push [i, j] unless i is j
               network.addEdges(edges)
             update()
             return
@@ -594,7 +591,7 @@ module.exports = [
             else
               mouseState.selecting = true
               # Unfocus nodes and edges.
-              focusedLink = null
+              focusedEdge = null
               focusedNode = null
               # Redraw selection box starting at mouse.
               dragRect.attr
@@ -652,14 +649,13 @@ module.exports = [
               circleGroup.call force.drag
               updateMouseElements()
 
-            return if not focusedNode and not focusedLink
+            return if not focusedNode and not focusedEdge
 
             # Node or link is focused:
             # Grab focused link source and target ids.
-            if focusedLink
-              ids = focusedLink.split ','
-              sourceId = ids[0]
-              targetId = ids[1]
+            if focusedEdge
+              source = focusedEdge.source
+              target = focusedEdge.target
             switch d3.event.keyCode
               # backspace, delete, d
               when 8, 46, 68
@@ -672,23 +668,23 @@ module.exports = [
                   removed = network.removeNode focusedNode
                   focusPreviousNode()
                   update()
-                else if focusedLink
-                  network.removeEdge sourceId, targetId
-                  network.removeEdge targetId, sourceId
-                  focusedLink = null
+                else if focusedEdge
+                  network.removeEdge source, target
+                  network.removeEdge target, source
+                  focusedEdge = null
                   update()
                 break
               # c
               when 67
-                if focusedLink
-                  cycleDirection(sourceId, targetId)
+                if focusedEdge
+                  cycleDirection(source, target)
                   update()
                 break
               # b
               when 66
-                if focusedLink
-                  network.addEdge sourceId, targetId
-                  network.addEdge targetId, sourceId
+                if focusedEdge
+                  network.addEdge source, target
+                  network.addEdge target, source
                   update()
                 break
               # space

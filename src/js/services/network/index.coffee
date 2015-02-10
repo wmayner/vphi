@@ -36,10 +36,10 @@ module.exports = angular.module name, []
         (commonUtils.holiIndexToState(i, numNodes) \
          for i in [0...Math.pow(2, numNodes)])
 
-      reverseEdgeKey = (key) ->
-        if not key?
+      reverseEdgeKey = (edge) ->
+        if not edge
           return null
-        ids = key.split(',')
+        ids = edge.key.split(',')
         return ids[1] + ',' + ids[0]
 
       nodeToJSON = (node) ->
@@ -88,24 +88,33 @@ module.exports = angular.module name, []
           @update()
           return removedNodes
 
-        addEdge: (sourceId, targetId) ->
-          edge = @graph.addEdge(sourceId, targetId)
+        getNode: (index) -> @graph.getNodeByIndex(index)
+
+        getNodes: -> @graph.getNodes()
+
+        addEdge: (source, target) ->
+          edge = @graph.addEdge(source._id, target._id)
           @update()
           return edge
 
-        addEdges: (nodeIdPairs) ->
+        addEdges: (nodePairs) ->
           edges = []
-          for pair in nodeIdPairs
-            edges.push @graph.addEdge(pair[0], pair[1])
+          for pair in nodePairs
+            edges.push @addEdge(pair[0], pair[1])
           @update()
           return edges
 
-        removeEdge: (sourceId, targetId) ->
-          removed = @graph.removeEdge(sourceId, targetId)
+        getEdge: (source, target) ->
+          @graph.getEdge(source._id, target._id)
+
+        getEdgeByKey: (key) ->
+          ids = key.split ','
+          @graph.getEdge(ids[0], ids[1])
+
+        removeEdge: (source, target) ->
+          removed = @graph.removeEdge(source._id, target._id)
           @update()
           return removed
-
-        getNodes: -> @graph.getNodes()
 
         getDrawableEdges: ->
           ###
@@ -121,7 +130,7 @@ module.exports = angular.module name, []
             # If this edge is the reverse of a previously seen edge, don't add a
             # second edge object; update the first to indicate that it's
             # bidirectional.
-            reversed = reverseEdgeKey(edge.key)
+            reversed = reverseEdgeKey(edge)
             if drawableEdges[reversed]
               drawableEdges[reversed].bidirectional = true
               return
@@ -143,8 +152,9 @@ module.exports = angular.module name, []
         mapByIndex: (operation) ->
           return (operation(node) for node in @getNodesByIndex())
 
-        isSameLink: (key, other) ->
-          return (key is other or key is reverseEdgeKey(other))
+        isSameLink: (edge, other) ->
+          return false if not other
+          return (edge.key is other.key or edge.key is reverseEdgeKey(other))
 
         # Return the given property for each node, in order of node indices.
         getNodeProperties: (property, node_indices) ->
@@ -183,9 +193,9 @@ module.exports = angular.module name, []
         toggleSelfLoop: (node) ->
           node.reflexive = not node.reflexive
           if node.reflexive
-            @graph.addEdge(node._id, node._id)
+            @addEdge(node, node)
           else
-            @graph.removeEdge(node._id, node._id)
+            @removeEdge(node, node)
           @update()
           return
 
@@ -194,9 +204,9 @@ module.exports = angular.module name, []
           for node in nodes
             node.reflexive = not initial
             if node.reflexive
-              @graph.addEdge(node._id, node._id)
+              @addEdge(node, node)
             else
-              @graph.removeEdge(node._id, node._id)
+              @removeEdge(node, node)
           @update()
           return
 
@@ -313,7 +323,7 @@ module.exports = angular.module name, []
           # Add edges.
           for row, i in json.connectivityMatrix
             for elt, j in row
-              if elt then @addEdge(i, j)
+              if elt then @graph.addEdge(i, j)
           # Set past state.
           @pastState = json.pastState
           @update()
