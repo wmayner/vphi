@@ -263,7 +263,7 @@ module.exports = angular.module name, []
         _checkPossiblePastState: (pastStateIndex) ->
           # Get the probabilities for each node being on given the past state.
           row = @tpm[pastStateIndex]
-          for own id, n of @_nodes
+          for own id, n of @graph._nodes
             # If the node has no inputs, it can have any past state.
             unless @graph.getInEdgesOf(id).length is 0
               # If it does have inputs, check that the TPM says there's a nonzero
@@ -286,15 +286,14 @@ module.exports = angular.module name, []
         updatePastState: ->
           possiblePastStates = @getPossiblePastStates()
 
-          return if @pastState.join('') in
-            (s.join('') for s in possiblePastStates)
-
-          old = @pastState
           if not possiblePastStates
             @pastState = null
           else
+            return if @pastState and @pastState.join('') in
+              (s.join('') for s in possiblePastStates)
+            old = @pastState
             @pastState = possiblePastStates[0]
-          llog "  Changed past state from [#{old}] to [#{@pastState}]."
+            llog "  Changed past state from [#{old}] to [#{@pastState}]."
           return
 
         updateCurrentState: ->
