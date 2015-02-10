@@ -714,12 +714,13 @@ module.exports = [
                 break
               # t
               when 84
-                if focusedNode
-                  if focusedNode.threshold >= networkSizeLimit
-                    newThreshold = 0
-                  else
-                    newThreshold = focusedNode.threshold + 1
-                  network.setThreshold focusedNode, newThreshold
+                if selectedNodes.length > 0
+                  network.cycleThresholds selectedNodes
+                  for node in selectedNodes
+                    logChange(node, 'threshold', 'threshold')
+                  update()
+                else if focusedNode
+                  network.cycleThreshold focusedNode
                   logChange(focusedNode, 'threshold', 'threshold')
                   update()
                 break

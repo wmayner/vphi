@@ -36,6 +36,19 @@ module.exports = angular.module name, []
         (commonUtils.holiIndexToState(i, numNodes) \
          for i in [0...Math.pow(2, numNodes)])
 
+      cycleMechanism = (node) ->
+        next_index = mechanism.names.indexOf(node.mechanism) + 1
+        if next_index is mechanism.names.length then next_index = 0
+        node.mechanism = mechanism.names[next_index]
+        return
+
+      cycleThreshold = (node, max) ->
+        if node.threshold >= max
+          node.threshold = 0
+        else
+          node.threshold++
+        return
+
       reverseEdgeKey = (edge) ->
         if not edge
           return null
@@ -164,22 +177,31 @@ module.exports = angular.module name, []
             return (node[property] for node in @getNodesByIndex())
 
         cycleMechanism: (node) ->
-          next_index = mechanism.names.indexOf(node.mechanism) + 1
-          if next_index is mechanism.names.length then next_index = 0
-          node.mechanism = mechanism.names[next_index]
+          cycleMechanism node
           @update()
           return
 
         cycleMechanisms: (nodes) ->
-          next_index = mechanism.names.indexOf(nodes[0].mechanism) + 1
-          if next_index is mechanism.names.length then next_index = 0
+          initial = nodes[0].mechanism
           for node in nodes
-            node.mechanism = mechanism.names[next_index]
+            node.mechanism = initial
+            cycleMechanism node
+          @update()
+          return
+
+        cycleThreshold: (node) ->
+          cycleThreshold node, @size()
+          @update()
+          return
+
+        cycleThresholds: (nodes) ->
+          for node in nodes
+            cycleThreshold node, @size()
           @update()
           return
 
         toggleState: (node) ->
-          node.on = utils.negate(node.on)
+          node.on = utils.negate node.on
           @update()
           return
 
