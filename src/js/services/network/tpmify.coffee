@@ -17,7 +17,7 @@ mechanism = require './mechanism'
 # Get the state of a node in the next timestep, given the current state of the graph.
 getNextNodeState = (network, index, state) ->
   # Grab the node.
-  node = network.getNodeByIndex(index)
+  node = network.getNode(index)
   # Get the IDs of nodes that are inputs to this one.
   inputNodes = (edge.source for edge in network.graph.getInEdgesOf(node._id))
   # Get an array of their states.
@@ -31,7 +31,7 @@ getNextNodeState = (network, index, state) ->
 
 # Get a map from nodes to their next states.
 getNextNetworkState = (network, state) ->
-  return network.mapByIndex (node) -> getNextNodeState(network, node.index, state)
+  (getNextNodeState(network, node.index, state) for node in network.getNodes())
 
 # TPMify!
 module.exports = (network) ->

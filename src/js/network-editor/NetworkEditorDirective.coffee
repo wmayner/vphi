@@ -29,7 +29,7 @@ module.exports = [
       # =====================================================================
 
       focusedNode = null
-      focusedEdge = null
+      focusedEdgeKey = null
       selectedNodes = []
       # Only respond once per keydown.
       lastKeyDown = -1
@@ -168,10 +168,10 @@ module.exports = [
 
       focusNode = (node) ->
         focusedNode = node
-        focusedEdge = null
+        focusedEdgeKey = null
 
       focusEdge = (edge) ->
-        focusedEdge = edge
+        focusedEdgeKey = edge.key
         focusedNode = null
 
       selectNode = (node) ->
@@ -200,33 +200,17 @@ module.exports = [
           r += NODE_RADIUS * 0.1
         return r
 
-      cycleDirection = (source, target) ->
-        # Cycle through link directions:
-        # Original to reverse
-        if (network.getEdge(source, target) and
-            not network.getEdge(target, source))
-          network.removeEdge source, target
-          network.addEdge target, source
-        # Reverse to bidirectional
-        else if (network.getEdge(target, source) and
-                 not network.getEdge(source, target))
-          network.addEdge source, target
-        # Bidirectional to original
-        else if (network.getEdge(source, target) and
-                 network.getEdge(target, source))
-          network.removeEdge target, source
-
       focusNextNode = ->
         if not focusedNode or focusedNode.index is network.size() - 1
-          focusNode(network.getNodeByIndex 0)
+          focusNode(network.getNode 0)
         else
-          focusNode(network.getNodeByIndex(focusedNode.index + 1))
+          focusNode(network.getNode(focusedNode.index + 1))
 
       focusPreviousNode = ->
         if not focusedNode or focusedNode.index is 0
-          focusNode(network.getNodeByIndex(network.size() - 1))
+          focusNode(network.getNode(network.size() - 1))
         else
-          focusNode(network.getNodeByIndex(focusedNode.index - 1))
+          focusNode(network.getNode(focusedNode.index - 1))
 
       getNeighbors = (point) ->
         neighbors = []
@@ -279,26 +263,18 @@ module.exports = [
 
         # Bind newly-fetched edges to path selection.
         path = path.data(edges)
-        # Update existing edges.
-        path
-            .classed 'focused', (edge) ->
-              network.isSameLink(edge, focusedEdge)
-            .style 'marker-start', (edge) ->
-              (if edge.bidirectional then 'url(#start-arrow)' else "")
-            .style 'marker-end', (edge) ->
-              'url(#end-arrow)'
         # Add new edges.
         path.enter()
           .append 'svg:path'
             .attr 'class', 'link'
             .attr 'stroke', colors.link.line
             .classed 'focused', (edge) ->
-              network.isSameLink(edge, focusedEdge)
+              network.isSameLink(edge.key, focusedEdgeKey)
             .style 'marker-start', (edge) ->
               (if edge.bidirectional then 'url(#start-arrow)' else '')
             .style 'marker-end', (edge) ->
               'url(#end-arrow)'
-            .on 'mouseover', (edge) ->
+            .on 'mouseenter', (edge) ->
               mouseState.overLink = edge
               # Only focus link if we're not dragging a new one and not
               # selecting nodes.
@@ -306,7 +282,7 @@ module.exports = [
                 focusEdge(edge)
               update()
               return
-            .on 'mouseout', (edge) ->
+            .on 'mouseleave', (edge) ->
               mouseState.overLink = false
               updateMouseElements()
               return
@@ -315,13 +291,23 @@ module.exports = [
               updateMouseElements()
               return
             .on 'mouseup', (edge) ->
-              focusEdge(edge)
               update()
               return
             .on 'click', (edge) ->
-              cycleDirection(edge.source, edge.target)
+              ids = focusedEdgeKey.split(',')
+              source = network.getNodeById ids[0]
+              target = network.getNodeById ids[1]
+              network.cycleDirection(source, target)
               update()
               return
+        # Update existing edges.
+        path
+            .classed 'focused', (edge) ->
+              network.isSameLink(edge.key, focusedEdgeKey)
+            .style 'marker-start', (edge) ->
+              (if edge.bidirectional then 'url(#start-arrow)' else "")
+            .style 'marker-end', (edge) ->
+              'url(#end-arrow)'
         # Remove old edges.
         path.exit().remove()
 
@@ -485,6 +471,7 @@ module.exports = [
             # Don't create a new node if we're holding shift/meta, dragging,
             # mousing-over a node or link, or the network size limit has been
             # reached.
+            console.log mouseState
             unless d3.event.shiftKey or
                    d3.event.metaKey or
                    mouseState.overNode or
@@ -591,8 +578,9 @@ module.exports = [
             else
               mouseState.selecting = true
               # Unfocus nodes and edges.
-              focusedEdge = null
               focusedNode = null
+              unless mouseState.overLink
+                focusedEdgeKey = null
               # Redraw selection box starting at mouse.
               dragRect.attr
                 x: mouseState.downPoint[0]
@@ -649,13 +637,14 @@ module.exports = [
               circleGroup.call force.drag
               updateMouseElements()
 
-            return if not focusedNode and not focusedEdge
+            return if not focusedNode and not focusedEdgeKey
 
             # Node or link is focused:
             # Grab focused link source and target ids.
-            if focusedEdge
-              source = focusedEdge.source
-              target = focusedEdge.target
+            if focusedEdgeKey
+              ids = focusedEdgeKey.split(',')
+              source = network.getNodeById ids[0]
+              target = network.getNodeById ids[1]
             switch d3.event.keyCode
               # backspace, delete, d
               when 8, 46, 68
@@ -668,21 +657,21 @@ module.exports = [
                   removed = network.removeNode focusedNode
                   focusPreviousNode()
                   update()
-                else if focusedEdge
+                else if focusedEdgeKey
                   network.removeEdge source, target
                   network.removeEdge target, source
-                  focusedEdge = null
+                  focusedEdgeKey = null
                   update()
                 break
               # c
               when 67
-                if focusedEdge
-                  cycleDirection(source, target)
+                if focusedEdgeKey
+                  network.cycleDirection(source, target)
                   update()
                 break
               # b
               when 66
-                if focusedEdge
+                if focusedEdgeKey
                   network.addEdge source, target
                   network.addEdge target, source
                   update()

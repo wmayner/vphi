@@ -49,10 +49,10 @@ module.exports = angular.module name, []
           node.threshold++
         return
 
-      reverseEdgeKey = (edge) ->
-        if not edge
+      reverseEdgeKey = (key) ->
+        if not key
           return null
-        ids = edge.key.split(',')
+        ids = key.split(',')
         return ids[1] + ',' + ids[0]
 
       nodeToJSON = (node) ->
@@ -101,9 +101,17 @@ module.exports = angular.module name, []
           @update()
           return removedNodes
 
-        getNode: (index) -> @graph.getNodeByIndex(index)
+        getNode: (index) ->
+          result = null
+          @graph.forEachNode (node, id) ->
+            if node.index is index
+              result = node
+          return result
 
-        getNodes: -> @graph.getNodes()
+        getNodes: ->
+          return _.sortBy @graph.getNodes(), 'index'
+
+        getNodeById: (id) -> @graph._nodes[id]
 
         addEdge: (source, target) ->
           edge = @graph.addEdge(source._id, target._id)
@@ -119,10 +127,6 @@ module.exports = angular.module name, []
 
         getEdge: (source, target) ->
           @graph.getEdge(source._id, target._id)
-
-        getEdgeByKey: (key) ->
-          ids = key.split ','
-          @graph.getEdge(ids[0], ids[1])
 
         removeEdge: (source, target) ->
           removed = @graph.removeEdge(source._id, target._id)
@@ -143,7 +147,7 @@ module.exports = angular.module name, []
             # If this edge is the reverse of a previously seen edge, don't add a
             # second edge object; update the first to indicate that it's
             # bidirectional.
-            reversed = reverseEdgeKey(edge)
+            reversed = reverseEdgeKey(edge.key)
             if drawableEdges[reversed]
               drawableEdges[reversed].bidirectional = true
               return
@@ -152,29 +156,9 @@ module.exports = angular.module name, []
           # Return an array of edges.
           return (edge for key, edge of drawableEdges)
 
-        getNodeByIndex: (index) ->
-          result = null
-          @graph.forEachNode (node, id) ->
-            if node.index is index
-              result = node
-          return result
-
-        getNodesByIndex: ->
-          return _.sortBy((node for id, node of @graph._nodes), 'index')
-
-        mapByIndex: (operation) ->
-          return (operation(node) for node in @getNodesByIndex())
-
-        isSameLink: (edge, other) ->
-          return false if not other
-          return (edge.key is other.key or edge.key is reverseEdgeKey(other))
-
-        # Return the given property for each node, in order of node indices.
-        getNodeProperties: (property, node_indices) ->
-          if node_indices?
-            return (node[property] for node in @getNodesByIndex() when node.index in node_indices)
-          else
-            return (node[property] for node in @getNodesByIndex())
+        isSameLink: (key, otherKey) ->
+          return false if not otherKey
+          return (key is otherKey or key is reverseEdgeKey(otherKey))
 
         cycleMechanism: (node) ->
           cycleMechanism node
@@ -199,6 +183,23 @@ module.exports = angular.module name, []
             cycleThreshold node, @size()
           @update()
           return
+
+        cycleDirection: (source, target) ->
+          # Cycle through link directions:
+          # Original to reversed
+          if (@graph.getEdge(source._id, target._id) and
+              not @graph.getEdge(target._id, source._id))
+            console.log 'Original to reversed'
+            @graph.removeEdge source._id, target._id
+            @graph.addEdge target._id, source._id
+          # Reversed to bidirectional
+          else if (not @graph.getEdge(source._id, target._id) and
+                   @graph.getEdge(target._id, source._id))
+            @graph.addEdge source._id, target._id
+          # Bidirectional to original
+          else
+            @graph.removeEdge target._id, source._id
+          @update()
 
         toggleState: (node) ->
           node.on = utils.negate node.on
@@ -238,8 +239,7 @@ module.exports = angular.module name, []
           @update()
           return oldThreshold
 
-        getCurrentState: (node_indices) ->
-          return @getNodeProperties('on', node_indices)
+        getCurrentState: -> (node.on for node in @getNodes())
 
         getPastState: (node_indices) ->
           if not @pastState
@@ -247,7 +247,7 @@ module.exports = angular.module name, []
           return (@pastState[i] for i in node_indices)
 
         getConnectivityMatrix: ->
-          nodes = @getNodesByIndex()
+          nodes = @getNodes()
           r = (((if @graph.getEdge(i._id, j._id) then 1 else 0) \
                 for j in nodes) for i in nodes)
           return r
@@ -299,7 +299,7 @@ module.exports = angular.module name, []
 
         updateCurrentState: ->
           old = @currentState
-          @currentState = @getNodeProperties('on', [0...@size()])
+          @currentState = @getCurrentState()
           llog "  Changed current state from [#{old}] to [#{@currentState}]."
           return
 

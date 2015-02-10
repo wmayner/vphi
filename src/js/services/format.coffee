@@ -13,7 +13,7 @@ module.exports = angular.module name, []
     network.name
     (network) ->
       return new class FormatService
-        node: (index) -> network.getNodeByIndex(index).label
+        node: (index) -> network.getNode(index).label
 
         nodes: (node_indices) -> (@node(i) for i in node_indices)
 
