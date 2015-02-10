@@ -18,20 +18,12 @@ module.exports =  [
     $scope.importNetwork = (files) ->
       if files
         file = files[0]
-        isJson = (
-          file.name.indexOf('.json', file.name.length - '.json'.length) isnt -1
-        )
-        if isJson
-          try
-            console.log file
-            r = new FileReader()
-            text = r.readAsText(file)
-            console.log text
-            network.loadJSON JSON.parse(text)
-          catch e
-            log.error e
-        else
-          log.warn "Cannot import a network file without the '.json' extension."
+        try
+          r = new FileReader()
+          text = r.readAsText(file)
+          network.loadJSON JSON.parse(text)
+        catch e
+          console.error e
 
     $scope.export = ->
       blob = new Blob [network.toJSON()], {type: 'application/json'}
