@@ -334,10 +334,11 @@ module.exports = [
               r: NODE_RADIUS
             .on 'mouseover', (node) ->
               mouseState.overNode = node
-              # Only focus a node if it's a new one and we haven't just
-              # finished dragging a new link.
+              # Only focus a node if it's a new one, we haven't just finished
+              # dragging a new link, and we're not dragging the selection box.
               unless mouseState.linking or
                      mouseState.justLinked or
+                     mouseState.selecting or
                      node is mouseState.upNode
                 focusNode(node)
               update()
