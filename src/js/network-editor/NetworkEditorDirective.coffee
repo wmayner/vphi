@@ -191,8 +191,11 @@ module.exports = [
       toggleSelect = (node) ->
         if node.selected
           deselectNode(node)
+          unless selectedNodes.length > 0
+            focusNode(node)
         else
           selectNode(node)
+          focusedNode = null
 
       getRadius = (node) ->
         r = NODE_RADIUS
