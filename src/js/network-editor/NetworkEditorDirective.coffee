@@ -573,7 +573,7 @@ module.exports = [
 
             if mouseState.downNode
               mouseState.linking = true
-            else
+            else unless mouseState.overLink
               mouseState.selecting = true
               # Unfocus nodes and edges.
               focusedNode = null
