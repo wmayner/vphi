@@ -167,8 +167,10 @@ module.exports = [
       )
 
       focusNode = (node) ->
-        focusedNode = node
-        focusedEdgeKey = null
+        # Only focus node if there are no selected nodes.
+        unless selectedNodes.length > 0
+          focusedNode = node
+          focusedEdgeKey = null
 
       focusEdge = (edge) ->
         focusedEdgeKey = edge.key
@@ -335,8 +337,6 @@ module.exports = [
                      mouseState.justLinked or
                      node is mouseState.upNode
                 focusNode(node)
-                # Enlarge target node.
-                d3.select().attr 'transform', 'scale(1.1)'
               update()
               return
             .on 'mouseleave', (node) ->
@@ -555,15 +555,9 @@ module.exports = [
                   )
                   if nodeInSelectionBox
                     unless node.selected
-                      # Focus and select node.
-                      focusNode(node)
                       selectNode(node)
-                  else
-                    if node is focusedNode
-                      # Unfocus node and refocus most recently selected node.
-                      focusNode(selectedNodes[selectedNodes.length - 1])
-                    if node.selected and not d3.event.shiftKey
-                      deselectNode(node)
+                  else if node.selected and not d3.event.shiftKey
+                    deselectNode(node)
                   return
 
             update()
@@ -637,7 +631,9 @@ module.exports = [
               circleGroup.call force.drag
               updateMouseElements()
 
-            return if not focusedNode and not focusedEdgeKey
+            return unless focusedNode or
+                          focusedEdgeKey or
+                          selectedNodes.length > 0
 
             # Node or link is focused:
             # Grab focused link source and target ids.
@@ -678,7 +674,7 @@ module.exports = [
                 break
               # space
               when 32
-                d3.event.preventDefault()
+                console.log selectedNodes
                 if selectedNodes.length > 0
                   network.toggleStates selectedNodes
                   for node in selectedNodes
