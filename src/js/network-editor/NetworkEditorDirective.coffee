@@ -621,11 +621,6 @@ module.exports = [
                 focusNextNode()
                 update()
                 break
-              # backspace, delete
-              when 8, 46
-                # Don't go “back” with backspace/delete (too easy to
-                # accidentally lose the page instead of deleting a node).
-                d3.event.preventDefault()
 
             return unless lastKeyDown is -1
             lastKeyDown = d3.event.keyCode
