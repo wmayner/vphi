@@ -18,21 +18,7 @@ parityGate = (input) ->
   return utils.negate(sum % 2)
 
 
-exports.names = [
-  'AND'
-  'NAND'
-  'OR'
-  'NOR'
-  'XOR'
-  'RAND'
-  'MAJ'
-  'MIN'
-  'PAR'
-  '>'
-  '<'
-]
-
-exports.functions =
+module.exports =
   'AND': andGate
   'NAND': (input) ->
     return utils.negate(andGate(input))
@@ -62,3 +48,6 @@ exports.functions =
     sum = 0
     sum += i for i in input
     return utils.bit(sum < threshold)
+
+names = (key for own key, val of module.exports)
+module.exports.names = names

@@ -25,9 +25,9 @@ getNextNodeState = (network, index, state) ->
   # Compute the new state of the node by plugging-in the inputs to its
   # mechanism.
   if node.mechanism is '>' or node.mechanism is '<'
-    return mechanism.functions[node.mechanism](inputs, node.threshold)
+    return mechanism[node.mechanism](inputs, node.threshold)
   else
-    return mechanism.functions[node.mechanism](inputs)
+    return mechanism[node.mechanism](inputs)
 
 # Get a map from nodes to their next states.
 getNextNetworkState = (network, state) ->

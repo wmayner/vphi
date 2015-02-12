@@ -5,6 +5,7 @@
 
 networkService = require '../../services/network'
 formatService = require '../../services/format'
+mechanism = require '../../services/network/mechanism'
 
 module.exports =  [
   '$scope'
@@ -14,7 +15,6 @@ module.exports =  [
   ($scope, $upload, network, format) ->
 
     $scope.$watch 'files', -> $scope.importNetwork $scope.files
-
     $scope.importNetwork = (files) ->
       if files
         file = files[0]
@@ -29,7 +29,7 @@ module.exports =  [
       blob = new Blob [network.toJSON()], {type: 'application/json'}
       window.saveAs blob, 'network.json'
 
-    $scope.examples = network.exampleNames
+    $scope.exampleNames = network.exampleNames
     $scope.load = (exampleName) -> network.loadExample(exampleName)
 
     $scope.select = (pastState) ->
@@ -47,6 +47,29 @@ module.exports =  [
     $scope.$on (networkService.name + '.updated'), ->
       log.debug 'NETWORK_CONTROLS: Receieved network update.'
       update()
+
+    $scope.mechanismNames = network.mechanismNames
+
+    # Getter/Setter functions for node labels and mechanisms. We need to use
+    # these with ng-model so that we can call the d3 update and network update
+    # function, respectively, whenever the model changes.
+    $scope.getSetLabel = (newValue) ->
+      if newValue?
+        $scope.activeNode?.label = newValue
+        $scope.canvasUpdate()
+        update()
+        return newValue
+      else
+        return $scope.activeNode?.label
+    $scope.getSetMechanism = (newValue) ->
+      if newValue?
+        $scope.activeNode?.mechanism = newValue
+        # Update the network (thereby updating the TPM) with the new mechanism.
+        network.update()
+        return newValue
+      else
+        return $scope.activeNode?.mechanism
+
     # Intialize.
     update()
 

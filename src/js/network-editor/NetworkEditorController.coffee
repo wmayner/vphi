@@ -6,4 +6,5 @@
 module.exports = [
   '$scope'
   ($scope) ->
+    $scope.activeNode = null
 ]

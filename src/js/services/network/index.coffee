@@ -9,7 +9,7 @@ utils = require './utils'
 Graph = require './graph'
 tpmify = require './tpmify'
 mechanism = require './mechanism'
-examples = require './examples'
+example = require './example'
 
 name = 'vphi.services.network'
 module.exports = angular.module name, []
@@ -64,6 +64,7 @@ module.exports = angular.module name, []
         delete jsonNode._inEdges
         delete jsonNode._outEdges
         return jsonNode
+
 
       # Public API
       # ========================================================================
@@ -353,10 +354,12 @@ module.exports = angular.module name, []
           @update()
           return
 
-        exampleNames: (key for own key, val of examples)
+        exampleNames: example.names
+
+        mechanismNames: mechanism.names
 
         loadExample: (exampleName) ->
-          @graph = examples[exampleName]()
+          @graph = example[exampleName]()
           @update()
           return
 

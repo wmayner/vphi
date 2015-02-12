@@ -1,5 +1,5 @@
 ###
-# graph-editor/examples.coffee
+# graph-editor/example.coffee
 ###
 
 Graph = require './graph'
@@ -240,3 +240,6 @@ module.exports =
       mechanism: 'OR'
       reflexive: false
       bidirectional: true
+
+names = (key for own key, val of module.exports)
+module.exports.names = names

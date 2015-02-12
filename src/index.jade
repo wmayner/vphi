@@ -30,13 +30,47 @@ body
   #top-wrapper.container-fluid
     .row.clearfix
       .col-md-6
-        #network-editor-module.module
+        #network-editor-module.module(ng-controller='networkEditorCtrl')
           h2.module-title Network
           .row.clearfix
             .col-xs-12
               #network-editor-container
                 network-editor
           .control-panel(ng-controller='networkEditor.controlPanelCtrl')
+            .row.clearfix
+              .col-xs-6
+                .form-inline
+                  .form-group
+                    label.vphi-label Label
+                    input#node-label-input.form-control(ng-if="!activeNode", disabled, aria-describedby='Change focused node label')
+                    input#node-label-input.form-control(ng-if="activeNode", type='text', ng-model="getSetLabel", ng-model-options="{ getterSetter: true }", aria-describedby='Change focused node label')
+              .col-xs-6
+                .form-inline
+                  .form-group
+                    label.vphi-label(for="node-mechanism-select") Mechanism
+                    select#node-mechanism-select.form-control(ng-if="!activeNode", disabled, aria-describedby='Change focused node mechanism')
+                    select#node-mechanism-select.form-control(ng-if="activeNode", ng-model="getSetMechanism", ng-model-options="{ getterSetter: true }", aria-describedby='Change focused node mechanism')
+                      option(ng-repeat='mechanism in mechanismNames') {{mechanism}}
+            .row.clearfix
+              .col-xs-12
+                .control-group#past-state-panel
+                  .btn-group
+                    label.vphi-label(for='past-state-chooser') Past state
+                    span.dropdown#past-state-chooser
+                      button#no-past-states.btn.btn-md.btn-default.disabled(ng-hide="possiblePastStates") No possible past states
+                      span(ng-show="possiblePastStates")
+                        button#empty-past-state.btn.btn-md.btn-default(ng-hide="currentPastState.length > 0") –
+                        button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-show="possiblePastStates && currentPastState.length > 0", type='button', data-toggle='dropdown', aria-expanded='false')
+                          span#current-past-state {{currentPastState}}
+                          span.caret
+                          span.sr-only Toggle past state selection dropdown menu
+                        ul#past-states.dropdown-menu.dropdown-menu-right(ng-show="possiblePastStates", role='menu', aria-labelledby='past-state-dropdown')
+                          //- TODO use table?
+                          li#past-state-list-header
+                            strong {{nodes}}
+                          li.divider
+                          li.past-state(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
+                            a {{pastState.join(', ')}}
             .row.clearfix
               .col-xs-12
                 .control-group#network-editor-buttons.btn-toolbar(role='toolbar')
@@ -52,27 +86,8 @@ body
                       span.caret
                       span.sr-only Toggle example selection dropdown menu
                     ul#examples.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='example-dropdown')
-                      li(ng-repeat='example in examples', ng-click='load(example)')
+                      li(ng-repeat='example in exampleNames', ng-click='load(example)')
                         a {{example}}
-            .row.clearfix
-              .col-xs-12
-                .control-group#past-state-panel
-                  .vphi-label Past state:
-                  span.dropdown#past-state-chooser
-                    button#no-past-states.btn.btn-md.btn-default.disabled(ng-hide="possiblePastStates") No possible past states
-                    span(ng-show="possiblePastStates")
-                      button#empty-past-state.btn.btn-md.btn-default(ng-hide="currentPastState.length > 0") –
-                      button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-show="possiblePastStates && currentPastState.length > 0", type='button', data-toggle='dropdown', aria-expanded='false')
-                        span#current-past-state {{currentPastState}}
-                        span.caret
-                        span.sr-only Toggle past state selection dropdown menu
-                      ul#past-states.dropdown-menu.dropdown-menu-right(ng-show="possiblePastStates", role='menu', aria-labelledby='past-state-dropdown')
-                        //- TODO use table?
-                        li#past-state-list-header
-                          strong {{nodes}}
-                        li.divider
-                        li.past-state(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
-                          a {{pastState.join(', ')}}
       .col-md-6
         #concept-space-module.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure
@@ -113,7 +128,7 @@ body
         section#output-summary-module.module(ng-controller="outputSummaryCtrl")
           .row.clearfix
             .col-md-12
-              h2.module-title {{title}} 
+              h2.module-title(ng-bind="title")
                 span.vphi-value.number-2(ng-hide="nodes.length > 0") –
                 ul.node-list
                   li(ng-class="{'on': currentState[n]}", ng-repeat="node in nodes") {{node}}
@@ -122,7 +137,7 @@ body
               .summary-items.well
                 #phi-value.item
                   .vphi-label \( \large \Phi \)
-                  .vphi-value.number-7 {{bigPhi}}
+                  .vphi-value.number-7(ng-bind="bigPhi")
                 #minimal-cut.item
                   .vphi-label Minimal cut
                   .vphi-value.number-2(ng-hide="cut") –
@@ -135,10 +150,10 @@ body
                       li(ng-repeat="n in cut.intact") {{n}}
                 #num-concepts.item
                   .vphi-label Number of concepts
-                  .vphi-value.number-2 {{numConcepts}}
+                  .vphi-value.number-2(ng-bind="numConcepts")
                 #sum-small-phi.item
                   .vphi-label \( \sum\varphi \)
-                  .vphi-value.number-7 {{sumSmallPhi}}
+                  .vphi-value.number-7(ng-bind="sumSmallPhi")
     .row.clearfix
       .col-md-12
         section#concept-list-module.module.hidden(ng-controller='conceptListCtrl')

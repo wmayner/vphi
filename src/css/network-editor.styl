@@ -21,15 +21,8 @@ network-editor
       float none
     }
 
-#past-state-panel
-  margin-bottom 15px
-
-//- phone
-@media (max-width: phone_max) {
-  #past-state-dropdown, #no-past-states {
-    width 100%
-  }
-}
+#node-label-input
+  text-align center
 
 #import-network
   border-top-left-radius 4px
@@ -59,6 +52,13 @@ ul#past-states,
 #no-past-states
   opacity 1
   background lighten(sol_red, 80%)
+
+//- phone
+@media (max-width: phone_max) {
+  #past-state-dropdown, #no-past-states {
+    width 100%
+  }
+}
 
 #network-editor-module
 

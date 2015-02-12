@@ -13,7 +13,9 @@ module.exports = angular.module name, []
     network.name
     (network) ->
       return new class FormatService
-        node: (index) -> network.getNode(index).label
+        node: (index) ->
+          # Only return the first 8 characters of the label.
+          network.getNode(index).label[..8]
 
         nodes: (node_indices) -> (@node(i) for i in node_indices)
 

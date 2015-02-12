@@ -28,9 +28,9 @@ module.exports = [
       # State
       # =====================================================================
 
+      selectedNodes = []
       focusedNode = null
       focusedEdgeKey = null
-      selectedNodes = []
       # Only respond once per keydown.
       lastKeyDown = -1
       mouseState =
@@ -166,27 +166,67 @@ module.exports = [
         if node.on then colors.node.on else colors.node.off
       )
 
+      # Update the currently 'active node'. Here 'active node' refers to the
+      # node bound to the scope, which control-panel elements act on.
+      activateNode = (node) ->
+        scope.activeNode = node
+        scope.$digest()
+        return node
+      # If no node is given, deactivate the current node. If a node is given,
+      # only deactivate that node (no effect if it's not the active node).
+      deactivateNode = (node) ->
+        if node?
+          scope.activeNode = null if node is scope.activeNode
+          scope.$digest()
+        else
+          scope.activeNode = null
+          scope.$digest()
+        return
+
+      # Update the currently 'focused node'. Here 'focused node' refers to the
+      # node that the user can act on with keyboard presses.
       focusNode = (node) ->
         # Only focus node if there are no selected nodes.
         unless selectedNodes.length > 0
           focusedNode = node
-          focusedEdgeKey = null
+          activateNode(node)
+          unfocusEdge()
+        return node
+      unfocusNode = (node) ->
+        focusedNode = null
+        return
 
+      # Update the currently 'focused edge'. Here 'focused edge' refers to the
+      # edge that the user can act on with keyboard presses.
       focusEdge = (edge) ->
         focusedEdgeKey = edge.key
-        focusedNode = null
+        unfocusNode()
+        return edge
+      unfocusEdge = ->
+        focusedEdgeKey = null
+        return
 
+      # Add a node to the list of 'selected nodes'. Here 'selected nodes' means
+      # the nodes that can be acted on as a group by a user keypress, and those
+      # that are considered as part of the subsystem that will be analyzed.
       selectNode = (node) ->
         # Add node to selected node list.
         selectedNodes.push node
+        # Unfocus it.
+        unfocusNode()
         # Mark it as selected.
         node.selected = true
-
+        # If it's the only one, active it too.
+        activateNode(node) if selectedNodes.length is 1
+        return node
       deselectNode = (node) ->
         # Remove node from selected node list.
         selectedNodes.splice selectedNodes.indexOf(node), 1
         # Mark it as not selected.
         node.selected = false
+        # Deactivate it if it was active.
+        deactivateNode(node)
+        return
 
       toggleSelect = (node) ->
         if node.selected
@@ -195,7 +235,7 @@ module.exports = [
             focusNode(node)
         else
           selectNode(node)
-          focusedNode = null
+          unfocusNode()
 
       getRadius = (node) ->
         r = NODE_RADIUS
@@ -475,7 +515,6 @@ module.exports = [
             # Don't create a new node if we're holding shift/meta, dragging,
             # mousing-over a node or link, or the network size limit has been
             # reached.
-            console.log mouseState
             unless d3.event.shiftKey or
                    d3.event.metaKey or
                    mouseState.overNode or
@@ -576,9 +615,9 @@ module.exports = [
             else unless mouseState.overLink
               mouseState.selecting = true
               # Unfocus nodes and edges.
-              focusedNode = null
+              unfocusNode()
               unless mouseState.overLink
-                focusedEdgeKey = null
+                unfocusEdge()
               # Redraw selection box starting at mouse.
               dragRect.attr
                 x: mouseState.downPoint[0]
@@ -589,6 +628,7 @@ module.exports = [
               unless d3.event.shiftKey or
                      d3.event.metaKey
                 selectedNodes = []
+                deactivateNode()
                 d3.selectAll 'circle.node'
                   .each deselectNode
 
@@ -630,9 +670,10 @@ module.exports = [
               circleGroup.call force.drag
               updateMouseElements()
 
-            return unless focusedNode or
-                          focusedEdgeKey or
-                          selectedNodes.length > 0
+            return unless mouseState.onCanvas and
+              (focusedNode or
+               focusedEdgeKey or
+               selectedNodes.length > 0)
 
             # Node or link is focused:
             # Grab focused link source and target ids.
@@ -640,9 +681,11 @@ module.exports = [
               ids = focusedEdgeKey.split(',')
               source = network.getNodeById ids[0]
               target = network.getNodeById ids[1]
+
             switch d3.event.keyCode
               # backspace, delete, d
               when 8, 46, 68
+                d3.event.preventDefault()
                 if selectedNodes.length > 0
                   network.removeNodes selectedNodes
                   selectedNodes = []
@@ -655,7 +698,7 @@ module.exports = [
                 else if focusedEdgeKey
                   network.removeEdge source, target
                   network.removeEdge target, source
-                  focusedEdgeKey = null
+                  unfocusEdge()
                   update()
                 break
               # c
@@ -673,7 +716,6 @@ module.exports = [
                 break
               # space
               when 32
-                console.log selectedNodes
                 if selectedNodes.length > 0
                   network.toggleStates selectedNodes
                   for node in selectedNodes
@@ -816,4 +858,6 @@ module.exports = [
       # Update when network is updated.
       scope.$on (networkService.name + '.updated'), update
 
+      # Put the d3 update function on the Angular scope.
+      scope.canvasUpdate = update
 ]
