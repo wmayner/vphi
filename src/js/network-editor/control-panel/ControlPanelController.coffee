@@ -51,7 +51,6 @@ module.exports =  [
       update()
 
     $scope.mechanismNames = mechanism.names
-    console.log $scope.mechanismNames
     $scope.mechanisms = mechanism.keys
     $scope.selectMechanism = (mechanismKey) ->
       $scope.activeNode?.mechanism = mechanismKey

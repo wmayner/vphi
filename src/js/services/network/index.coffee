@@ -190,7 +190,6 @@ module.exports = angular.module name, []
           # Original to reversed
           if (@graph.getEdge(source._id, target._id) and
               not @graph.getEdge(target._id, source._id))
-            console.log 'Original to reversed'
             @graph.removeEdge source._id, target._id
             @graph.addEdge target._id, source._id
           # Reversed to bidirectional
