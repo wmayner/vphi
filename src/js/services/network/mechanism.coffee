@@ -49,5 +49,17 @@ module.exports =
     sum += i for i in input
     return utils.bit(sum < threshold)
 
-names = (key for own key, val of module.exports)
-module.exports.names = names
+keys = (key for own key, val of module.exports)
+module.exports.keys = keys
+module.exports.names =
+  'AND': 'AND Gate'
+  'NAND': 'NAND Gate'
+  'OR': 'OR Gate'
+  'NOR': 'NOR Gate'
+  'XOR': 'XOR Gate'
+  'RAND': 'Random'
+  'MAJ': 'Majority'
+  'MIN': 'Minority'
+  'PAR': 'Parity'
+  '>': 'Greater than threshold'
+  '<': 'Less than threshold'

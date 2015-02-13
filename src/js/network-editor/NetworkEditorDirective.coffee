@@ -224,8 +224,6 @@ module.exports = [
         selectedNodes.splice selectedNodes.indexOf(node), 1
         # Mark it as not selected.
         node.selected = false
-        # Deactivate it if it was active.
-        deactivateNode(node)
         return
 
       toggleSelect = (node) ->
@@ -628,7 +626,6 @@ module.exports = [
               unless d3.event.shiftKey or
                      d3.event.metaKey
                 selectedNodes = []
-                deactivateNode()
                 d3.selectAll 'circle.node'
                   .each deselectNode
 

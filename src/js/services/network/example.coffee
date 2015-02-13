@@ -241,5 +241,4 @@ module.exports =
       reflexive: false
       bidirectional: true
 
-names = (key for own key, val of module.exports)
-module.exports.names = names
+module.exports.names = (key for own key, val of module.exports)

@@ -21,33 +21,42 @@ network-editor
       float none
     }
 
-#node-label-input
+  .form-control, .form-group
+    display inline-block
+
+#node-label, #current-node-mechanism
   text-align center
+  color inherit
+
+#node-label
+    font-weight bold
+    width 4em
+  [disabled]
+    background-color white
+    border-color #ccc
+    box-shadow none
+    cursor auto
+    opacity 0.65
+
+#current-node-mechanism
+  display inline-block
+  width 13em
 
 #import-network
   border-top-left-radius 4px
   border-bottom-left-radius 4px
 
-ul#past-states,
-  text-align center
-  margin-top 13px
-  font-family mono_font
-  li
-    cursor pointer
-  #past-state-list-header
-    cursor inherit
-
 #past-state-chooser
   font-family mono_font
   text-align center
-  #current-past-state
-    display inline-block
-  #past-states
-    text-align center
-
-.dropdown-toggle
   span.caret
-    margin-left 1ex
+    margin-left 2ex
+
+ul#past-states
+  li
+    text-align center
+    >a
+      cursor pointer
 
 #no-past-states
   opacity 1
@@ -55,8 +64,24 @@ ul#past-states,
 
 //- phone
 @media (max-width: phone_max) {
-  #past-state-dropdown, #no-past-states {
-    width 100%
+  #network-editor-module {
+    .form-control, .form-group {
+      display block
+    }
+    .form-inline .btn-group, #node-label {
+      width 100%
+      button {
+        width 100%
+        span.caret {
+          position absolute
+          display inline-block
+          float right
+          top 45%
+          right 1.5ex
+          height 100%
+        }
+      }
+    }
   }
 }
 

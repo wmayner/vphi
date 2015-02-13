@@ -23,4 +23,3 @@ module.exports = angular.module name, []
 
         latexNodes: (nodeArray) -> @nodes(nodeArray).join('') or '[\\,]'
   ]
-

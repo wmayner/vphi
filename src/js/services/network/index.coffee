@@ -354,10 +354,6 @@ module.exports = angular.module name, []
           @update()
           return
 
-        exampleNames: example.names
-
-        mechanismNames: mechanism.names
-
         loadExample: (exampleName) ->
           @graph = example[exampleName]()
           @update()
@@ -379,7 +375,7 @@ module.exports = angular.module name, []
       if storedNetwork
         network.loadJSON storedNetwork
       else
-        network.loadExample network.exampleNames[0]
+        network.loadExample example.names[0]
 
       return network
   ]

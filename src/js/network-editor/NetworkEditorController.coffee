@@ -2,9 +2,12 @@
 ###
 # network-editor/NetworkEditorController.coffee
 ###
+#
+networkService = require '../services/network'
 
 module.exports = [
   '$scope'
-  ($scope) ->
-    $scope.activeNode = null
+  networkService.name
+  ($scope, network) ->
+    $scope.activeNode = network.getNode(0)
 ]

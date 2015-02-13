@@ -38,40 +38,6 @@ body
                 network-editor
           .control-panel(ng-controller='networkEditor.controlPanelCtrl')
             .row.clearfix
-              .col-xs-6
-                .form-inline
-                  .form-group
-                    label.vphi-label Label
-                    input#node-label-input.form-control(ng-if="!activeNode", disabled, aria-describedby='Change focused node label')
-                    input#node-label-input.form-control(ng-if="activeNode", type='text', ng-model="getSetLabel", ng-model-options="{ getterSetter: true }", aria-describedby='Change focused node label')
-              .col-xs-6
-                .form-inline
-                  .form-group
-                    label.vphi-label(for="node-mechanism-select") Mechanism
-                    select#node-mechanism-select.form-control(ng-if="!activeNode", disabled, aria-describedby='Change focused node mechanism')
-                    select#node-mechanism-select.form-control(ng-if="activeNode", ng-model="getSetMechanism", ng-model-options="{ getterSetter: true }", aria-describedby='Change focused node mechanism')
-                      option(ng-repeat='mechanism in mechanismNames') {{mechanism}}
-            .row.clearfix
-              .col-xs-12
-                .control-group#past-state-panel
-                  .btn-group
-                    label.vphi-label(for='past-state-chooser') Past state
-                    span.dropdown#past-state-chooser
-                      button#no-past-states.btn.btn-md.btn-default.disabled(ng-hide="possiblePastStates") No possible past states
-                      span(ng-show="possiblePastStates")
-                        button#empty-past-state.btn.btn-md.btn-default(ng-hide="currentPastState.length > 0") –
-                        button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-show="possiblePastStates && currentPastState.length > 0", type='button', data-toggle='dropdown', aria-expanded='false')
-                          span#current-past-state {{currentPastState}}
-                          span.caret
-                          span.sr-only Toggle past state selection dropdown menu
-                        ul#past-states.dropdown-menu.dropdown-menu-right(ng-show="possiblePastStates", role='menu', aria-labelledby='past-state-dropdown')
-                          //- TODO use table?
-                          li#past-state-list-header
-                            strong {{nodes}}
-                          li.divider
-                          li.past-state(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
-                            a {{pastState.join(', ')}}
-            .row.clearfix
               .col-xs-12
                 .control-group#network-editor-buttons.btn-toolbar(role='toolbar')
                   .btn-group
@@ -83,11 +49,48 @@ body
                     button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export
                   .btn-group
                     button#example-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false') Load Example
+                      | &nbsp;
                       span.caret
                       span.sr-only Toggle example selection dropdown menu
                     ul#examples.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='example-dropdown')
-                      li(ng-repeat='example in exampleNames', ng-click='load(example)')
-                        a {{example}}
+                      li(ng-repeat='exampleName in exampleNames', ng-click='load(exampleName)')
+                        a {{exampleName}}
+            .row.clearfix
+              .col-xs-12
+                .form-inline
+                  .form-group
+                    label.vphi-label Label
+                    input#node-label.form-control(ng-if="!activeNode", disabled, aria-describedby='Change focused node label')
+                    input#node-label.form-control(ng-if="activeNode", type='text', ng-model="getSetLabel", ng-model-options="{ getterSetter: true }", aria-describedby='Change focused node label')
+                  .form-group
+                    label.vphi-label(for="node-mechanism-select") Mechanism
+                    .btn-group
+                      button#node-mechanism-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-class="{'disabled': !activeNode}", type='button', data-toggle='dropdown', aria-expanded='false')
+                        #current-node-mechanism {{mechanismNames[activeNode.mechanism]}}
+                        span.caret
+                        span.sr-only Toggle node mechanism selection dropdown menu
+                      ul#node-mechanisms.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
+                        li.mechanism-option(ng-repeat="mechanism in mechanisms", ng-click="selectMechanism(mechanism)") 
+                          a {{mechanismNames[mechanism]}}
+                  .form-group
+                    label.vphi-label(for='past-state-chooser') Past state
+                    .btn-group(ng-if="!possiblePastStates")
+                      button#no-past-states.btn.btn-md.btn-default.disabled No possible past states
+                    .btn-group(ng-if="possiblePastStates && !(currentPastState.length > 0)")
+                      button#empty-past-state.btn.btn-md.btn-default –
+                    .btn-group#past-state-chooser(ng-if="possiblePastStates && currentPastState.length > 0")
+                      button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                        span#current-past-state 
+                          strong {{currentPastState}}
+                        span.caret
+                        span.sr-only Toggle past state selection dropdown menu
+                      ul#past-states.dropdown-menu.dropdown-menu-right(ng-show="possiblePastStates", role='menu', aria-labelledby='past-state-dropdown')
+                        //- TODO use table?
+                        li#past-state-list-header
+                          strong {{nodes}}
+                        li.divider
+                        li.past-state(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
+                          a {{pastState.join(', ')}}
       .col-md-6
         #concept-space-module.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure
