@@ -296,13 +296,13 @@ module.exports = angular.module name, []
             # Otherwise, set to the first possible one.
             old = @pastState
             @pastState = possiblePastStates[0]
-            llog "  Changed past state from [#{old}] to [#{@pastState}]."
+            llog "Changed past state from [#{old}] to [#{@pastState}]."
           return
 
         updateCurrentState: ->
           old = @currentState
           @currentState = @getCurrentState()
-          llog "  Changed current state from [#{old}] to [#{@currentState}]."
+          llog "Changed current state from [#{old}] to [#{@currentState}]."
           return
 
         getSelectedSubsystem: ->
@@ -325,7 +325,7 @@ module.exports = angular.module name, []
 
         updateTpm: ->
           @tpm = tpmify this
-          llog "  Updated TPM."
+          llog "Updated TPM."
           return
 
         toJSON: ->

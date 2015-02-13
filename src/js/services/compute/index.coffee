@@ -68,7 +68,7 @@ module.exports = angular.module name, []
           # TODO just attach these to the service.
           @data.currentState = network.currentState
           @data.pastState = network.pastState
-          log.debug "DATA_SERVICE: Data:"
+          log.debug "DATA_SERVICE: Got data:"
           log.debug @data
           phidata = @data
 
@@ -76,7 +76,7 @@ module.exports = angular.module name, []
           network.setSelectedSubsystem(@data.subsystem.node_indices)
           network.update()
 
-          log.debug "DATA_SERVICE: Broadcasting data update."
+          log.debug "DATA_SERVICE: *** Broadcasting update event. ***"
           $rootScope.$broadcast (name + '.updated')
           return
   ]

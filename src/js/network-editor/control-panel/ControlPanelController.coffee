@@ -38,7 +38,6 @@ module.exports =  [
       network.setPastState(pastState)
 
     update = ->
-      log.debug "NETWORK_CONTROLS: Updating."
       $scope.currentPastState = network.pastState?.join(', ') or null
       $scope.possiblePastStates = network.getPossiblePastStates()
       $scope.nodes = (
@@ -46,6 +45,7 @@ module.exports =  [
           [0...network.size()]).join(', ')
         else ''
       )
+      log.debug "NETWORK_CONTROLS: Updated."
     $scope.$on (networkService.name + '.updated'), ->
       log.debug 'NETWORK_CONTROLS: Receieved network update.'
       update()
