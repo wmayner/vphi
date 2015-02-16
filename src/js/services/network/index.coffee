@@ -37,9 +37,9 @@ module.exports = angular.module name, []
          for i in [0...Math.pow(2, numNodes)])
 
       cycleMechanism = (node) ->
-        next_index = mechanism.names.indexOf(node.mechanism) + 1
-        if next_index is mechanism.names.length then next_index = 0
-        node.mechanism = mechanism.names[next_index]
+        next_index = mechanism.keys.indexOf(node.mechanism) + 1
+        if next_index is mechanism.keys.length then next_index = 0
+        node.mechanism = mechanism.keys[next_index]
         return
 
       cycleThreshold = (node, max) ->
