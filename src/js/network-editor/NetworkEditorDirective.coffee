@@ -289,7 +289,7 @@ module.exports = [
         return nearest
 
       logChange = (node, propertyName, property) ->
-        log.debug "network_EDITOR: Set node #{node.label} #{propertyName} to " +
+        log.debug "NETWORK_EDITOR: Set node #{node.label} #{propertyName} to " +
                   "#{node[property]}."
 
 
