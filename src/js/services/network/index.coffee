@@ -334,6 +334,7 @@ module.exports = angular.module name, []
             jsonNodes.push nodeToJSON(node)
           data =
             nodes: jsonNodes
+            tpm: @tpm
             connectivityMatrix: @getConnectivityMatrix()
             pastState: @pastState
           return JSON.stringify data

@@ -89,7 +89,7 @@ body
                         li#past-state-list-header
                           strong {{nodes}}
                         li.divider
-                        li.past-state(ng-repeat="pastState in possiblePastStates", ng-click="select(pastState)") 
+                        li.past-state(ng-repeat="pastState in possiblePastStates", ng-click="selectPastState(pastState)") 
                           a {{pastState.join(', ')}}
       .col-md-6
         #concept-space-module.module(ng-controller='conceptSpaceCtrl')
