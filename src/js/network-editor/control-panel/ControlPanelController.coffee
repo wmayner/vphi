@@ -21,8 +21,9 @@ module.exports =  [
         file = files[0]
         try
           r = new FileReader()
-          text = r.readAsText(file)
-          network.loadJSON JSON.parse(text)
+          r.onloadend = ->
+            network.loadJSON r.result
+          r.readAsText(file)
         catch e
           console.error e
 
