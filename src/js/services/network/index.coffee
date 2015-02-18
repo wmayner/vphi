@@ -336,6 +336,7 @@ module.exports = angular.module name, []
             nodes: jsonNodes
             tpm: @tpm
             connectivityMatrix: @getConnectivityMatrix()
+            currentState: @currentState
             pastState: @pastState
           return JSON.stringify data
 
@@ -349,7 +350,9 @@ module.exports = angular.module name, []
           for row, i in json.connectivityMatrix
             for elt, j in row
               if elt then @graph.addEdge(i, j)
-          # Set past state.
+          @tpm = json.tpm
+          @connectivityMatrix = json.connectivityMatrix
+          @currentState = json.currentState
           @pastState = json.pastState
           @update()
           return
