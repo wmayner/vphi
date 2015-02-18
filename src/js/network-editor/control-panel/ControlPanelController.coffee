@@ -34,6 +34,17 @@ module.exports =  [
     $scope.exampleNames = example.names
     $scope.load = (exampleName) -> network.loadExample(exampleName)
 
+    $scope.mechanismNames = mechanism.names
+    $scope.mechanisms = mechanism.keys
+    $scope.selectMechanism = (mechanismKey) ->
+      if $scope.selectedNodes.length > 1
+        for node in $scope.selectedNodes
+          node.mechanism = mechanismKey
+        network.update()
+      else if $scope.activeNode?
+        $scope.activeNode?.mechanism = mechanismKey
+        network.update()
+
     $scope.selectPastState = (pastState) ->
       log.debug "NETWORK_CONTROLS: Setting past state to [#{pastState}]."
       network.setPastState(pastState)
@@ -50,17 +61,6 @@ module.exports =  [
     $scope.$on (networkService.name + '.updated'), ->
       log.debug 'NETWORK_CONTROLS: Receieved network update.'
       update()
-
-    $scope.mechanismNames = mechanism.names
-    $scope.mechanisms = mechanism.keys
-    $scope.selectMechanism = (mechanismKey) ->
-      if $scope.selectedNodes.length > 1
-        for node in $scope.selectedNodes
-          node.mechanism = mechanismKey
-        network.update()
-      else if $scope.activeNode?
-        $scope.activeNode?.mechanism = mechanismKey
-        network.update()
 
     # Intialize.
     update()
