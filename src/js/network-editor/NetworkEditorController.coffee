@@ -10,4 +10,5 @@ module.exports = [
   networkService.name
   ($scope, network) ->
     $scope.activeNode = network.getNode(0)
+    $scope.selectedNodes = []
 ]

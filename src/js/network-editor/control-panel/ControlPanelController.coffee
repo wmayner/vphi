@@ -54,27 +54,13 @@ module.exports =  [
     $scope.mechanismNames = mechanism.names
     $scope.mechanisms = mechanism.keys
     $scope.selectMechanism = (mechanismKey) ->
-      $scope.activeNode?.mechanism = mechanismKey
-      network.update()
-    # Getter/Setter functions for node labels and mechanisms. We need to use
-    # these with ng-model so that we can call the d3 update and network update
-    # function, respectively, whenever the model changes.
-    $scope.getSetLabel = (newValue) ->
-      if newValue?
-        $scope.activeNode?.label = newValue
-        $scope.canvasUpdate()
-        update()
-        return newValue
-      else
-        return $scope.activeNode?.label
-    $scope.getSetMechanism = (newValue) ->
-      if newValue?
-        $scope.activeNode?.mechanism = newValue
-        # Update the network (thereby updating the TPM) with the new mechanism.
+      if $scope.selectedNodes.length > 1
+        for node in $scope.selectedNodes
+          node.mechanism = mechanismKey
         network.update()
-        return newValue
-      else
-        return $scope.activeNode?.mechanism
+      else if $scope.activeNode?
+        $scope.activeNode?.mechanism = mechanismKey
+        network.update()
 
     # Intialize.
     update()

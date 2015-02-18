@@ -28,7 +28,7 @@ module.exports = [
       # State
       # =====================================================================
 
-      selectedNodes = []
+      scope.selectedNodes = []
       focusedNode = null
       focusedEdgeKey = null
       # Only respond once per keydown.
@@ -187,7 +187,7 @@ module.exports = [
       # node that the user can act on with keyboard presses.
       focusNode = (node) ->
         # Only focus node if there are no selected nodes.
-        unless selectedNodes.length > 0
+        unless scope.selectedNodes.length > 0
           focusedNode = node
           activateNode(node)
           unfocusEdge()
@@ -211,17 +211,17 @@ module.exports = [
       # that are considered as part of the subsystem that will be analyzed.
       selectNode = (node) ->
         # Add node to selected node list.
-        selectedNodes.push node
+        scope.selectedNodes.push node
         # Unfocus it.
         unfocusNode()
         # Mark it as selected.
         node.selected = true
         # If it's the only one, active it too.
-        activateNode(node) if selectedNodes.length is 1
+        activateNode(node) if scope.selectedNodes.length is 1
         return node
       deselectNode = (node) ->
         # Remove node from selected node list.
-        selectedNodes.splice selectedNodes.indexOf(node), 1
+        scope.selectedNodes.splice scope.selectedNodes.indexOf(node), 1
         # Mark it as not selected.
         node.selected = false
         return
@@ -229,7 +229,7 @@ module.exports = [
       toggleSelect = (node) ->
         if node.selected
           deselectNode(node)
-          unless selectedNodes.length > 0
+          unless scope.selectedNodes.length > 0
             focusNode(node)
         else
           selectNode(node)
@@ -625,7 +625,7 @@ module.exports = [
               # Clear selection unless holding Shift or Command/Alt.
               unless d3.event.shiftKey or
                      d3.event.metaKey
-                selectedNodes = []
+                scope.selectedNodes = []
                 d3.selectAll 'circle.node'
                   .each deselectNode
 
@@ -670,7 +670,7 @@ module.exports = [
             return unless mouseState.onCanvas and
               (focusedNode or
                focusedEdgeKey or
-               selectedNodes.length > 0)
+               scope.selectedNodes.length > 0)
 
             # Node or link is focused:
             # Grab focused link source and target ids.
@@ -683,9 +683,9 @@ module.exports = [
               # backspace, delete, d
               when 8, 46, 68
                 d3.event.preventDefault()
-                if selectedNodes.length > 0
-                  network.removeNodes selectedNodes
-                  selectedNodes = []
+                if scope.selectedNodes.length > 0
+                  network.removeNodes scope.selectedNodes
+                  scope.selectedNodes = []
                   focusPreviousNode()
                   update()
                 else if focusedNode
@@ -713,9 +713,9 @@ module.exports = [
                 break
               # space
               when 32
-                if selectedNodes.length > 0
-                  network.toggleStates selectedNodes
-                  for node in selectedNodes
+                if scope.selectedNodes.length > 0
+                  network.toggleStates scope.selectedNodes
+                  for node in scope.selectedNodes
                     logChange(node, 'state', 'on')
                   update()
                 else if focusedNode
@@ -725,9 +725,9 @@ module.exports = [
                 break
               # m
               when 77
-                if selectedNodes.length > 0
-                  network.cycleMechanisms selectedNodes
-                  for node in selectedNodes
+                if scope.selectedNodes.length > 0
+                  network.cycleMechanisms scope.selectedNodes
+                  for node in scope.selectedNodes
                     logChange(node, 'state', 'on')
                   update()
                 else if focusedNode
@@ -737,9 +737,9 @@ module.exports = [
                 break
               # t
               when 84
-                if selectedNodes.length > 0
-                  network.cycleThresholds selectedNodes
-                  for node in selectedNodes
+                if scope.selectedNodes.length > 0
+                  network.cycleThresholds scope.selectedNodes
+                  for node in scope.selectedNodes
                     logChange(node, 'threshold', 'threshold')
                   update()
                 else if focusedNode
@@ -749,9 +749,9 @@ module.exports = [
                 break
               # r
               when 82
-                if selectedNodes.length > 0
-                  network.toggleSelfLoops selectedNodes
-                  for node in selectedNodes
+                if scope.selectedNodes.length > 0
+                  network.toggleSelfLoops scope.selectedNodes
+                  for node in scope.selectedNodes
                     logChange(node, 'reflexivity', 'reflexive')
                   update()
                 else if focusedNode
@@ -761,9 +761,9 @@ module.exports = [
                 break
               # f
               when 70
-                if selectedNodes.length > 0
-                  initial = selectedNodes[0].fixed
-                  for node in selectedNodes
+                if scope.selectedNodes.length > 0
+                  initial = scope.selectedNodes[0].fixed
+                  for node in scope.selectedNodes
                     node.fixed = not initial
                     logChange(node, 'fixed', 'fixed')
                   update()
