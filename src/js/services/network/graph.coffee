@@ -37,10 +37,9 @@ class Graph
       on: 0
       mechanism: 'OR'
       reflexive: false
+      selected: false
       # Threshold for '>' and '<' mechanisms.
       threshold: 2
-      # Marks whether this node is in the currently chosen subsystem.
-      inSubsystem: false
 
     for key, value of nodeData
       unless key is 'neighbors'
