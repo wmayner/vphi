@@ -443,7 +443,7 @@ module.exports = [
         # Update existing nodes.
         # Note: since we appended to the enter selection, this will be applied
         # to the new circle elements we just created.
-        circleGroup.selectAll 'circle.node'
+        circles
             .style 'fill', (node) ->
               # Brighten the focused node.
               if (node is focusedNode)
@@ -463,6 +463,9 @@ module.exports = [
               return r
             .attr 'stroke-width', (node) ->
               return (if node.reflexive then REFLEXIVE_NODE_BORDER else 0)
+        # Class selected nodes as such.
+        circleGroup
+          .classed 'selected', (node) -> node.selected
         # Update subsystem inclusion markers.
         circleGroup.select '.subsystem-marker'
           .classed 'hidden', (node) -> not node.selected
@@ -472,7 +475,7 @@ module.exports = [
               r += REFLEXIVE_NODE_BORDER
             return r
         # Enlarge the focused node.
-        circleGroup.selectAll 'circle'
+        circles
             .attr 'transform', (node) ->
               if (node is focusedNode)
                 return 'scale(1.1)'
@@ -793,7 +796,7 @@ module.exports = [
               circleGroup
                   .on 'mousedown.drag', null
                   .on 'touchstart.drag', null
-              svg.classed('shiftkey', false)
+              svg.classed 'shiftkey', false
 
 
       # Initialization
