@@ -44,6 +44,7 @@ module.exports = angular.module name, []
         pyphiCall: (method, success, always) ->
           if not isValid(network)
             always()
+            log.debug 'DATA_SERVICE: Invalid network.'
             return
           log.debug "DATA_SERVICE: Calling `#{method}`..."
           @callInProgress = true
