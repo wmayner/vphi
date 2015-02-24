@@ -18,10 +18,12 @@ chain = (n, options) ->
 
   unless options.k?
     options.k = 1
+  unless options.on?
+    options.on = 0
 
   for i in [0...n]
     graph.addNode
-      on: 0
+      on: options.on
       mechanism: options.mechanism or 'OR'
       reflexive: (if options.reflexive then true else false)
 
@@ -43,7 +45,7 @@ chain = (n, options) ->
 module.exports =
 
   # IIT 3.0 paper example
-  'IIT 2014 Paper': ->
+  'IIT 3.0 Paper, Figure 1': ->
     graph = new Graph()
 
     graph.addNode
@@ -67,6 +69,15 @@ module.exports =
     graph.addEdge(2, 1)
 
     return graph
+
+  'IIT 3.0 Paper, Figure 17: Specialized majority': ->
+    return '/examples/specialized-majority.json'
+
+  'IIT 3.0 Paper, Figure 17: Homogeneous': ->
+    return '/examples/homogeneous.json'
+
+  'IIT 3.0 Paper, Figure 17: Modular': ->
+    return '/examples/modular.json'
 
   # Matlab default example
   'IIT 2008 Paper': ->
@@ -93,6 +104,8 @@ module.exports =
 
     return graph
 
+  '5 OR-node bidirectional loop': ->
+    return '/examples/5-OR-bidirectional-loop.json'
 
   # http://upload.wikimedia.org/wikipedia/commons/c/c6/R-S_mk2.gif
   'SR-Latch': ->
@@ -223,22 +236,5 @@ module.exports =
 
     return graph
 
-
-  '5 OR-node bidirectional loop': ->
-    chain 5,
-      k: 1
-      circle: true
-      mechanism: 'OR'
-      reflexive: false
-      bidirectional: true
-
-
-  '5 OR-node bidirectional loop, k = 2': ->
-    chain 5,
-      k: 2
-      circle: true
-      mechanism: 'OR'
-      reflexive: false
-      bidirectional: true
 
 module.exports.names = (key for own key, val of module.exports)

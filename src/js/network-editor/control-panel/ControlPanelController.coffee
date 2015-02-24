@@ -22,7 +22,7 @@ module.exports =  [
         try
           r = new FileReader()
           r.onloadend = ->
-            network.loadJSON r.result
+            network.loadJSON JSON.parse(r.result)
           r.readAsText(file)
         catch e
           console.error e

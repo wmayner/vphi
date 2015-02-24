@@ -341,7 +341,6 @@ module.exports = angular.module name, []
           return JSON.stringify data
 
         loadJSON: (json) ->
-          json = JSON.parse(json)
           @graph = new Graph()
           # Add nodes.
           for node in json.nodes
@@ -358,8 +357,12 @@ module.exports = angular.module name, []
           return
 
         loadExample: (exampleName) ->
-          @graph = example[exampleName]()
-          @update()
+          ex = example[exampleName]()
+          if typeof ex is 'string'
+            $.getJSON ex, (data) => @loadJSON data
+          else
+            @graph = ex
+            @update()
           return
 
         update: ->
@@ -376,7 +379,7 @@ module.exports = angular.module name, []
       # Load previous graph if available.
       storedNetwork = localStorage.getItem 'network'
       if storedNetwork
-        network.loadJSON storedNetwork
+        network.loadJSON JSON.parse(storedNetwork)
       else
         network.loadExample example.names[0]
 
