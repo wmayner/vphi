@@ -319,9 +319,10 @@ module.exports = [
               'url(#end-arrow)'
             .on 'mouseenter', (edge) ->
               mouseState.overLink = edge
-              # Only focus link if we're not dragging a new one and not
-              # selecting nodes.
-              unless mouseState.dragging
+              # Only focus link if we're not dragging a new one or selecting
+              # nodes and if it's not already focused.
+              unless mouseState.dragging or
+                     network.isSameLink(edge.key, focusedEdgeKey)
                 focusEdge(edge)
               update()
               return
