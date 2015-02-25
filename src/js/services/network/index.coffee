@@ -136,17 +136,19 @@ module.exports = angular.module name, []
 
         getDrawableEdges: ->
           ###
-          _Returns:_ An array of edges suitable for drawing on a plane. Bidirectional
-          edges are merged into a single object with the `bidirectional` attribute
-          set to true, and reflexive edges (self-loops) are not included.
+          _Returns:_ An array of edges suitable for drawing on a plane.
+          Bidirectional edges are merged into a single object with the
+          `bidirectional` attribute set to true, and reflexive edges
+          (self-loops) are not included.
           ###
           drawableEdges = {}
           @graph.forEachEdge (edge) ->
-            # Don't add self-loops (these are recorded as attributes on the node).
+            # Don't add self-loops (these are recorded as attributes on the
+            # node).
             if edge.source._id is edge.target._id
               return
-            # If this edge is the reverse of a previously seen edge, don't add a
-            # second edge object; update the first to indicate that it's
+            # If this edge is the reverse of a previously seen edge, don't add
+            # a second edge object; update the first to indicate that it's
             # bidirectional.
             reversed = reverseEdgeKey(edge.key)
             if drawableEdges[reversed]
@@ -266,9 +268,9 @@ module.exports = angular.module name, []
           for own id, n of @graph._nodes
             # If the node has no inputs, it can have any past state.
             unless @graph.getInEdgesOf(id).length is 0
-              # If it does have inputs, check that the TPM says there's a nonzero
-              # probability of that node being on if it currently is, and a zero
-              # probability if it isn't.
+              # If it does have inputs, check that the TPM says there's a
+              # nonzero probability of that node being on if it currently is,
+              # and a zero probability if it isn't.
               if ((@currentState[n.index] > 0 and row[n.index] is 0) or
                   (@currentState[n.index] is 0 and row[n.index] > 0))
                 return false
@@ -302,7 +304,7 @@ module.exports = angular.module name, []
         updateCurrentState: ->
           old = @currentState
           @currentState = @getCurrentState()
-          llog "Changed current state from [#{old}] to [#{@currentState}]."
+          llog "Updated current state from [#{old}] to [#{@currentState}]."
           return
 
         getSelectedSubsystem: ->
