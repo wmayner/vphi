@@ -26,7 +26,33 @@ module.exports = angular.module name, []
           return false
         return true
 
+      typesetMath = ->
+        # Typeset the concept list after it's loaded.
+        MathJax.Hub.Queue ['Typeset', MathJax.Hub, 'concept-list-module']
+        MathJax.Hub.Queue ->
+          # Show it after typesetting.
+          $('#concept-list-module').removeClass('hidden')
+          # Need this to force the charts to recalculate their width after
+          # the MathJax is rendered.
+          $(window).trigger('resize')
+
       return new class PhiDataService
+        constructor: ->
+          storedResults = localStorage.getItem 'results'
+          if storedResults
+            log.debug "DATA_SERVICE: Loading stored results."
+            # Need a setTimeout here to do the update after Angular is set up.
+            setTimeout (=>
+              # Update the service.
+              @update JSON.parse(storedResults)
+              typesetMath()
+              # Force a digest cycle.
+              # TODO figure out why we need this... we shouldn't and it's ugly.
+              $rootScope.$apply()
+            ), 0
+          else
+            log.debug "DATA_SERVICE: No stored results found."
+
         data: null
         calledMethod: null
         callInProgress: false
@@ -48,18 +74,12 @@ module.exports = angular.module name, []
             return
           log.debug "DATA_SERVICE: Calling `#{method}`..."
           @callInProgress = true
-          pyphi[method](network, (bigMip) =>
-            @update(bigMip)
+          pyphi[method](network, (data) =>
+            @update(data)
+            localStorage.setItem 'results', JSON.stringify(data)
             @callInProgress = false
             $rootScope.$apply success
-            # Typeset the concept list after it's loaded.
-            MathJax.Hub.Queue ['Typeset', MathJax.Hub, 'concept-list-module']
-            MathJax.Hub.Queue ->
-              # Show it after typesetting.
-              $('#concept-list-module').removeClass('hidden')
-              # Need this to force the charts to recalculate their width after
-              # the MathJax is rendered.
-              $(window).trigger('resize')
+            typesetMath()
           ).always(-> $rootScope.$apply always)
 
         update: (data) ->
