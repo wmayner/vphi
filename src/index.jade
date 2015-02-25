@@ -126,6 +126,53 @@ body
           button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("bigMip")', ng-disabled='isDisabled')
             | Selected Subsystem
     .row.clearfix
+      .col-md-10.col-md-offset-1
+        .alert.alert-default(role='alert')
+          button.close(type='button', data-dismiss='alert', aria-label='Close')
+            span(aria-hidden='true')&times;
+          h4 Note on calculation time
+          p The calculation time for Φ grows extremely quickly with the number of nodes and the density of the network. In order to conserve computational resources for other users, networks are therefore limited to 6 nodes.
+          .row.clearfix
+            .col-md-8.col-md-offset-2
+              p
+                table.table.table-responsive.table-condensed.table-hover#time-estimates
+                  caption Approximate times for finding the main complex
+                  thead
+                    tr
+                      th 
+                      th 1 nodes
+                      th 2 nodes
+                      th 3 nodes
+                      th 4 nodes
+                      th 5 nodes
+                      th 6 nodes
+                  tbody
+                    tr
+                      th Sparse
+                      td 0 sec
+                      td 0 sec
+                      td 3 sec
+                      td 40 sec
+                      td 10 min
+                      td
+                    tr
+                      th Medium
+                      td 0 sec
+                      td 0 sec
+                      td 3 sec
+                      td 
+                      td 1.5 min
+                      td 40 min
+                    tr
+                      th Dense
+                      td 0 sec
+                      td 0 sec
+                      td 3 sec
+                      td 
+                      td 5 min
+                      td 7.5 hrs
+          p Once a network has been analyzed, the results are saved and loaded again when needed; these estimates only apply to previously unanalyzed networks.
+    .row.clearfix
       .col-md-12
         section#output-summary-module.module(ng-controller='outputSummaryCtrl')
           .row.clearfix
