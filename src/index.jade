@@ -1,5 +1,5 @@
 doctype html
-html(lang='en' ng-app="vphi")
+html(lang='en' ng-app='vphi')
 head
   meta(charset='utf-8')
   meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
@@ -18,7 +18,7 @@ head
 
   link(href='/css/app.css', rel='stylesheet', type='text/css')
 
-  script(type="text/javascript").
+  script(type='text/javascript').
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -60,36 +60,35 @@ body
                 .form-inline
                   .form-group
                     label.vphi-label Label
-                    input#node-label.form-control(ng-if="!activeNode", disabled, aria-describedby='Change focused node label')
-                    input#node-label.form-control(ng-if="activeNode", type='text', ng-model="getSetLabel", ng-model-options="{ getterSetter: true }", aria-describedby='Change focused node label')
+                    input#node-label.form-control(ng-if='!activeNode', disabled, aria-describedby='Change focused node label')
+                    input#node-label.form-control(ng-if='activeNode', type='text', ng-model='getSetLabel', ng-model-options='{getterSetter: true}', aria-describedby='Change focused node label')
                   .form-group
-                    label.vphi-label(for="node-mechanism-select") Mechanism
+                    label.vphi-label(for='node-mechanism-select') Mechanism
                     .btn-group
-                      button#node-mechanism-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-class="{'disabled': !activeNode}", type='button', data-toggle='dropdown', aria-expanded='false')
+                      button#node-mechanism-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-class='{"disabled": !activeNode}', type='button', data-toggle='dropdown', aria-expanded='false')
                         #current-node-mechanism {{mechanismNames[activeNode.mechanism]}}
                         span.caret
                         span.sr-only Toggle node mechanism selection dropdown menu
                       ul#node-mechanisms.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
-                        li.mechanism-option(ng-repeat="mechanism in mechanisms", ng-click="selectMechanism(mechanism)") 
+                        li.mechanism-option(ng-repeat='mechanism in mechanisms', ng-click='selectMechanism(mechanism)') 
                           a {{mechanismNames[mechanism]}}
                   .form-group
                     label.vphi-label(for='past-state-chooser') Past state
-                    .btn-group(ng-if="!possiblePastStates")
+                    .btn-group(ng-if='!possiblePastStates')
                       button#no-past-states.btn.btn-md.btn-default.disabled No possible past states
-                    .btn-group(ng-if="possiblePastStates && !(currentPastState.length > 0)")
+                    .btn-group(ng-if='possiblePastStates && !(currentPastState.length > 0)')
                       button#empty-past-state.btn.btn-md.btn-default –
-                    .btn-group#past-state-chooser(ng-if="possiblePastStates && currentPastState.length > 0")
+                    .btn-group#past-state-chooser(ng-if='possiblePastStates && currentPastState.length > 0')
                       button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
                         span#current-past-state 
                           strong {{currentPastState}}
                         span.caret
                         span.sr-only Toggle past state selection dropdown menu
-                      ul#past-states.dropdown-menu.dropdown-menu-right(ng-show="possiblePastStates", role='menu', aria-labelledby='past-state-dropdown')
-                        //- TODO use table?
+                      ul#past-states.dropdown-menu.dropdown-menu-right(ng-show='possiblePastStates', role='menu', aria-labelledby='past-state-dropdown')
                         li#past-state-list-header
                           strong {{nodes}}
                         li.divider
-                        li.past-state(ng-repeat="pastState in possiblePastStates", ng-click="selectPastState(pastState)") 
+                        li.past-state(ng-repeat='pastState in possiblePastStates', ng-click='selectPastState(pastState)') 
                           a {{pastState.join(', ')}}
       .col-md-6
         #concept-space-module.module(ng-controller='conceptSpaceCtrl')
@@ -121,39 +120,40 @@ body
                 //     | Switch View
     .row.centered.clearfix
       .col-centered
-        #main-control-module.module(ng-controller="controlPanelCtrl")
-          button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('mainComplex')", ng-disabled="isDisabled")
+        #main-control-module.module(ng-controller='controlPanelCtrl')
+          button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("mainComplex")', ng-disabled='isDisabled')
             | Main Complex
-          button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click="calculate('bigMip')", ng-disabled="isDisabled")
+          button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("bigMip")', ng-disabled='isDisabled')
             | Selected Subsystem
     .row.clearfix
       .col-md-12
-        section#output-summary-module.module(ng-controller="outputSummaryCtrl")
+        section#output-summary-module.module(ng-controller='outputSummaryCtrl')
           .row.clearfix
             .col-md-12
-              h2.module-title(ng-bind="title")
-                span.vphi-value.number-2(ng-hide="nodes.length > 0") –
+              h2.module-title
+                span(ng-bind='title')
+                span.vphi-value.number-2(ng-hide='nodes.length > 0') –
                 ul.node-list
-                  li(ng-class="{'on': currentState[n]}", ng-repeat="node in nodes") {{node}}
+                  li(ng-class='{"on": currentState[node]}', ng-repeat='node in nodes') {{node}}
           .row.centered.clearfix
             .col-md-12
               .summary-items.well
                 #phi-value.item
                   .vphi-label \( \large \Phi \)
-                  .vphi-value.number-7(ng-bind="bigPhi")
+                  .vphi-value.number-7(ng-bind='bigPhi')
                 #minimal-cut.item
                   .vphi-label Minimal cut
-                  .vphi-value.number-2(ng-hide="cut") –
-                  .vphi-value(ng-if="cut.severed.length <= 0") N/A
-                  span(ng-show="cut.severed.length > 0")
+                  .vphi-value.number-2(ng-hide='cut') –
+                  .vphi-value(ng-if='cut.severed.length <= 0') N/A
+                  span(ng-show='cut.severed.length > 0')
                     ul.node-list.secondary
-                      li(ng-repeat="n in cut.severed") {{n}}
+                      li(ng-repeat='n in cut.severed') {{n}}
                     span.cut-symbol ⇏
                     ul.node-list.secondary
-                      li(ng-repeat="n in cut.intact") {{n}}
+                      li(ng-repeat='n in cut.intact') {{n}}
                 #num-concepts.item
                   .vphi-label Number of concepts
-                  .vphi-value.number-2(ng-bind="numConcepts")
+                  .vphi-value.number-2(ng-bind='numConcepts')
                 #sum-small-phi.item
                   .vphi-label \( \sum\varphi \)
                   .vphi-value.number-7(ng-bind='sumSmallPhi')
@@ -162,17 +162,16 @@ body
               p#elapsed-time(ng-show='time')
                 | Actual calculation time: \(\Phi\): <code>{{time}}</code> seconds; all \(\varphi\): <code>{{smallPhiTime}}</code> seconds
     .row.clearfix
-    .row.clearfix
       .col-md-12
         section#concept-list-module.module.hidden(ng-controller='conceptListCtrl')
           h2.module-title Concepts
-          .concept.well(ng-controller='conceptList.conceptCtrl' ng-repeat='concept in concepts', id="concept-{{$index}}")
+          .concept.well(ng-controller='conceptList.conceptCtrl' ng-repeat='concept in concepts', id='concept-{{$index}}')
             .row.centered.clearfix
               .col-xs-4
                 ul.concept-data
                   li
                     .small-phi-past
-                      .vphi-label(ng-class="{'bold': concept.cause.mip.phi >  concept.effect.mip.phi}") \( \varphi_{p} \)
+                      .vphi-label(ng-class='{"bold": concept.cause.mip.phi >  concept.effect.mip.phi}') \( \varphi_{p} \)
                       .vphi-value.number-7 {{smallPhiPast}}
                   li
                     .row
@@ -185,7 +184,7 @@ body
                           .math-output \( {{partitionedCauseMip}} \)
               .col-xs-4
                 ul.node-list.mechanism
-                  li(ng-class="{'on': currentState[n]}", ng-repeat="n in mechanism") {{format.node(n)}}
+                  li(ng-class='{"on": currentState[n]}', ng-repeat='n in mechanism') {{format.node(n)}}
                 hr
                 .small-phi
                   .vphi-label \( \varphi \)
@@ -194,7 +193,7 @@ body
                 ul.concept-data
                   li
                     .small-phi-future
-                      .vphi-label(ng-class="{'bold': concept.cause.mip.phi < concept.effect.mip.phi}") \( \varphi_{f} \)
+                      .vphi-label(ng-class='{"bold": concept.cause.mip.phi < concept.effect.mip.phi}') \( \varphi_{f} \)
                       .vphi-value.number-7 {{smallPhiFuture}}
                   li
                     .row
@@ -208,14 +207,14 @@ body
             .row.clearfix
               //- Stack repertoire charts for more width depending on how many
               //- states are being displayed.
-              div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
+              div(ng-class='{"col-md-12": numNodes > 5, "col-md-6": numNodes <= 5}')
                 .repertoire-container
                   h5.repertoire-title Cause Repertoire
-                  .repertoire(repertoire-chart, direction="cause")
-              div(ng-class="{'col-md-12': numNodes > 5, 'col-md-6': numNodes <= 5}")
+                  .repertoire(repertoire-chart, direction='cause')
+              div(ng-class='{"col-md-12": numNodes > 5, "col-md-6": numNodes <= 5}')
                 .repertoire-container
                   h5.repertoire-title Effect Repertoire
-                  .repertoire(repertoire-chart, direction="effect")
+                  .repertoire(repertoire-chart, direction='effect')
 
   #network-editor-help.modal.fade
     .modal-dialog
@@ -263,7 +262,7 @@ body
 
   //- Online/Offline
   //- script(src='/bower_components/angular/angular.js')
-  script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js")
+  script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js')
 
   //- TODO minify?
   script(src='/js/lib/jquery.jsonrpcclient.js')
@@ -296,8 +295,8 @@ body
   //- Online/Offline
   script(src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
   //- IMPORTANT: If loading from Bower, need to load the config file also
-  //- script(src='/bower_components/MathJax/MathJax.js')
-  //- script(src='/bower_components/MathJax/config/TeX-AMS-MML_HTMLorMML.js')
+  // //- script(src='/bower_components/MathJax/MathJax.js')
+  // //- script(src='/bower_components/MathJax/config/TeX-AMS-MML_HTMLorMML.js')
 
   script(src='/js/app.js')
 
