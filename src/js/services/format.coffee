@@ -5,7 +5,7 @@
 
 network = require './network'
 
-PRECISION = 6
+PRECISION = 5
 
 name = 'vphi.services.format'
 module.exports = angular.module name, []
