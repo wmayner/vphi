@@ -11,6 +11,8 @@ module.exports = [
   computeService.name
   formatService.name
   ($scope, compute, format) ->
+    $scope.time = null
+    $scope.smallPhiTime = null
     $scope.currentState = null
     $scope.title = 'Subsystem'
     $scope.nodes = []
@@ -29,6 +31,8 @@ module.exports = [
       else
         $scope.title = 'Subsystem'
 
+      $scope.time = format.time d.time
+      $scope.smallPhiTime = format.time d.small_phi_time
       $scope.currentState = d.currentState
       $scope.nodes = (format.node(i) for i in d.subsystem.node_indices)
       $scope.bigPhi = format.phi d.phi

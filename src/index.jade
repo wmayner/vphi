@@ -156,7 +156,12 @@ body
                   .vphi-value.number-2(ng-bind="numConcepts")
                 #sum-small-phi.item
                   .vphi-label \( \sum\varphi \)
-                  .vphi-value.number-7(ng-bind="sumSmallPhi")
+                  .vphi-value.number-7(ng-bind='sumSmallPhi')
+          .row.clearfix
+            .col-md-12
+              p#elapsed-time(ng-show='time')
+                | Actual calculation time: \(\Phi\): <code>{{time}}</code> seconds; all \(\varphi\): <code>{{smallPhiTime}}</code> seconds
+    .row.clearfix
     .row.clearfix
       .col-md-12
         section#concept-list-module.module.hidden(ng-controller='conceptListCtrl')

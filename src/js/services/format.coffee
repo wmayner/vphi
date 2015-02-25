@@ -21,5 +21,7 @@ module.exports = angular.module name, []
 
         phi: (phiValue) -> d3.round(phiValue, PRECISION)
 
+        time: (seconds) -> d3.round(seconds, 2)
+
         latexNodes: (nodeArray) -> @nodes(nodeArray).join('') or '[\\,]'
   ]
