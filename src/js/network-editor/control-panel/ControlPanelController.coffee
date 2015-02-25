@@ -71,7 +71,7 @@ module.exports =  [
       )
       log.debug "NETWORK_CONTROLS: Updated."
     $scope.$on (networkService.name + '.updated'), ->
-      log.debug 'NETWORK_CONTROLS: Receieved network update.'
+      log.debug 'NETWORK_CONTROLS: Received network update event.'
       update()
 
     # Intialize.

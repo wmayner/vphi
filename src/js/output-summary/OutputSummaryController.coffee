@@ -20,6 +20,8 @@ module.exports = [
     $scope.sumSmallPhi = '–'
 
     $scope.$on (computeService.name + '.updated'), ->
+      log.debug 'OUTPUT_SUMMARY: Received compute update.'
+
       d = compute.data
 
       if compute.calledMethod is 'mainComplex'
