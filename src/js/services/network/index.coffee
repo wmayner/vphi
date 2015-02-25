@@ -255,6 +255,7 @@ module.exports = angular.module name, []
           return r
 
         setPastState: (state) =>
+          return if "#{state}" is "#{@pastState}"
           old = @pastState
           @pastState = state
           llog "Changed past state from [#{old}] to [#{@pastState}]."
