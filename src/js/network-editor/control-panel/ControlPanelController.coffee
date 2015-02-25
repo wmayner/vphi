@@ -25,7 +25,7 @@ module.exports =  [
             network.loadJSON JSON.parse(r.result)
           r.readAsText(file)
         catch e
-          console.error e
+          log.error e
 
     $scope.export = ->
       blob = new Blob [network.toJSON()], {type: 'application/json'}
