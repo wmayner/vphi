@@ -62,20 +62,15 @@ module.exports = angular.module name, []
               $(window).trigger('resize')
           ).always(-> $rootScope.$apply always)
 
-        update: (bigMip) =>
-          log.debug "DATA_SERVICE: Updating..."
-          @data = bigMip
+        update: (data) ->
+          log.debug "DATA_SERVICE: Updating with data:"
+          log.debug data
+
+          @data = data
           # Record current and past state.
           # TODO just attach these to the service.
-          @data.currentState = network.currentState
-          @data.pastState = network.pastState
-          log.debug "DATA_SERVICE: Got data:"
-          log.debug @data
-          phidata = @data
-
-          # Select the subsystem that was returned
-          network.setSelectedSubsystem(@data.subsystem.node_indices)
-          network.update()
+          @data.bigMip.currentState = network.currentState
+          @data.bigMip.pastState = network.pastState
 
           log.debug "DATA_SERVICE: *** Broadcasting update event. ***"
           $rootScope.$broadcast (name + '.updated')
