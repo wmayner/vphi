@@ -13,7 +13,8 @@ module.exports = [
   ($scope, compute, format) ->
     $scope.format = format
 
-    $scope.time = null
+    $scope.elapsedTime = null
+    $scope.bigPhiTime = null
     $scope.smallPhiTime = null
     $scope.currentState = null
     $scope.title = 'Subsystem'
@@ -33,7 +34,8 @@ module.exports = [
       else
         $scope.title = 'Subsystem'
 
-      $scope.time = format.time bm.time
+      $scope.elapsedTime = format.time compute.data.elapsedTime
+      $scope.bigPhiTime = format.time bm.time
       $scope.smallPhiTime = format.time bm.small_phi_time
       $scope.currentState = bm.currentState
       $scope.nodes = bm.subsystem.node_indices
