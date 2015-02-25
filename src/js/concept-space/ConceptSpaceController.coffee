@@ -17,5 +17,7 @@ module.exports = [
     $scope.canvas = new ConceptSpaceCanvas(format)
 
     # Update display when new data is computed.
-    $scope.$on (computeService.name + '.updated'), -> $scope.canvas.display(compute.data)
+    # TODO handle complexes
+    $scope.$on (computeService.name + '.updated'), ->
+      $scope.canvas.display(compute.data.bigMip)
 ]

@@ -26,26 +26,26 @@ module.exports = [
     $scope.$on (computeService.name + '.updated'), ->
       log.debug 'OUTPUT_SUMMARY: Received compute update.'
 
-      d = compute.data
+      bm = compute.data.bigMip
 
       if compute.calledMethod is 'mainComplex'
         $scope.title = 'Main Complex'
       else
         $scope.title = 'Subsystem'
 
-      $scope.time = format.time d.time
-      $scope.smallPhiTime = format.time d.small_phi_time
-      $scope.currentState = d.currentState
-      $scope.nodes = d.subsystem.node_indices
-      $scope.bigPhi = format.phi d.phi
-      $scope.numConcepts = d.unpartitioned_constellation.length
+      $scope.time = format.time bm.time
+      $scope.smallPhiTime = format.time bm.small_phi_time
+      $scope.currentState = bm.currentState
+      $scope.nodes = bm.subsystem.node_indices
+      $scope.bigPhi = format.phi bm.phi
+      $scope.numConcepts = bm.unpartitioned_constellation.length
 
-      if d.unpartitioned_constellation.length > 0
-        $scope.sumSmallPhi = format.phi (c.phi for c in d.unpartitioned_constellation).reduce((x, y) -> x + y)
+      if bm.unpartitioned_constellation.length > 0
+        $scope.sumSmallPhi = format.phi (c.phi for c in bm.unpartitioned_constellation).reduce((x, y) -> x + y)
       else
         $scope.sumSmallPhi = 0
 
       $scope.cut =
-        intact: format.nodes d.cut_subsystem.cut.intact
-        severed: format.nodes d.cut_subsystem.cut.severed
+        intact: format.nodes bm.cut_subsystem.cut.intact
+        severed: format.nodes bm.cut_subsystem.cut.severed
 ]
