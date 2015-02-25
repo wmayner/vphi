@@ -14,6 +14,7 @@ module.exports = [
     $scope.currentState = null
 
     $scope.$on (computeService.name + '.updated'), ->
+      log.debug "CONCEPT_LIST: Received data update event."
       $scope.concepts = compute.data.unpartitioned_constellation
       $scope.numNodes = compute.data.subsystem.node_indices.length
       $scope.currentState = compute.data.currentState
@@ -28,5 +29,4 @@ module.exports = [
       allProbabilities = [].concat.apply([], allRepertoires)
       $scope.maxProbability = _.max(allProbabilities)
 
-      log.debug "CONCEPT_LIST: Updated concept list."
 ]
