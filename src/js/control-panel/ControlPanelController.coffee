@@ -51,7 +51,6 @@ module.exports = [
 
     success = (btn) ->
       return ->
-        # conceptSpace.display(compute.data)
         btn.button 'reset'
         finishLoading()
 
