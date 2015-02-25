@@ -46,8 +46,6 @@ class RepertoireChart
 
     @_chart = c3.generate(config)
 
-  load: (columns) ->
-    @_chart.load(columns: columns)
-    $(window).trigger('resize')
+  load: (columns) -> @_chart.load(columns: columns)
 
 module.exports = RepertoireChart
