@@ -43,9 +43,13 @@ module.exports = ->
             # NOTE: This should correspond to how NumPy's `flatten` function
             # works.
             utils.loliIndexToState(x, scope.numNodes).join(', ')
-        label: (if attrs.direction is 'cause' then 'Past State' else 'Future State')
+        label: (
+          if attrs.direction is 'cause' then 'Past State' else 'Future State'
+        )
       y: yAxis or undefined
 
+    log.debug "CONCEPT_LIST: Loading #{attrs.direction} repertoire chart " +
+      "for concept #{scope.$index}."
     chart.load [
       ['Unpartitioned'].concat concept.repertoire
       ['Partitioned'].concat concept.partitioned_repertoire
