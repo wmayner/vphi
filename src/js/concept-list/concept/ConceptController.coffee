@@ -14,7 +14,7 @@ module.exports = [
 
     concept = $scope.concept
 
-    $scope.mechanism = (compute.network.nodes[i] for i in concept.mechanism)
+    $scope.mechanism = concept.mechanism
     $scope.smallPhi = format.phi concept.phi
     $scope.smallPhiPast = format.phi concept.phi
     $scope.smallPhiPast = format.phi concept.cause.mip.phi
