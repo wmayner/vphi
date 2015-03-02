@@ -341,6 +341,8 @@ module.exports = angular.module name, []
           jsonNodes = []
           @graph.forEachNode (node, id) ->
             jsonNodes.push nodeToJSON(node)
+          # Sort the nodes by index.
+          jsonNodes = _.sortBy jsonNodes, 'index'
           data =
             nodes: jsonNodes
             tpm: @tpm
