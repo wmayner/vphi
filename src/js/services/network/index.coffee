@@ -109,8 +109,14 @@ module.exports = angular.module name, []
               result = node
           return result
 
-        getNodes: ->
-          return _.sortBy @graph.getNodes(), 'index'
+        getNodes: (indices) ->
+          if indices
+            result = []
+            @graph.forEachNode (node, id) ->
+              result.push node if node.index in indices
+          else
+            result = @graph.getNodes()
+          return _.sortBy result, 'index'
 
         getNodeById: (id) -> @graph._nodes[id]
 
