@@ -31,5 +31,4 @@ module.exports = [
       )
       allProbabilities = [].concat.apply([], allRepertoires)
       $scope.maxProbability = _.max(allProbabilities)
-
 ]

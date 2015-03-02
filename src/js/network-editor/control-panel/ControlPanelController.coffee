@@ -4,7 +4,6 @@
 ###
 
 networkService = require '../../services/network'
-formatService = require '../../services/format'
 example = require '../../services/network/example'
 mechanism = require '../../services/network/mechanism'
 
@@ -12,8 +11,7 @@ module.exports =  [
   '$scope'
   '$upload'
   networkService.name
-  formatService.name
-  ($scope, $upload, network, format) ->
+  ($scope, $upload, network) ->
 
     $scope.$watch 'files', -> $scope.importNetwork $scope.files
     $scope.importNetwork = (files) ->
@@ -65,8 +63,7 @@ module.exports =  [
       $scope.currentPastState = network.pastState?.join(', ') or null
       $scope.possiblePastStates = network.getPossiblePastStates()
       $scope.nodes = (
-        if network.size() > 0 then format.nodes(
-          [0...network.size()]).join(', ')
+        if network.size() > 0 then network.format.nodes(network.getNodes()).join(', ')
         else ''
       )
       log.debug "NETWORK_CONTROLS: Updated."

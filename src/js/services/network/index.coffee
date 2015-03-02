@@ -1,7 +1,9 @@
 'use strict'
 ###
-# services/graph/index.coffee
+# services/network/index.coffee
 ###
+
+formatterService = require '../formatter.coffee'
 
 commonUtils = require '../../utils'
 # TODO provide utils in service
@@ -16,7 +18,8 @@ module.exports = angular.module name, []
   .factory name, [
     '$rootScope'
     '$timeout'
-    ($rootScope, $timeout) ->
+    formatterService.name
+    ($rootScope, $timeout, Formatter) ->
 
       # Helpers
       # ========================================================================
@@ -71,6 +74,8 @@ module.exports = angular.module name, []
 
       network = new class Network
         constructor: (@graph = new Graph()) ->
+          # Set up a formatting object that gets labels from this network.
+          @format = new Formatter((index) => @getNode(index).label)
           # TODO refactor tpmify
           @tpm = tpmify this
           @currentState = []
@@ -349,7 +354,7 @@ module.exports = angular.module name, []
             connectivityMatrix: @getConnectivityMatrix()
             currentState: @currentState
             pastState: @pastState
-          return JSON.stringify data
+          return data
 
         loadJSON: (json) ->
           @graph = new Graph()
@@ -381,7 +386,7 @@ module.exports = angular.module name, []
           @updateTpm()
           @updatePastState()
           broadcast()
-          localStorage.setItem 'network', @toJSON()
+          localStorage.setItem 'network', JSON.stringify @toJSON()
           return
 
       # ========================================================================

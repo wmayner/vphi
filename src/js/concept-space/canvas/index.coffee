@@ -44,7 +44,7 @@ getRenderedDimensions = (constellation, numNodes) ->
 
 
 class ConceptSpaceCanvas
-  constructor: (@format) ->
+  constructor: (@compute) ->
     @scene = scene
 
     @ignoredAxes = []
@@ -123,7 +123,8 @@ class ConceptSpaceCanvas
   mechanismLabel: (mechanism) ->
     return ("<span class='mechanism-node " +
       "#{if @bigMip.currentState[i] then 'on' else 'off'}'>" +
-      "#{@format.node(i)}</span>" for i in mechanism).join('')
+      "#{@compute.format.node(i)}</span>" for i in mechanism)
+        .join('')
 
   drawConcept: (concept, dimensions, radiusScale, labelScale) ->
     radius = radiusScale(concept.phi)

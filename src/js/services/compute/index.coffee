@@ -4,15 +4,18 @@
 ###
 
 pyphi = require './pyphi'
+
 networkService = require '../network'
+formatterService = require '../formatter'
 
 name = 'vphi.services.compute'
 module.exports = angular.module name, []
   .factory name, [
     '$rootScope'
     networkService.name
+    formatterService.name
     'NETWORK_SIZE_LIMIT'
-    ($rootScope, network, NETWORK_SIZE_LIMIT) ->
+    ($rootScope, network, Formatter, NETWORK_SIZE_LIMIT) ->
       isValid = (network) ->
         if not network.pastState
           log.info "PYPHI: Current state cannot be reached by any past state; not " +
@@ -36,15 +39,21 @@ module.exports = angular.module name, []
           # the MathJax is rendered.
           $(window).trigger('resize')
 
-      return new class PhiDataService
+      return new class ComputeService
         constructor: ->
-          storedResults = localStorage.getItem 'results'
-          if storedResults
+          # Set up a formatting object that gets labels from the network that was
+          # computed.
+          @format = new Formatter((index) => @network.nodes[index].label)
+
+          stored = localStorage.getItem 'compute'
+          if stored
+            stored = JSON.parse(stored)
             log.debug "DATA_SERVICE: Loading stored results."
             # Need a setTimeout here to do the update after Angular is set up.
             setTimeout (=>
               # Update the service.
-              @update JSON.parse(storedResults)
+              @network = stored.network
+              @update(stored.data)
               typesetMath()
               # Force a digest cycle.
               # TODO figure out why we need this... we shouldn't and it's ugly.
@@ -54,6 +63,7 @@ module.exports = angular.module name, []
             log.debug "DATA_SERVICE: No stored results found."
 
         data: null
+        network: null
         calledMethod: null
         callInProgress: false
 
@@ -76,7 +86,10 @@ module.exports = angular.module name, []
           @callInProgress = true
           pyphi[method](network, (data) =>
             @update(data)
-            localStorage.setItem 'results', JSON.stringify(data)
+            localStorage.setItem 'compute', JSON.stringify(
+              data: @data
+              network: @network
+            )
             @callInProgress = false
             $rootScope.$apply success
             typesetMath()
@@ -86,6 +99,7 @@ module.exports = angular.module name, []
           log.debug "DATA_SERVICE: Updating with data:"
           log.debug data
 
+          @network = network.toJSON()
           @data = data
           # Record current and past state.
           # TODO just attach these to the service.

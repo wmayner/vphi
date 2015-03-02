@@ -6,15 +6,13 @@
 ConceptSpaceCanvas = require './canvas'
 
 computeService = require '../services/compute'
-formatService = require '../services/format'
 
 module.exports = [
   '$scope'
   computeService.name
-  formatService.name
-  ($scope, compute, format) ->
+  ($scope, compute) ->
     # Create the view.
-    $scope.canvas = new ConceptSpaceCanvas(format)
+    $scope.canvas = new ConceptSpaceCanvas(compute)
 
     # Update display when new data is computed.
     # TODO handle complexes

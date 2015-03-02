@@ -3,17 +3,18 @@
 # concept-list/ConceptCtrl.coffee
 ###
 
-format = require '../../services/format'
+computeService = require '../../services/compute'
 
 module.exports = [
   '$scope'
-  format.name
-  ($scope, format) ->
+  computeService.name
+  ($scope, compute) ->
+    format = compute.format
+    $scope.format = compute.format
+
     concept = $scope.concept
 
-    $scope.format = format
-
-    $scope.mechanism = concept.mechanism
+    $scope.mechanism = (compute.network.nodes[i] for i in concept.mechanism)
     $scope.smallPhi = format.phi concept.phi
     $scope.smallPhiPast = format.phi concept.phi
     $scope.smallPhiPast = format.phi concept.cause.mip.phi

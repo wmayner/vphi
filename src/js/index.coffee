@@ -5,7 +5,7 @@
 
 angular.module 'vphi', [
   require('./services/compute').name
-  require('./services/format').name
+  require('./services/formatter').name
   require('./services/network').name
   require('./network-editor').name
   require('./concept-space').name

@@ -4,14 +4,13 @@
 ###
 
 computeService = require '../services/compute'
-formatService = require '../services/format'
 
 module.exports = [
   '$scope'
   computeService.name
-  formatService.name
-  ($scope, compute, format) ->
-    $scope.format = format
+  ($scope, compute) ->
+    format = compute.format
+    $scope.format = compute.format
 
     $scope.elapsedTime = null
     $scope.bigPhiTime = null
@@ -43,7 +42,8 @@ module.exports = [
       $scope.numConcepts = bm.unpartitioned_constellation.length
 
       if bm.unpartitioned_constellation.length > 0
-        $scope.sumSmallPhi = format.phi (c.phi for c in bm.unpartitioned_constellation).reduce((x, y) -> x + y)
+        sumSmallPhi = (c.phi for c in bm.unpartitioned_constellation).reduce((x, y) -> x + y)
+        $scope.sumSmallPhi = format.phi sumSmallPhi
       else
         $scope.sumSmallPhi = 0
 
