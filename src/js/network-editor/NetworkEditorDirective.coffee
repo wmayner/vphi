@@ -21,8 +21,7 @@ IGNORE_DRAG_THRESHOLD = 10
 module.exports = [
   networkService.name
   'CANVAS_HEIGHT'
-  'NETWORK_SIZE_LIMIT'
-  (network, CANVAS_HEIGHT, NETWORK_SIZE_LIMIT) ->
+  (network, CANVAS_HEIGHT) ->
     link: (scope, element, attrs) ->
 
       # State
@@ -521,8 +520,7 @@ module.exports = [
                    d3.event.metaKey or
                    mouseState.overNode or
                    mouseState.overLink or
-                   mouseState.dragging or
-                   network.size() >= NETWORK_SIZE_LIMIT
+                   mouseState.dragging
               d3.event.preventDefault()
               # Insert new node, connecting it to nearby nodes.
               newNode =

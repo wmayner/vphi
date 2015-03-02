@@ -118,13 +118,19 @@ body
                 // .btn-group
                 //   button.btn.btn-md.btn-default(ng-click='switchView()', type='button')
                 //     | Switch View
-    .row.centered.clearfix
-      .col-centered
-        #main-control-module.module(ng-controller='controlPanelCtrl')
-          button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("mainComplex")', ng-disabled='isDisabled')
-            | Main Complex
-          button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("bigMip")', ng-disabled='isDisabled')
-            | Selected Subsystem
+    #main-control-module.module(ng-controller='controlPanelCtrl')
+      .row.centered.clearfix
+        .col-centered
+          button#too-many-nodes(ng-show='size > NETWORK_SIZE_LIMIT', type='button', data-toggle='tooltip', data-placement='top', title='In order to conserve computational resources for others, networks larger than {{NETWORK_SIZE_LIMIT}} nodes cannot be analyzed.').btn.btn-md.btn-warning
+            span.glyphicon.glyphicon-warning-sign
+            | &nbsp;
+            | Too many nodes
+      .row.centered.clearfix
+        .col-centered
+            button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("mainComplex")', ng-disabled='isDisabled')
+              | Main Complex
+            button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("bigMip")', ng-disabled='isDisabled')
+              | Selected Subsystem
     .row.clearfix
       .col-md-10.col-md-offset-1
         .alert.alert-default(role='alert')
@@ -344,3 +350,9 @@ body
   //- Online/Offline
   script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')
   //- script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
+
+  script(type='text/javascript').
+    // Initialize tooltips.
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })

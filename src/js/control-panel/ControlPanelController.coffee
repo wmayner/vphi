@@ -10,7 +10,8 @@ module.exports = [
   '$scope'
   networkService.name
   computeService.name
-  ($scope, network, compute) ->
+  'NETWORK_SIZE_LIMIT'
+  ($scope, network, compute, NETWORK_SIZE_LIMIT) ->
     btns = $('.btn-calculate')
     btnSelectedSubsystem = $('#btn-selected-subsystem')
     btnMainComplex = $('#btn-main-complex')
@@ -19,14 +20,20 @@ module.exports = [
       'mainComplex': btnMainComplex
       'bigMip': btnSelectedSubsystem
 
-    # Disable buttons if the network has no possible past state or if there's
-    # already a calculation in progress.
-    updateButtonState = ->
+    $scope.NETWORK_SIZE_LIMIT = NETWORK_SIZE_LIMIT
+
+    update = ->
+      # Display a warning if there are too many nodes
+      console.log 'updating'
+      $scope.size = network.size()
+      console.log $scope.size
+      # Disable buttons if the network has no possible past state or if there's
+      # already a calculation in progress.
       $scope.isDisabled = compute.callInProgress or
                           not network.pastState or
-                          network.size() is 0
-    updateButtonState()
-    $scope.$on (networkService.name + '.updated'), updateButtonState
+                          not (0 < network.size() < NETWORK_SIZE_LIMIT)
+    update()
+    $scope.$on (networkService.name + '.updated'), update
 
     btnCooldown = false
 
