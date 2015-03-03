@@ -6,8 +6,7 @@
 
 # TODO*** change endpoint
 pyphi = new $.JsonRpcClient({
-  ajaxUrl: 'http://localhost:5000'
-  # ajaxUrl: 'http://144.92.177.185'
+  ajaxUrl: 'http://144.92.177.185'
   # 12 hr timeout
   timeout: 43200000
 })
