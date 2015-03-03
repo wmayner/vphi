@@ -24,9 +24,7 @@ module.exports = [
 
     update = ->
       # Display a warning if there are too many nodes
-      console.log 'updating'
       $scope.size = network.size()
-      console.log $scope.size
       # Disable buttons if the network has no possible past state or if there's
       # already a calculation in progress.
       $scope.isDisabled = compute.callInProgress or
