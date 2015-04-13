@@ -27,7 +27,9 @@ module.exports =  [
     $scope.$watch 'network-files', -> $scope.importNetwork $scope.files
 
     $scope.export = ->
-      blob = new Blob [network.toJSON()], {type: 'application/json'}
+      blob = new Blob [JSON.stringify network.toJSON()], {
+        type: 'application/json'
+      }
       window.saveAs blob, 'network.json'
 
     $scope.exampleNames = example.names
