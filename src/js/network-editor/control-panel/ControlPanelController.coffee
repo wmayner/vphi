@@ -26,7 +26,9 @@ module.exports =  [
           log.error e
 
     $scope.export = ->
-      blob = new Blob [network.toJSON()], {type: 'application/json'}
+      blob = new Blob [JSON.stringify network.toJSON()], {
+        type: 'application/json'
+      }
       window.saveAs blob, 'network.json'
 
     $scope.exampleNames = example.names
