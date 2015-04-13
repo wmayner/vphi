@@ -57,6 +57,7 @@ module.exports = [
             width: width
             height: CANVAS_HEIGHT
             align: 'center'
+            id: 'network-editor-svg'
       # Paint the background black.
       background = svg.append 'rect'
         .attr

@@ -55,10 +55,12 @@ class ConceptSpaceCanvas
     @labels = []
 
     # Initialize the renderer.
-    @renderer = new THREE.WebGLRenderer(
-      alpha: false
-      devicePixelRatio: window.devicePixelRatio or 1
+    @renderer = new THREE.SVGRenderer(
+      # alpha: false
+      # devicePixelRatio: window.devicePixelRatio or 1
     )
+    @renderer.setClearColor( 0x000000 )
+    @renderer.setQuality('low')
 
     # Tag the SVG element with an ID
     $(@renderer.domElement).attr('id', 'concept-space-svg')
@@ -106,10 +108,12 @@ class ConceptSpaceCanvas
     xyGrid.position.set(0.5, 0.5, 0.0)
     # YZ
     yzGrid = new THREE.GridHelper(0.5, gridStep)
+    yzGrid.setColors('black', 'black')
     yzGrid.rotation.set(0, π/2, 0)
     yzGrid.position.set(0.5, 0.0, 0.5)
     # ZX
     zxGrid = new THREE.GridHelper(0.5, gridStep)
+    zxGrid.setColors('black', 'black')
     zxGrid.rotation.set(0, 0, π/2)
     zxGrid.position.set(0.0, 0.5, 0.5)
 

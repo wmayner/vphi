@@ -43,9 +43,9 @@ body
                   .btn-group
                     button#show-controls.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#network-editor-help') Show Controls
                   .btn-group
-                    button#save-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
+                    button(svg-download='#network-editor-svg', filename='network', type='button').btn.btn-md.btn-default Save Image
                   .btn-group
-                    button#import-network(ng-file-select, ng-model='files', allow-dir='false', type='button').btn.btn-md.btn-default Import
+                    button#import-network(ng-file-select, ng-model='network-files', allow-dir='false', type='button').btn.btn-md.btn-default Import
                     button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export
                   .btn-group
                     button#example-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false') Load Example
@@ -118,6 +118,9 @@ body
                       a None
                     li(ng-repeat='concept in concepts', ng-click='highlightConcept($index)') 
                       a {{format.nodes(concept.mechanism).join('')}}
+                .btn-group
+                  button(svg-download="#concept-space-svg", filename='conceptual-structure', type='button').btn.btn-md.btn-default Save Image
+                .btn-group
                   button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
                     | Reset Camera
                 .btn-group
@@ -344,6 +347,8 @@ body
   //- script(src='/bower_components/threejs/build/three.js')
 
   script(src='/js/lib/OrbitControls.js')
+  script(src='/js/lib/Projector.js')
+  script(src='/js/lib/SVGRenderer.js')
   script(src='/js/lib/Detector.js')
   script(src='/js/lib/FileSaver.js')
   script(src='/js/lib/angular-downloadsvg-directive.min.js')
