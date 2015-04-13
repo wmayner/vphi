@@ -18,6 +18,9 @@ MAX_CONCEPT_RADIUS = 0.5
 MIN_CONCEPT_LABEL_SIZE = 14
 MAX_CONCEPT_LABEL_SIZE = 60
 
+STAR_COLOR = 0xF5F237
+HIGHLIGHT_COLOR = 0x36f1fb
+
 scene = new THREE.Scene()
 
 
@@ -57,6 +60,9 @@ class ConceptSpaceCanvas
       devicePixelRatio: window.devicePixelRatio or 1
     )
 
+    # Tag the SVG element with an ID
+    $(@renderer.domElement).attr('id', 'concept-space-svg')
+
     # Initialize the camera.
     @camera = new THREE.PerspectiveCamera(20, 1, 0.0001, 1000)
     @scene.add(@camera)
@@ -94,7 +100,8 @@ class ConceptSpaceCanvas
     # ~~~~~~~~~~~~~~~~~~~~
     gridStep = 0.2
     # XY
-    xyGrid = new THREE.GridHelper(0.5, 0.2)
+    xyGrid = new THREE.GridHelper(0.5, gridStep)
+    xyGrid.setColors('black', 'black')
     xyGrid.rotation.set(π/2, 0, 0)
     xyGrid.position.set(0.5, 0.5, 0.0)
     # YZ
@@ -132,7 +139,7 @@ class ConceptSpaceCanvas
       x: concept[dimensions[0].direction].repertoire[dimensions[0].index]
       y: concept[dimensions[1].direction].repertoire[dimensions[1].index]
       z: concept[dimensions[2].direction].repertoire[dimensions[2].index]
-    star = utils.drawStar(scene, radius, position)
+    star = utils.drawStar(scene, radius, position, STAR_COLOR)
 
     labelText = @mechanismLabel(concept.mechanism)
     labelSize = labelScale(concept.phi)
@@ -153,6 +160,13 @@ class ConceptSpaceCanvas
     @constellation.push(star)
     @labels.push(label)
     return
+
+  highlightConcept: (i) ->
+    for concept in @constellation
+      concept.material.color.setHex(STAR_COLOR)
+    if i >= 0
+      @constellation[i].material.color.setHex(HIGHLIGHT_COLOR)
+    @render()
 
   updateLabels: ->
     for label in @labels

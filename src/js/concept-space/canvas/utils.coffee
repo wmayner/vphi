@@ -18,7 +18,7 @@ module.exports =
     # Descending sort.
     return (v.index for v in _.sortBy(variances, (d) -> - d.variance))
 
-  drawStar: (scene, radius, position) ->
+  drawStar: (scene, radius, position, color) ->
     # TODO make these actual stars.
     material = new THREE.MeshPhongMaterial(
       transparent: true
@@ -26,7 +26,7 @@ module.exports =
       # wireframe: true
       # wireframeLinewidth: 2
       ambient: 0x404040
-      color: 0xF5F237
+      color: color
       specular: 0x404040
       shininess: 3
       shading: THREE.SmoothShading
@@ -41,5 +41,6 @@ module.exports =
     geometry = new THREE.SphereGeometry(radius, 32, 32)
     star = new THREE.Mesh(geometry, material)
     star.position.set(position.x, position.y, position.z)
+
     scene.add(star)
     return star

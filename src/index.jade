@@ -108,6 +108,16 @@ body
             .col-md-12
               .control-group.btn-toolbar(ng-controller='conceptSpace.controlPanelCtrl', role='toolbar')
                 .btn-group
+                  button.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                    | Highlight Concept 
+                    | &nbsp;
+                    span.caret
+                    span.sr-only Toggle node mechanism selection dropdown menu
+                  ul.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
+                    li(ng-click='highlightConcept(-1)')
+                      a None
+                    li(ng-repeat='concept in concepts', ng-click='highlightConcept($index)') 
+                      a {{format.nodes(concept.mechanism).join('')}}
                   button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
                     | Reset Camera
                 .btn-group
