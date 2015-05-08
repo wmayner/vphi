@@ -101,7 +101,6 @@ class ConceptSpaceCanvas
     gridStep = 0.2
     # XY
     xyGrid = new THREE.GridHelper(0.5, gridStep)
-    xyGrid.setColors('black', 'black')
     xyGrid.rotation.set(π/2, 0, 0)
     xyGrid.position.set(0.5, 0.5, 0.0)
     # YZ
