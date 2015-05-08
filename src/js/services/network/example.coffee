@@ -107,6 +107,24 @@ module.exports =
   '5 OR-node bidirectional loop': ->
     return '/examples/5-OR-bidirectional-loop.json'
 
+  'Cellular automata paper, Figure 3b: Rule 128, 5 nodes': ->
+    return '/examples/cellular-automata-paper_fig-3b_rule-128_5-nodes.json'
+
+  'Cellular automata paper, Figure 3c: Rule 232, 5 nodes': ->
+    return '/examples/cellular-automata-paper_fig-3c_rule-232_5-nodes.json'
+
+  'Cellular automata paper, Figure 3d: Rule 74, 5 nodes': ->
+    return '/examples/cellular-automata-paper_fig-3d_rule-74_5-nodes.json'
+
+  'Cellular automata paper, Figure 3d: Rule 90, 5 nodes': ->
+    return '/examples/cellular-automata-paper_fig-3d_rule-90_5-nodes.json'
+
+  'Cellular automata paper, Figure 3e: Rule 106, 5 nodes': ->
+    return '/examples/cellular-automata-paper_fig-3e_rule-106_5-nodes.json'
+
+  'Cellular automata paper, Figure 8e: Rule 232, 6 nodes': ->
+    return '/examples/cellular-automata-paper_fig-8_rule-232_6-nodes.json'
+
   # # http://upload.wikimedia.org/wikipedia/commons/c/c6/R-S_mk2.gif
   # 'SR-Latch': ->
   #   graph = new Graph()
