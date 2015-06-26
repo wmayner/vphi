@@ -22,9 +22,9 @@ module.exports = [
 
     # TODO replace with directives and templates
     $scope.causeMip = "\\frac{" +
-      format.latexNodes(concept.effect.mip.mechanism) + "^{c}" +
+      format.latexNodes(concept.cause.mip.mechanism) + "^{c}" +
       "}{" +
-      format.latexNodes(concept.effect.mip.purview) + "^{p}" +
+      format.latexNodes(concept.cause.mip.purview) + "^{p}" +
       "}"
     $scope.partitionedCauseMip = "\\frac{" +
       format.latexNodes(concept.cause.mip.partition[0].mechanism) + "^{c}" +
