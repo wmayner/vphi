@@ -72,24 +72,6 @@ body
                       ul#node-mechanisms.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
                         li.mechanism-option(ng-repeat='mechanism in mechanisms', ng-click='selectMechanism(mechanism)') 
                           a {{mechanismNames[mechanism]}}
-                  .form-group
-                    label.vphi-label(for='past-state-chooser') Past state
-                    .btn-group(ng-if='!possiblePastStates')
-                      button#no-past-states.btn.btn-md.btn-default.disabled No possible past states
-                    .btn-group(ng-if='possiblePastStates && !(currentPastState.length > 0)')
-                      button#empty-past-state.btn.btn-md.btn-default –
-                    .btn-group#past-state-chooser(ng-if='possiblePastStates && currentPastState.length > 0')
-                      button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
-                        span#current-past-state 
-                          strong {{currentPastState}}
-                        span.caret
-                        span.sr-only Toggle past state selection dropdown menu
-                      ul#past-states.dropdown-menu.dropdown-menu-right(ng-show='possiblePastStates', role='menu', aria-labelledby='past-state-dropdown')
-                        li#past-state-list-header
-                          strong {{nodes}}
-                        li.divider
-                        li.past-state(ng-repeat='pastState in possiblePastStates', ng-click='selectPastState(pastState)') 
-                          a {{pastState.join(', ')}}
       .col-md-6
         #concept-space-module.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure
@@ -112,12 +94,13 @@ body
                     | Highlight Concept 
                     | &nbsp;
                     span.caret
-                    span.sr-only Toggle node mechanism selection dropdown menu
+                    span.sr-only Toggle concept highlighting dropdown menu
                   ul.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
                     li(ng-click='highlightConcept(-1)')
                       a None
                     li(ng-repeat='concept in concepts', ng-click='highlightConcept($index)') 
                       a {{format.nodes(concept.mechanism).join('')}}
+                .btn-group
                   button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
                     | Reset Camera
                 .btn-group
@@ -142,45 +125,6 @@ body
             button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("bigMip")', ng-disabled='isDisabled')
               | Selected Subsystem
     .row.clearfix
-      .col-md-10.col-md-offset-1
-        .alert.alert-default(role='alert')
-          button.close(type='button', data-dismiss='alert', aria-label='Close')
-            span(aria-hidden='true')&times;
-          h4 Note on calculation time
-          p The calculation time for Φ grows extremely quickly with the number of nodes and the density of the network. In order to conserve computational resources for other users, networks are therefore limited to 6 nodes.
-          .row.clearfix
-            .col-md-8.col-md-offset-2
-              p
-                table.table.table-responsive.table-condensed.table-hover#time-estimates
-                  caption Approximate times for finding the main complex
-                  thead
-                    tr
-                      th 
-                      th 3 nodes
-                      th 4 nodes
-                      th 5 nodes
-                      th 6 nodes
-                  tbody
-                    tr
-                      th Sparse
-                      td 2 sec
-                      td 4 sec
-                      td 30 sec
-                      td 7 min
-                    tr
-                      th Medium
-                      td 3 sec
-                      td 5 sec
-                      td 1 min
-                      td 18 min
-                    tr
-                      th Dense
-                      td 3 sec
-                      td 10 sec
-                      td 2.5 min
-                      td 1.6 hrs
-          p Once a network has been analyzed, the results are saved and loaded again when needed; these estimates only apply to previously unanalyzed networks.
-    .row.clearfix
       .col-md-12
         section#output-summary-module.module(ng-controller='outputSummaryCtrl')
           .row.clearfix
@@ -189,7 +133,7 @@ body
                 span(ng-bind='title')
                 span.vphi-value.number-2(ng-hide='nodes.length > 0') –
                 ul.node-list
-                  li(ng-class='{"on": currentState[n]}', ng-repeat='n in nodes')
+                  li(ng-class='{"on": state[n]}', ng-repeat='n in nodes')
                     | {{format.node(n)}}
           .row.centered.clearfix
             .col-md-12
@@ -215,13 +159,15 @@ body
                   .vphi-value.number-7(ng-bind='sumSmallPhi')
           .row.clearfix
             .col-md-12
-              #elapsed-time(ng-show='elapsedTime')
-                p Total elapsed time: <code>{{elapsedTime}}</code> seconds
-                p Subsystem calculation time: \(\Phi\): <code>{{bigPhiTime}}</code> seconds; all \(\varphi\): <code>{{smallPhiTime}}</code> seconds
+              #misc-info
+                .block-item PyPhi v0.7.2
+                #elapsed-time(ng-show='elapsedTime')
+                  .block-item Total elapsed time: <code>{{elapsedTime}}</code> seconds
+                  .block-item Subsystem calculation time: \(\Phi\): <code>{{bigPhiTime}}</code> seconds; all \(\varphi\): <code>{{smallPhiTime}}</code> seconds
     .row.clearfix
       .col-md-12
         section#concept-list-module.module.hidden(ng-controller='conceptListCtrl')
-          h2.module-title Concepts
+          h2.module-title Concepts:
           .concept.well(ng-controller='conceptList.conceptCtrl' ng-repeat='concept in concepts', id='concept-{{$index}}')
             .row.centered.clearfix
               .col-xs-4
@@ -241,7 +187,7 @@ body
                           .math-output \( {{partitionedCauseMip}} \)
               .col-xs-4
                 ul.node-list.mechanism
-                  li(ng-class='{"on": currentState[n]}', ng-repeat='n in mechanism') {{format.node(n)}}
+                  li(ng-class='{"on": state[n]}', ng-repeat='n in mechanism') {{format.node(n)}}
                 hr
                 .small-phi
                   .vphi-label \( \varphi \)

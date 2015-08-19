@@ -11,7 +11,7 @@ module.exports = [
   ($scope, compute) ->
     $scope.concepts = null
     $scope.numNodes = null
-    $scope.currentState = null
+    $scope.state = null
 
     $scope.$on (computeService.name + '.updated'), ->
       log.debug "CONCEPT_LIST: Received data update event."
@@ -20,7 +20,7 @@ module.exports = [
 
       $scope.concepts = bm.unpartitioned_constellation
       $scope.numNodes = bm.subsystem.node_indices.length
-      $scope.currentState = bm.currentState
+      $scope.state= bm.state
 
       # Merge all unpartitioned and partitioned repertoires and find the max.
       allRepertoires = (

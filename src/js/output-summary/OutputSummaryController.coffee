@@ -15,7 +15,7 @@ module.exports = [
     $scope.elapsedTime = null
     $scope.bigPhiTime = null
     $scope.smallPhiTime = null
-    $scope.currentState = null
+    $scope.state = null
     $scope.title = 'Subsystem'
     $scope.nodes = []
     $scope.cut = null
@@ -29,14 +29,14 @@ module.exports = [
       bm = compute.data.bigMip
 
       if compute.calledMethod is 'mainComplex'
-        $scope.title = 'Main Complex'
+        $scope.title = 'Main Complex:'
       else
-        $scope.title = 'Subsystem'
+        $scope.title = 'Subsystem:'
 
       $scope.elapsedTime = format.time compute.data.elapsedTime
       $scope.bigPhiTime = format.time bm.time
       $scope.smallPhiTime = format.time bm.small_phi_time
-      $scope.currentState = bm.currentState
+      $scope.state = bm.state
       $scope.nodes = bm.subsystem.node_indices
       $scope.bigPhi = format.phi bm.phi
       $scope.numConcepts = bm.unpartitioned_constellation.length

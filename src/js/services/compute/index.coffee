@@ -17,10 +17,6 @@ module.exports = angular.module name, []
     'NETWORK_SIZE_LIMIT'
     ($rootScope, network, Formatter, NETWORK_SIZE_LIMIT) ->
       isValid = (network) ->
-        if not network.pastState
-          log.info "PYPHI: Current state cannot be reached by any past state; not " +
-                   "sending request."
-          return false
         if network.size() > NETWORK_SIZE_LIMIT
           log.error "Network cannot have more than #{NETWORK_SIZE_LIMIT} nodes."
           return false
@@ -101,10 +97,9 @@ module.exports = angular.module name, []
 
           @network = network.toJSON()
           @data = data
-          # Record current and past state.
+          # Record state.
           # TODO just attach these to the service.
-          @data.bigMip.currentState = network.currentState
-          @data.bigMip.pastState = network.pastState
+          @data.bigMip.state = network.state
 
           log.debug "DATA_SERVICE: *** Broadcasting update event. ***"
           $rootScope.$broadcast (name + '.updated')

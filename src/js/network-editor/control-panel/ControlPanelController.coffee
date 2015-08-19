@@ -57,13 +57,7 @@ module.exports =  [
         $scope.activeNode?.mechanism = mechanismKey
         network.update()
 
-    $scope.selectPastState = (pastState) ->
-      log.debug "NETWORK_CONTROLS: Setting past state to [#{pastState}]."
-      network.setPastState(pastState)
-
     update = ->
-      $scope.currentPastState = network.pastState?.join(', ') or null
-      $scope.possiblePastStates = network.getPossiblePastStates()
       $scope.nodes = (
         if network.size() > 0 then network.format.nodes(network.getNodes()).join(', ')
         else ''
