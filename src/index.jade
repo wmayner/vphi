@@ -1,47 +1,84 @@
 doctype html
-html(lang='en' ng-app="vphi")
+html(lang='en' ng-app='vphi')
 head
   meta(charset='utf-8')
   meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
   meta(name='viewport', content='width=device-width')
-  title vphi
-  // Online/Offline
-  // link(href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css', rel='stylesheet', type='text/css')
-  link(href='/bower_components/bootstrap/dist/css/bootstrap.css', rel='stylesheet', type='text/css')
-  // TODO load minified versions
-  link(href='bower_components/c3/c3.css', rel='stylesheet', type='text/css')
+  title Calculate Φ
+
+  //- TODO load minified versions
+
+  //- Online/Offline
+  link(href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css', rel='stylesheet', type='text/css')
+  //- link(href='/bower_components/bootstrap/dist/css/bootstrap.css', rel='stylesheet', type='text/css')
+
+  //- Online/Offline
+  //- link(href='bower_components/c3/c3.css', rel='stylesheet', type='text/css')
+  link(href='//cdnjs.cloudflare.com/ajax/libs/c3/0.4.8/c3.min.css', rel='stylesheet', type='text/css')
+
   link(href='/css/app.css', rel='stylesheet', type='text/css')
 
-  // Online/Offline
-  script(src='/bower_components/angular/angular.min.js')
+  script(type='text/javascript').
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-53865041-1', 'auto');
+    ga('send', 'pageview');
 body
-  .container-fluid
+  #top-wrapper.container-fluid
     .row.clearfix
       .col-md-6
-        #graph-editor-module.well.module
+        #network-editor-module.module(ng-controller='networkEditorCtrl')
           h2.module-title Network
           .row.clearfix
-            .col-md-12
-              #graph-editor-container(vphi-graph-editor-canvas)
-          .row.clearfix
-            .col-md-12
-              form.form-horizontal.control-panel(role="form")
-                .form-group.form-group-lg
-                  label.control-label.col-sm-5(for="past-state-chooser") Past state:
-                  .col-sm-7
-                    button#past-state-chooser.btn.btn-lg.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
-                      #selected-past-state 1, 1, 0
+            .col-xs-12
+              #network-editor-container
+                network-editor
+          .control-panel(ng-controller='networkEditor.controlPanelCtrl')
+            .row.clearfix
+              .col-xs-12
+                .control-group#network-editor-buttons.btn-toolbar(role='toolbar')
+                  .btn-group
+                    button#show-controls.btn.btn-md.btn-default(type='button', data-toggle='modal', data-target='#network-editor-help') Show Controls
+                  .btn-group
+                    button#save-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
+                  .btn-group
+                    button#import-network(ng-file-select, ng-model='networkFiles', allow-dir='false', type='button').btn.btn-md.btn-default Import
+                    button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export
+                  .btn-group
+                    button#example-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false') Load Example
+                      | &nbsp;
                       span.caret
-                      span.sr-only Toggle past state selection dropdown
-                    ul#possible-past-states.dropdown-menu(role='menu')
-                      li
-                        strong A, B, C
+                      span.sr-only Toggle example selection dropdown menu
+                    ul#examples.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='example-dropdown')
+                      li(ng-repeat='exampleName in exampleNames', ng-click='load(exampleName)')
+                        a {{exampleName}}
+            .row.clearfix
+              .col-xs-12
+                .form-inline
+                  .form-group
+                    label.vphi-label Label
+                    input#node-label.form-control(ng-if='!activeNode', disabled, aria-describedby='Change focused node label')
+                    input#node-label.form-control(ng-if='activeNode', type='text', ng-model='getSetLabel', ng-model-options='{getterSetter: true}', aria-describedby='Change focused node label')
+                  .form-group
+                    label.vphi-label(for='node-mechanism-select') Mechanism
+                    .btn-group
+                      button#node-mechanism-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-class='{"disabled": !activeNode}', type='button', data-toggle='dropdown', aria-expanded='false')
+                        #current-node-mechanism {{mechanismNames[activeNode.mechanism]}}
+                        span.caret
+                        span.sr-only Toggle node mechanism selection dropdown menu
+                      ul#node-mechanisms.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
+                        li.mechanism-option(ng-repeat='mechanism in mechanisms', ng-click='selectMechanism(mechanism)') 
+                          a {{mechanismNames[mechanism]}}
       .col-md-6
-        #concept-space-module.well.module
+        #concept-space-module.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure
           .row.clearfix
-            .col-md-12.column
+            .col-md-12
               #concept-space-container
+                #concept-space(concept-space)
                 #concept-space-overlay.hidden &nbsp;
               #concept-space-loading-spinner.hidden
                 .tetrominos
@@ -49,79 +86,229 @@ body
                   .tetromino.box2
                   .tetromino.box3
                   .tetromino.box4
-          .row.row-centered.clearfix
-            .col-centered
-              .control-panel.btn-toolbar(role='toolbar')
-                .btn-group.pull-right
-                  button#reset-camera.btn.btn-default(type='button')
+          .row.clearfix.control-panel
+            .col-md-12
+              .control-group.btn-toolbar(ng-controller='conceptSpace.controlPanelCtrl', role='toolbar')
+                .btn-group
+                  button.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+                    | Highlight Concept 
+                    | &nbsp;
+                    span.caret
+                    span.sr-only Toggle concept highlighting dropdown menu
+                  ul.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
+                    li(ng-click='highlightConcept(-1)')
+                      a None
+                    li(ng-repeat='concept in concepts', ng-click='highlightConcept($index)') 
+                      a {{format.nodes(concept.mechanism).join('')}}
+                .btn-group
+                  button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
                     | Reset Camera
-                  button#switch-view.btn.btn-default(type='button')
-                    | Switch View
-                  button#toggle-grids.btn.btn-default(type='button')
+                .btn-group
+                  button.btn.btn-md.btn-default(ng-click='toggleGrids()', type='button')
                     | Toggle Grids
-    .row.row-centered.clearfix
-      .col-centered
-        #main-control-module.module
-          .control-panel.btn-toolbar(role='toolbar')
-            .btn-group
-              button#btn-calculate.btn.btn-lg.btn-primary(type='button', data-loading-text='Calculating…')
-                | Calculate Φ
-              button#output-phi.btn.btn-lg.btn-default.disabled
-                | ···
+                  button.btn.btn-md.btn-default(ng-click='toggleIgnoredAxes()', type='button')
+                    | Toggle Ignored Axes
+                // .btn-group
+                //   button.btn.btn-md.btn-default(ng-click='switchView()', type='button')
+                //     | Switch View
+    #main-control-module.module(ng-controller='controlPanelCtrl')
+      .row.centered.clearfix
+        .col-centered
+          button#too-many-nodes(ng-show='size > NETWORK_SIZE_LIMIT', type='button', data-toggle='tooltip', data-placement='top', title='In order to conserve computational resources for others, networks larger than {{NETWORK_SIZE_LIMIT}} nodes cannot be analyzed.').btn.btn-md.btn-warning
+            span.glyphicon.glyphicon-warning-sign
+            | &nbsp;
+            | Too many nodes
+      .row.centered.clearfix
+        .col-centered
+            button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("mainComplex")', ng-disabled='isDisabled')
+              | Main Complex
+            button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("bigMip")', ng-disabled='isDisabled')
+              | Selected Subsystem
     .row.clearfix
       .col-md-12
-        #concept-list-module.module(ng-controller="vphiConceptListCtrl")
-          h2.module-title Concepts
-          .concept.well(phi-concept, ng-repeat="concept in concepts", id="concept-{{$index}}")
+        section#output-summary-module.module(ng-controller='outputSummaryCtrl')
+          .row.clearfix
+            .col-md-12
+              h2.module-title
+                span(ng-bind='title')
+                span.vphi-value.number-2(ng-hide='nodes.length > 0') –
+                ul.node-list
+                  li(ng-class='{"on": state[n]}', ng-repeat='n in nodes')
+                    | {{format.node(n)}}
+          .row.centered.clearfix
+            .col-md-12
+              .summary-items.well
+                #phi-value.item
+                  .vphi-label \( \large \Phi \)
+                  .vphi-value.number-7(ng-bind='bigPhi')
+                #minimal-cut.item
+                  .vphi-label Minimal cut
+                  .vphi-value.number-2(ng-hide='cut') –
+                  .vphi-value(ng-if='cut.severed.length <= 0') N/A
+                  span(ng-show='cut.severed.length > 0')
+                    ul.node-list.secondary
+                      li(ng-repeat='n in cut.severed') {{n}}
+                    span.cut-symbol ⇏
+                    ul.node-list.secondary
+                      li(ng-repeat='n in cut.intact') {{n}}
+                #num-concepts.item
+                  .vphi-label Number of concepts
+                  .vphi-value.number-2(ng-bind='numConcepts')
+                #sum-small-phi.item
+                  .vphi-label \( \sum\varphi \)
+                  .vphi-value.number-7(ng-bind='sumSmallPhi')
+          .row.clearfix
+            .col-md-12
+              #misc-info
+                .block-item PyPhi v0.7.2
+                #elapsed-time(ng-show='elapsedTime')
+                  .block-item Total elapsed time: <code>{{elapsedTime}}</code> seconds
+                  .block-item Subsystem calculation time: \(\Phi\): <code>{{bigPhiTime}}</code> seconds; all \(\varphi\): <code>{{smallPhiTime}}</code> seconds
+    .row.clearfix
+      .col-md-12
+        section#concept-list-module.module.hidden(ng-controller='conceptListCtrl')
+          h2.module-title Concepts:
+          .concept.well(ng-controller='conceptList.conceptCtrl' ng-repeat='concept in concepts', id='concept-{{$index}}')
+            .row.centered.clearfix
+              .col-xs-4
+                ul.concept-data
+                  li
+                    .small-phi-past
+                      .vphi-label(ng-class='{"bold": concept.cause.mip.phi >  concept.effect.mip.phi}') \( \varphi_{p} \)
+                      .vphi-value.number-7 {{smallPhiPast}}
+                  li
+                    .row
+                      .small-phi-mips
+                        .col-sm-6
+                          .vphi-label Cause MIP:
+                          .math-output \( {{causeMip}} \)
+                        .col-sm-6
+                          .vphi-label Partitioned:
+                          .math-output \( {{partitionedCauseMip}} \)
+              .col-xs-4
+                ul.node-list.mechanism
+                  li(ng-class='{"on": state[n]}', ng-repeat='n in mechanism') {{format.node(n)}}
+                hr
+                .small-phi
+                  .vphi-label \( \varphi \)
+                  .vphi-value.number-7 {{smallPhi}}
+              .col-xs-4
+                ul.concept-data
+                  li
+                    .small-phi-future
+                      .vphi-label(ng-class='{"bold": concept.cause.mip.phi < concept.effect.mip.phi}') \( \varphi_{f} \)
+                      .vphi-value.number-7 {{smallPhiFuture}}
+                  li
+                    .row
+                      .small-phi-mips
+                        .col-sm-6
+                          .vphi-label Effect MIP:
+                          .math-output \( {{effectMip}} \)
+                        .col-sm-6
+                          .vphi-label Partitioned:
+                          .math-output \( {{partitionedEffectMip}} \)
             .row.clearfix
-              .col-md-5.repertoire-container
-                h4 Past Repertoire
-                .repertoire(phi-repertoire-chart, direction="cause")
-              .col-md-2.concept-data
-                hr
-                button.mechanism.btn.btn-lg.btn-primary
-                  | {{getMechanism(concept)}}
-                hr
-                .btn-group
-                  button.btn.btn-lg.btn-default
-                    | φ
-                  button.btn.btn-lg.btn-default
-                    | {{getSmallPhi(concept)}}
-                h4.cut
-              .col-md-5.repertoire-container
-                h4 Future Repertoire
-                .repertoire(phi-repertoire-chart, direction="effect")
+              //- Stack repertoire charts for more width depending on how many
+              //- states are being displayed.
+              div(ng-class='{"col-md-12": numNodes > 5, "col-md-6": numNodes <= 5}')
+                .repertoire-container
+                  h5.repertoire-title Cause Repertoire
+                  .repertoire(repertoire-chart, direction='cause')
+              div(ng-class='{"col-md-12": numNodes > 5, "col-md-6": numNodes <= 5}')
+                .repertoire-container
+                  h5.repertoire-title Effect Repertoire
+                  .repertoire(repertoire-chart, direction='effect')
 
-  // TODO *** minify
+  #network-editor-help.modal.fade
+    .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span(aria-hidden='true') &times;
+            h4.modal-title Network-editing controls
+          .modal-body
+            ul.commands
+              li <strong>Click and drag</strong> to select nodes. Holding <kbd>shift</kbd> or <kbd>command</kbd> while dragging will add to the selection. 
+              li <strong>Double-click</strong> to add nodes. The new node will automatically connect to any nodes within the blue circle.
+              li <kbd>command</kbd><strong> + click</strong> while the blue circle is around your cursor to connect all the nodes within.
+              li <kbd>command</kbd><strong> + click</strong> to select/deselect individual nodes.
+              li <strong>Click and drag from one node to another</strong> to add edges.
+              li <kbd>shift</kbd><strong> + click and drag</strong> to reposition nodes. Repositioned nodes will stay fixed in place.
+              li <strong>Mouse-over</strong> nodes or edges to focus them. New ones are automatically focused.
+              li When a node is focused: 
+                ul
+                  li Press <kbd>s</kbd> to <strong>s</strong>elect/deselect the node.
+                  li <strong>Click it</strong> or press <kbd>spacebar</kbd> to change its state.
+                  li Press <kbd>m</kbd> to change the node's <strong>m</strong>echanism.
+                  li Press <kbd>r</kbd> to change whether the node has a <strong>r</strong>eflexive edge (self-loop).
+                  li Press <kbd>f</kbd> to <strong>f</strong>ix the node in place or release it.
+                  li Press <kbd>t</kbd> to change the node's <strong>t</strong>hreshold. The threshold only has an effect when the mechanism is <kbd>></kbd> or <kbd><</kbd>.
+                  li Press <kbd>delete</kbd>, <kbd>backspace</kbd>, or <kbd>d</kbd> to <strong>d</strong>elete the node.
+                  li Use the <strong>label</strong> field to change the node's label.
+              li When an edge is focused:
+                ul
+                  li <strong>Click it</strong> or press <kbd>c</kbd> to <strong>c</strong>hange the direction of the edge.
+                  li Press <kbd>b</kbd> to make the edge <strong>b</strong>idirectional.
+                  li Press <kbd>delete</kbd>, <kbd>backspace</kbd>, or <kbd>d</kbd> to <strong>d</strong>elete the edge.
+              li Use the <strong>past state dropdown menu</strong> to select the network's past state from among those that could have lead to the current one.
+              li Use the <strong>mechanism dropdown menu</strong> to change the mechanisms of the selected or focused nodes.
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Close
+
+  //- Online/Offline
+  script(src='//cdnjs.cloudflare.com/ajax/libs/loglevel/1.2.0/loglevel.min.js')
+  // script(src='/bower_components/loglevel/dist/loglevel.min.js')
   
-  // Online/Offline
-  // script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
-  script(src='/bower_components/jquery/jquery.min.js')
+  //- Online/Offline
+  script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
+  //- script(src='/bower_components/jquery/jquery.min.js')
 
-  // TODO minify?
-  script(src='/bower_components/jquery-jsonrpcclient/jquery.jsonrpcclient.js')
+  //- Online/Offline
+  //- script(src='/bower_components/angular/angular.js')
+  script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js')
 
-  // Online/Offline
-  script(src='/bower_components/underscore/underscore.js')
+  //- TODO minify?
+  script(src='/js/lib/jquery.jsonrpcclient.js')
+  //- script(src='/bower_components/jquery-jsonrpcclient/jquery.jsonrpcclient.js')
 
-  // Online/Offline
-  // TODO get minified versions
-  // script(src='//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.js')
-  script(src='/bower_components/d3/d3.js')
+  //- Online/Offline
+  //- TODO get minified versions
+  script(src='//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js')
+  //- script(src='/bower_components/d3/d3.js')
 
-  // TODO get minified versions
-  // Online/Offline
-  script(src='/bower_components/c3/c3.js')
+  //- Online/Offline
+  script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js')
+  //- script(src='/bower_components/underscore/underscore.js')
 
-  // Online/Offline
-  // script(src='//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js')
-  script(src='/bower_components/threejs/build/three.js')
+  //- TODO get minified versions
+  //- Online/Offline
+  script(src='//cdnjs.cloudflare.com/ajax/libs/c3/0.4.8/c3.min.js')
+  //- script(src='/bower_components/c3/c3.js')
 
-  script(src='/js/lib/TrackballControls.js')
+  //- Online/Offline
+  script(src='//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js')
+  //- script(src='/bower_components/threejs/build/three.js')
+
+  script(src='/js/lib/OrbitControls.js')
   script(src='/js/lib/Detector.js')
+  script(src='/js/lib/FileSaver.js')
+  script(src='/js/lib/angular-downloadsvg-directive.min.js')
+  script(src='/js/lib/angular-file-upload.min.js')
+
+  //- Online/Offline
+  script(src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
+  //- IMPORTANT: If loading from Bower, need to load the config file also
+  // //- script(src='/bower_components/MathJax/MathJax.js')
+  // //- script(src='/bower_components/MathJax/config/TeX-AMS-MML_HTMLorMML.js')
 
   script(src='/js/app.js')
 
-  // Online/Offline
-  // script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')
-  script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
+  //- Online/Offline
+  script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')
+  //- script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
+
+  script(type='text/javascript').
+    // Initialize tooltips.
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })

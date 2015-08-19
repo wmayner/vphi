@@ -1,11 +1,32 @@
 // concept-space.styl
 
 #concept-space-module
-  .control-panel
-    padding-top 10px
+  padding-bottom 10px
+
+  .control-group
+    float right
+    @media (max-width: md_max) {
+      float none
+    }
 
 #concept-space-container
   position relative
+  height 500px
+  margin-bottom 20px
+
+  .threejs-label
+
+    position: absolute
+    font-family: Droid Sans Mono
+    color: white
+    z-index: 100
+    background-color: rgba(145, 145, 145, 0.5)
+    border-radius: 5px
+    padding: 0.3ex 0.5em
+
+    .mechanism-node
+      &.on
+        color: cyan
 
 #concept-space-overlay
   z-index 10
@@ -15,4 +36,4 @@
   top 0
   left 0
   right 0
-  background rgba(255, 255, 255, 0.3)
+  background rgba(255, 255, 255, 0.4)

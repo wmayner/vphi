@@ -1,79 +1,18 @@
 'use strict'
+###
+# index.coffee
+###
 
-# AngularJS
-ngControllers = require './controllers'
-ngServices = require './services'
-
-pyphi = require './graph-editor/pyphi'
-error = require './errors'
-
-# Initialize interface components
-graphEditor = require './graph-editor'
-conceptSpace = require './concept-space'
-
-
-PRECISION = 6
-
-
-# TODO dispense with jQuery and use d3 instead
-
-#################
-# Control panel #
-#################
-
-# Helpers
-
-displayBigMip = (bigMip) ->
-  # Round to PRECISION.
-  phi = Number(bigMip.phi).toFixed(PRECISION)
-  # Display the result.
-  $('#output-phi').html(phi)
-  # Draw the unpartitioned constellation.
-  conceptSpace.display(bigMip)
-
-cooldown = false
-
-startLoading = ->
-  $('#output-phi').html('···')
-  $('#concept-space-loading-spinner').removeClass('hidden')
-  $('#concept-space-loading-spinner').show()
-  $('#concept-space-overlay').removeClass('hidden')
-  $('#concept-space-overlay').show()
-
-finishLoading = ->
-  $('#concept-space-loading-spinner').fadeOut(400, -> cooldown = false)
-  $('#concept-space-overlay').fadeOut(400)
-
-pressCalculate = ->
-  return if cooldown
-  cooldown = true
-  btn = $('#btn-calculate')
-  btn.button 'loading'
-  startLoading()
-  try
-    pyphi.bigMip(graphEditor.graph, displayBigMip).always ->
-      btn.button 'reset'
-      finishLoading()
-  catch e
-    btn.button 'reset'
-    finishLoading()
-    switch e.code
-      when 1
-        # TODO display "invalid past state message"
-        console.error(e.message)
-      when 2
-        # TODO display "network size limit exceeded message"
-        console.error(e.message)
-
-
-$(document).ready ->
-
-# Event handlers
-
-control = $('#btn-calculate').mouseup(pressCalculate)
-
-# Keyboard shorcuts
-
-$(document).keydown (e) ->
-  if e.keyCode is 13
-    pressCalculate()
+angular.module 'vphi', [
+  require('./services/compute').name
+  require('./services/formatter').name
+  require('./services/network').name
+  require('./network-editor').name
+  require('./concept-space').name
+  require('./control-panel').name
+  require('./output-summary').name
+  require('./concept-list').name
+]
+  .constant 'version', require('../../package.json').version
+  .constant 'NETWORK_SIZE_LIMIT', 8
+  .constant 'CANVAS_HEIGHT', 500

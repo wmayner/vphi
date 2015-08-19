@@ -1,0 +1,126 @@
+// network-editor.styl
+
+network-editor
+  display block
+
+#network-editor-help
+  ul
+    padding-top 0
+    li
+      margin 7px 0
+
+#network-editor-container
+  margin-bottom 15px
+
+#network-editor-module
+  padding-bottom 10px
+
+  .control-group
+    float left
+    @media (max-width: md_max) {
+      float none
+    }
+
+  .form-control, .form-group
+    display inline-block
+
+#node-label, #current-node-mechanism
+  text-align center
+  color inherit
+
+#node-label
+    font-weight bold
+    width 4em
+  [disabled]
+    background-color white
+    border-color #ccc
+    box-shadow none
+    cursor auto
+    opacity 0.65
+
+#current-node-mechanism
+  display inline-block
+  width 13em
+
+#import-network
+  border-top-left-radius 4px
+  border-bottom-left-radius 4px
+
+//- phone
+@media (max-width: phone_max) {
+  #network-editor-module {
+    .form-control, .form-group {
+      display block
+    }
+    .form-inline .btn-group, #node-label {
+      width 100%
+      button {
+        width 100%
+        span.caret {
+          position absolute
+          display inline-block
+          float right
+          top 45%
+          right 1.5ex
+          height 100%
+        }
+      }
+    }
+  }
+}
+
+#network-editor-module
+
+  svg
+    &:not(.active):not(.shiftkey)
+      cursor crosshair
+      path
+        &.link
+          cursor pointer
+
+  path.link
+    fill none
+    stroke-width 6px
+    cursor default
+    opacity 0.7
+    &.focused
+      opacity 1
+    &.dragline
+      pointer-events none
+    &.hidden
+      stroke-width 0
+
+  circle.node
+    stroke none
+    cursor pointer
+    &.reflexive
+      stroke sol_background !important
+
+  circle.subsystem-marker
+    stroke none
+    stroke sol_background
+    stroke-width 2px
+    stroke-dasharray 7
+    fill none
+
+  circle.neighbor-circle
+    stroke-width 2
+    stroke sol_blue
+    opacity 0.75
+    fill none
+
+  text
+    font 12px 'Helvetica Neue', sans-serif
+    pointer-events none
+    &.node-label
+      text-anchor middle
+      &.id
+        font 14px 'Helvetica Neue', sans-serif
+        font-weight bold
+
+  rect.selection-box
+    stroke #fff
+    stroke-width 2
+    stroke-dasharray 6, 8
+    stroke-opacity 0.5
+    fill none
