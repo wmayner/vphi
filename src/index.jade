@@ -159,9 +159,11 @@ body
                   .vphi-value.number-7(ng-bind='sumSmallPhi')
           .row.clearfix
             .col-md-12
-              #elapsed-time(ng-show='elapsedTime')
-                p Total elapsed time: <code>{{elapsedTime}}</code> seconds
-                p Subsystem calculation time: \(\Phi\): <code>{{bigPhiTime}}</code> seconds; all \(\varphi\): <code>{{smallPhiTime}}</code> seconds
+              #misc-info
+                .block-item PyPhi v0.7.2
+                #elapsed-time(ng-show='elapsedTime')
+                  .block-item Total elapsed time: <code>{{elapsedTime}}</code> seconds
+                  .block-item Subsystem calculation time: \(\Phi\): <code>{{bigPhiTime}}</code> seconds; all \(\varphi\): <code>{{smallPhiTime}}</code> seconds
     .row.clearfix
       .col-md-12
         section#concept-list-module.module.hidden(ng-controller='conceptListCtrl')
