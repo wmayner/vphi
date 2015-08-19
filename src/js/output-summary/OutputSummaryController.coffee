@@ -29,9 +29,9 @@ module.exports = [
       bm = compute.data.bigMip
 
       if compute.calledMethod is 'mainComplex'
-        $scope.title = 'Main Complex'
+        $scope.title = 'Main Complex:'
       else
-        $scope.title = 'Subsystem'
+        $scope.title = 'Subsystem:'
 
       $scope.elapsedTime = format.time compute.data.elapsedTime
       $scope.bigPhiTime = format.time bm.time

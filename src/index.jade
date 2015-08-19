@@ -165,7 +165,7 @@ body
     .row.clearfix
       .col-md-12
         section#concept-list-module.module.hidden(ng-controller='conceptListCtrl')
-          h2.module-title Concepts
+          h2.module-title Concepts:
           .concept.well(ng-controller='conceptList.conceptCtrl' ng-repeat='concept in concepts', id='concept-{{$index}}')
             .row.centered.clearfix
               .col-xs-4
