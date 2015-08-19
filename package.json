@@ -1,6 +1,6 @@
 {
   "name": "vphi",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "Will Mayner <wmayner@gmail.com> (http://willmayner.com/)",
   "description": "A visual interface to PyPhi.",
   "repository": {
