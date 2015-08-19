@@ -6,7 +6,8 @@
 
 # TODO*** change endpoint
 pyphi = new $.JsonRpcClient({
-  ajaxUrl: 'http://144.92.177.185'
+  # ajaxUrl: 'http://144.92.177.185'
+  ajaxUrl: 'http://127.0.0.1:8000'
   # 12 hr timeout
   timeout: 43200000
 })
@@ -15,9 +16,8 @@ pyphi = new $.JsonRpcClient({
 getPyphiNetwork = (network) ->
   net =
     'tpm': network.tpm
-    'currentState': network.currentState
-    'connectivityMatrix': network.getConnectivityMatrix()
-    'pastState': network.pastState
+    'state': network.state
+    'cm': network.getConnectivityMatrix()
   log.debug "PYPHI: Sending network:"
   log.debug net
   return net

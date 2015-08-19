@@ -78,8 +78,7 @@ module.exports = angular.module name, []
           @format = new Formatter((index) => @getNode(index).label)
           # TODO refactor tpmify
           @tpm = tpmify this
-          @currentState = []
-          @pastState = @getPossiblePastStates()[0]
+          @state = []
 
         size: -> @graph.numNodes
 
@@ -252,12 +251,7 @@ module.exports = angular.module name, []
           @update()
           return oldThreshold
 
-        getCurrentState: -> (node.on for node in @getNodes())
-
-        getPastState: (node_indices) ->
-          if not @pastState
-            return null
-          return (@pastState[i] for i in node_indices)
+        getState: -> (node.on for node in @getNodes())
 
         getConnectivityMatrix: ->
           nodes = @getNodes()
@@ -265,58 +259,10 @@ module.exports = angular.module name, []
                 for j in nodes) for i in nodes)
           return r
 
-        setPastState: (state) =>
-          return if "#{state}" is "#{@pastState}"
-          old = @pastState
-          @pastState = state
-          llog "Changed past state from [#{old}] to [#{@pastState}]."
-          @update()
-          return
-
-        # TODO have special 'IN' mechanism, that doesn't restrict past state?
-        _checkPossiblePastState: (pastStateIndex) ->
-          # Get the probabilities for each node being on given the past state.
-          row = @tpm[pastStateIndex]
-          for own id, n of @graph._nodes
-            # If the node has no inputs, it can have any past state.
-            unless @graph.getInEdgesOf(id).length is 0
-              # If it does have inputs, check that the TPM says there's a
-              # nonzero probability of that node being on if it currently is,
-              # and a zero probability if it isn't.
-              if ((@currentState[n.index] > 0 and row[n.index] is 0) or
-                  (@currentState[n.index] is 0 and row[n.index] > 0))
-                return false
-          return true
-
-        getPossiblePastStates: ->
-          numStates = Math.pow(2, @size())
-          result = (commonUtils.holiIndexToState(pastStateIndex, @size()) \
-            for pastStateIndex in [0...numStates] \
-            when @_checkPossiblePastState(pastStateIndex))
-          if result.length is 0
-            return false
-          return result
-
-        updatePastState: ->
-          possiblePastStates = @getPossiblePastStates()
-
-          # If there are no possible past states, set to null.
-          if not possiblePastStates
-            @pastState = null
-          else
-            # Return if the current past state is possible.
-            return if (@pastState and @pastState.join('') in
-              (s.join('') for s in possiblePastStates))
-            # Otherwise, set to the first possible one.
-            old = @pastState
-            @pastState = possiblePastStates[0]
-            llog "Changed past state from [#{old}] to [#{@pastState}]."
-          return
-
-        updateCurrentState: ->
-          old = @currentState
-          @currentState = @getCurrentState()
-          llog "Updated current state from [#{old}] to [#{@currentState}]."
+        updateState: ->
+          old = @state
+          @state = @getState()
+          llog "Updated state from [#{old}] to [#{@state}]."
           return
 
         getSelectedSubsystem: ->
@@ -351,9 +297,8 @@ module.exports = angular.module name, []
           data =
             nodes: jsonNodes
             tpm: @tpm
-            connectivityMatrix: @getConnectivityMatrix()
-            currentState: @currentState
-            pastState: @pastState
+            cm: @getConnectivityMatrix()
+            state: @state
           return data
 
         loadJSON: (json) ->
@@ -362,13 +307,12 @@ module.exports = angular.module name, []
           for node in json.nodes
             @graph.addNode(node)
           # Add edges.
-          for row, i in json.connectivityMatrix
+          for row, i in json.cm
             for elt, j in row
               if elt then @graph.addEdge(i, j)
           @tpm = json.tpm
-          @connectivityMatrix = json.connectivityMatrix
-          @currentState = json.currentState
-          @pastState = json.pastState
+          @cm = json.cm
+          @state = json.state
           @update()
           return
 
@@ -382,9 +326,8 @@ module.exports = angular.module name, []
           return
 
         update: ->
-          @updateCurrentState()
+          @updateState()
           @updateTpm()
-          @updatePastState()
           broadcast()
           localStorage.setItem 'network', JSON.stringify @toJSON()
           return

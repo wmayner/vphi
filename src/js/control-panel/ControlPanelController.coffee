@@ -25,10 +25,9 @@ module.exports = [
     update = ->
       # Display a warning if there are too many nodes
       $scope.size = network.size()
-      # Disable buttons if the network has no possible past state or if there's
-      # already a calculation in progress.
+      # Disable buttons if there's already a calculation in progress or the
+      # network is too big.
       $scope.isDisabled = compute.callInProgress or
-                          not network.pastState or
                           not (0 < network.size() < NETWORK_SIZE_LIMIT)
     update()
     $scope.$on (networkService.name + '.updated'), update
@@ -65,7 +64,7 @@ module.exports = [
         finishLoading()
 
     $scope.calculate = (method) ->
-      return if btnCooldown or not network.pastState
+      return if btnCooldown
       btn = method2btn[method]
       registerClick(btn)
       compute[method](

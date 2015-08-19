@@ -128,7 +128,7 @@ class ConceptSpaceCanvas
 
   mechanismLabel: (mechanism) ->
     return ("<span class='mechanism-node " +
-      "#{if @bigMip.currentState[i] then 'on' else 'off'}'>" +
+      "#{if @bigMip.state[i] then 'on' else 'off'}'>" +
       "#{@compute.format.node(i)}</span>" for i in mechanism)
         .join('')
 

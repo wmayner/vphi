@@ -72,24 +72,6 @@ body
                       ul#node-mechanisms.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
                         li.mechanism-option(ng-repeat='mechanism in mechanisms', ng-click='selectMechanism(mechanism)') 
                           a {{mechanismNames[mechanism]}}
-                  .form-group
-                    label.vphi-label(for='past-state-chooser') Past state
-                    .btn-group(ng-if='!possiblePastStates')
-                      button#no-past-states.btn.btn-md.btn-default.disabled No possible past states
-                    .btn-group(ng-if='possiblePastStates && !(currentPastState.length > 0)')
-                      button#empty-past-state.btn.btn-md.btn-default –
-                    .btn-group#past-state-chooser(ng-if='possiblePastStates && currentPastState.length > 0')
-                      button#past-state-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
-                        span#current-past-state 
-                          strong {{currentPastState}}
-                        span.caret
-                        span.sr-only Toggle past state selection dropdown menu
-                      ul#past-states.dropdown-menu.dropdown-menu-right(ng-show='possiblePastStates', role='menu', aria-labelledby='past-state-dropdown')
-                        li#past-state-list-header
-                          strong {{nodes}}
-                        li.divider
-                        li.past-state(ng-repeat='pastState in possiblePastStates', ng-click='selectPastState(pastState)') 
-                          a {{pastState.join(', ')}}
       .col-md-6
         #concept-space-module.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure
@@ -112,12 +94,13 @@ body
                     | Highlight Concept 
                     | &nbsp;
                     span.caret
-                    span.sr-only Toggle node mechanism selection dropdown menu
+                    span.sr-only Toggle concept highlighting dropdown menu
                   ul.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
                     li(ng-click='highlightConcept(-1)')
                       a None
                     li(ng-repeat='concept in concepts', ng-click='highlightConcept($index)') 
                       a {{format.nodes(concept.mechanism).join('')}}
+                .btn-group
                   button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
                     | Reset Camera
                 .btn-group
@@ -150,7 +133,7 @@ body
                 span(ng-bind='title')
                 span.vphi-value.number-2(ng-hide='nodes.length > 0') –
                 ul.node-list
-                  li(ng-class='{"on": currentState[n]}', ng-repeat='n in nodes')
+                  li(ng-class='{"on": state[n]}', ng-repeat='n in nodes')
                     | {{format.node(n)}}
           .row.centered.clearfix
             .col-md-12
@@ -202,7 +185,7 @@ body
                           .math-output \( {{partitionedCauseMip}} \)
               .col-xs-4
                 ul.node-list.mechanism
-                  li(ng-class='{"on": currentState[n]}', ng-repeat='n in mechanism') {{format.node(n)}}
+                  li(ng-class='{"on": state[n]}', ng-repeat='n in mechanism') {{format.node(n)}}
                 hr
                 .small-phi
                   .vphi-label \( \varphi \)
