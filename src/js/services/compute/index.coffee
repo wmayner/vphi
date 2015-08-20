@@ -27,7 +27,7 @@ module.exports = angular.module name, []
           log.error "DATA_SERVICE: Network cannot have more than
             #{NETWORK_SIZE_LIMIT} nodes."
           return false
-        if network.size() is 0
+        if network.tpm.length < 2
           log.info "DATA_SERVICE: Network is empty; not sending request."
           return false
         return true
