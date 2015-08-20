@@ -313,7 +313,7 @@ module.exports = angular.module name, []
             return
           # Load nodes if there are any.
           @graph = new Graph()
-          if 'nodes' in json
+          if 'nodes' of json
             # Add nodes.
             for node in json.nodes
               @graph.addNode(node)
