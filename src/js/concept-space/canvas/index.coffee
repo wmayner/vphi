@@ -218,6 +218,10 @@ class ConceptSpaceCanvas
 
     @bigMip = bigMip
 
+    # Don't do anything if there are no concepts.
+    if bigMip.unpartitioned_constellation.length is 0
+      return
+
     numNodes = bigMip.subsystem.node_indices.length
     numStates = Math.pow(2, numNodes)
 
@@ -228,18 +232,21 @@ class ConceptSpaceCanvas
     axes.drawJoined(@scene, renderedDimensions)
     # Label them.
     axisLabelSize = 10
-    @labels.push new Label(
-      {position: {x: 1, y: 0, z: 0}}, renderedDimensions[0].state,
-      axisLabelSize, @camera, @controls, @renderer
-    )
-    @labels.push new Label(
-      {position: {x: 0, y: 1, z: 0}}, renderedDimensions[1].state,
-      axisLabelSize, @camera, @controls, @renderer
-    )
-    @labels.push new Label(
-      {position: {x: 0, y: 0, z: 1}}, renderedDimensions[2].state,
-      axisLabelSize, @camera, @controls, @renderer
-    )
+    if renderedDimensions.length > 0
+      @labels.push new Label(
+        {position: {x: 1, y: 0, z: 0}}, renderedDimensions[0].state,
+        axisLabelSize, @camera, @controls, @renderer
+      )
+    if renderedDimensions.length > 1
+      @labels.push new Label(
+        {position: {x: 0, y: 1, z: 0}}, renderedDimensions[1].state,
+        axisLabelSize, @camera, @controls, @renderer
+      )
+    if renderedDimensions.length > 2
+      @labels.push new Label(
+        {position: {x: 0, y: 0, z: 1}}, renderedDimensions[2].state,
+        axisLabelSize, @camera, @controls, @renderer
+      )
     # Draw the ignored axes.
     @drawIgnoredAxes(numStates, renderedDimensions)
 
