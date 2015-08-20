@@ -4,6 +4,7 @@
 ###
 
 pyphi = require './pyphi'
+semver = require '../../../../bower_components/semver/semver.min.js'
 
 networkService = require '../network'
 formatterService = require '../formatter'
@@ -14,8 +15,9 @@ module.exports = angular.module name, []
     '$rootScope'
     networkService.name
     formatterService.name
+    'VERSION'
     'NETWORK_SIZE_LIMIT'
-    ($rootScope, network, Formatter, NETWORK_SIZE_LIMIT) ->
+    ($rootScope, network, Formatter, VERSION, NETWORK_SIZE_LIMIT) ->
       isValid = (network) ->
         if network.size() > NETWORK_SIZE_LIMIT
           log.error "Network cannot have more than #{NETWORK_SIZE_LIMIT} nodes."
@@ -44,17 +46,24 @@ module.exports = angular.module name, []
           stored = localStorage.getItem 'compute'
           if stored
             stored = JSON.parse(stored)
-            log.debug "DATA_SERVICE: Loading stored results."
-            # Need a setTimeout here to do the update after Angular is set up.
-            setTimeout (=>
-              # Update the service.
-              @network = stored.network
-              @update(stored.data)
-              typesetMath()
-              # Force a digest cycle.
-              # TODO figure out why we need this... we shouldn't and it's ugly.
-              $rootScope.$apply()
-            ), 0
+            # Check that stored results are compatible with this version.
+            if semver.valid(stored.version) and
+                  semver.major(stored.version) is semver.major(VERSION)
+              log.debug "DATA_SERVICE: Loading stored results."
+              # Need a setTimeout here to do the update after Angular is set up.
+              setTimeout (=>
+                # Update the service.
+                @network = stored.network
+                @update(stored.data)
+                typesetMath()
+                # Force a digest cycle.
+                # TODO figure out why we need this... we shouldn't and it's ugly.
+                $rootScope.$apply()
+              ), 0
+            else
+              log.debug "DATA_SERVICE: Incompatible versions; not loading stored
+                results from v#{stored.version or 'UNDEFINED'} since this is
+                v#{VERSION}."
           else
             log.debug "DATA_SERVICE: No stored results found."
 
@@ -85,6 +94,7 @@ module.exports = angular.module name, []
             localStorage.setItem 'compute', JSON.stringify(
               data: @data
               network: @network
+              version: VERSION
             )
             @callInProgress = false
             $rootScope.$apply success
