@@ -87,26 +87,26 @@ module.exports = angular.module name, []
 
         addNode: (node) ->
           newNode = @graph.addNode(node)
-          @update()
+          @updateFromGraph()
           return newNode
 
         addNodes: (nodes) ->
           newNodes = []
           for node in nodes
             newNodes.push @graph.addNode(node)
-          @update()
+          @updateFromGraph()
           return newNodes
 
         removeNode: (node) ->
           removedNode = @graph.removeNode(node)
-          @update()
+          @updateFromGraph()
           return removedNode
 
         removeNodes: (nodes) ->
           removedNodes = []
           for node in nodes
             removedNodes.push @graph.removeNode(node)
-          @update()
+          @updateFromGraph()
           return removedNodes
 
         getNode: (index) ->
@@ -129,14 +129,14 @@ module.exports = angular.module name, []
 
         addEdge: (source, target) ->
           edge = @graph.addEdge(source._id, target._id)
-          @update()
+          @updateFromGraph()
           return edge
 
         addEdges: (nodePairs) ->
           edges = []
           for pair in nodePairs
             edges.push @addEdge(pair[0], pair[1])
-          @update()
+          @updateFromGraph()
           return edges
 
         getEdge: (source, target) ->
@@ -144,7 +144,7 @@ module.exports = angular.module name, []
 
         removeEdge: (source, target) ->
           removed = @graph.removeEdge(source._id, target._id)
-          @update()
+          @updateFromGraph()
           return removed
 
         getDrawableEdges: ->
@@ -178,7 +178,7 @@ module.exports = angular.module name, []
 
         cycleMechanism: (node) ->
           cycleMechanism node
-          @update()
+          @updateFromGraph()
           return
 
         cycleMechanisms: (nodes) ->
@@ -186,18 +186,18 @@ module.exports = angular.module name, []
           for node in nodes
             node.mechanism = initial
             cycleMechanism node
-          @update()
+          @updateFromGraph()
           return
 
         cycleThreshold: (node) ->
           cycleThreshold node, @size()
-          @update()
+          @updateFromGraph()
           return
 
         cycleThresholds: (nodes) ->
           for node in nodes
             cycleThreshold node, @size()
-          @update()
+          @updateFromGraph()
           return
 
         cycleDirection: (source, target) ->
@@ -214,18 +214,18 @@ module.exports = angular.module name, []
           # Bidirectional to original
           else
             @graph.removeEdge target._id, source._id
-          @update()
+          @updateFromGraph()
 
         toggleState: (node) ->
           node.on = utils.negate node.on
-          @update()
+          @updateFromGraph()
           return
 
         toggleStates: (nodes) ->
           initial = nodes[0].on
           for node in nodes
             node.on = utils.negate(initial)
-          @update()
+          @updateFromGraph()
           return
 
         toggleSelfLoop: (node) ->
@@ -234,7 +234,7 @@ module.exports = angular.module name, []
             @addEdge(node, node)
           else
             @removeEdge(node, node)
-          @update()
+          @updateFromGraph()
           return
 
         toggleSelfLoops: (nodes) ->
@@ -245,22 +245,16 @@ module.exports = angular.module name, []
               @addEdge(node, node)
             else
               @removeEdge(node, node)
-          @update()
+          @updateFromGraph()
           return
 
         setThreshold: (node, threshold) ->
           oldThreshold = node.threshold
           node.threshold = threshold
-          @update()
+          @updateFromGraph()
           return oldThreshold
 
         getState: -> (node.on for node in @getNodes())
-
-        getConnectivityMatrix: ->
-          nodes = @getNodes()
-          r = (((if @graph.getEdge(i._id, j._id) then 1 else 0) \
-                for j in nodes) for i in nodes)
-          return r
 
         updateState: ->
           old = @state
@@ -286,10 +280,16 @@ module.exports = angular.module name, []
               node.selected = false
           return
 
-        updateTpm: ->
+        updateTPM: ->
           @tpm = tpmify this
           llog "Updated TPM."
           return
+
+        updateCM: ->
+          nodes = @getNodes()
+          @cm = (
+            ((if @graph.getEdge(i._id, j._id) then 1 else 0) \
+              for j in nodes) for i in nodes)
 
         toJSON: ->
           jsonNodes = []
@@ -300,22 +300,32 @@ module.exports = angular.module name, []
           data =
             nodes: jsonNodes
             tpm: @tpm
-            cm: @getConnectivityMatrix()
+            cm: @cm
             state: @state
           return data
 
         loadJSON: (json) ->
+          # Check that stored network is compatible with this version.
+          unless semver.valid(json.version) and
+                 semver.major(json.version) is semver.major(VERSION)
+            llog "Incompatible versions; not loading stored network from
+              v#{json.version or 'UNDEFINED'} since this is v#{VERSION}."
+            return
+          # Load nodes if there are any.
           @graph = new Graph()
-          # Add nodes.
-          for node in json.nodes
-            @graph.addNode(node)
-          # Add edges.
-          for row, i in json.cm
-            for elt, j in row
-              if elt then @graph.addEdge(i, j)
+          if 'nodes' in json
+            # Add nodes.
+            for node in json.nodes
+              @graph.addNode(node)
+            # Add edges.
+            for row, i in json.cm
+              for elt, j in row
+                if elt then @graph.addEdge(i, j)
+          # Load TPM, connectivity matrix, and state.
           @tpm = json.tpm
           @cm = json.cm
           @state = json.state
+          llog 'Loaded network.'
           @update()
           return
 
@@ -325,12 +335,16 @@ module.exports = angular.module name, []
             $.getJSON ex, (data) => @loadJSON data
           else
             @graph = ex
-            @update()
+            @updateFromGraph()
           return
 
-        update: ->
+        updateFromGraph: ->
           @updateState()
-          @updateTpm()
+          @updateTPM()
+          @updateCM()
+          @update()
+
+        update: ->
           broadcast()
           jsonNetwork = @toJSON()
           # Tag with current version.
@@ -345,20 +359,12 @@ module.exports = angular.module name, []
       loaded = no
       storedNetwork = localStorage.getItem 'network'
       if storedNetwork
-        storedNetwork = JSON.parse(storedNetwork)
-        # Check that stored network is compatible with this version.
-        if semver.valid(storedNetwork.version) and
-              semver.major(storedNetwork.version) is semver.major(VERSION)
-          network.loadJSON storedNetwork
-          loaded = yes
-        else
-          llog "Incompatible versions; not loading stored network from
-            v#{storedNetwork.version or 'UNDEFINED'} since this is v#{VERSION}."
+        network.loadJSON JSON.parse(storedNetwork)
       else
         llog "No stored network found."
       # Default to the first example.
       if not loaded
         network.loadExample example.names[0]
-        
+
       return network
   ]

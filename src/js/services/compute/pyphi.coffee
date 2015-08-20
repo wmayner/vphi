@@ -15,8 +15,8 @@ pyphi = new $.JsonRpcClient({
 getPyphiNetwork = (network) ->
   net =
     'tpm': network.tpm
+    'cm': network.cm
     'state': network.state
-    'cm': network.getConnectivityMatrix()
   log.debug "PYPHI: Sending network:"
   log.debug net
   return net
