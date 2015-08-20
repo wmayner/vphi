@@ -3,6 +3,8 @@
 # services/network/index.coffee
 ###
 
+semver = require '../../../../bower_components/semver/semver.min.js'
+
 formatterService = require '../formatter.coffee'
 
 commonUtils = require '../../utils'
@@ -19,13 +21,14 @@ module.exports = angular.module name, []
     '$rootScope'
     '$timeout'
     formatterService.name
-    ($rootScope, $timeout, Formatter) ->
+    'VERSION'
+    ($rootScope, $timeout, Formatter, VERSION) ->
 
       # Helpers
       # ========================================================================
 
       llog = (msg) ->
-        log.debug "NETWORK: #{msg}"
+        log.debug "NETWORK_SERVICE: #{msg}"
 
       broadcast = ->
         llog "*** Broadcasting update event. ***"
@@ -329,18 +332,33 @@ module.exports = angular.module name, []
           @updateState()
           @updateTpm()
           broadcast()
-          localStorage.setItem 'network', JSON.stringify @toJSON()
+          jsonNetwork = @toJSON()
+          # Tag with current version.
+          jsonNetwork.version = VERSION
+          localStorage.setItem 'network', JSON.stringify jsonNetwork
           return
 
       # ========================================================================
 
       network = new Network()
-      # Load previous graph if available.
+      # Load previous network if available.
+      loaded = no
       storedNetwork = localStorage.getItem 'network'
       if storedNetwork
-        network.loadJSON JSON.parse(storedNetwork)
+        storedNetwork = JSON.parse(storedNetwork)
+        # Check that stored network is compatible with this version.
+        if semver.valid(storedNetwork.version) and
+              semver.major(storedNetwork.version) is semver.major(VERSION)
+          network.loadJSON storedNetwork
+          loaded = yes
+        else
+          llog "Incompatible versions; not loading stored network from
+            v#{storedNetwork.version or 'UNDEFINED'} since this is v#{VERSION}."
       else
+        llog "No stored network found."
+      # Default to the first example.
+      if not loaded
         network.loadExample example.names[0]
-
+        
       return network
   ]

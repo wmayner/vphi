@@ -3,8 +3,8 @@
 # services/compute/index.coffee
 ###
 
-pyphi = require './pyphi'
 semver = require '../../../../bower_components/semver/semver.min.js'
+pyphi = require './pyphi'
 
 networkService = require '../network'
 formatterService = require '../formatter'
@@ -18,12 +18,17 @@ module.exports = angular.module name, []
     'VERSION'
     'NETWORK_SIZE_LIMIT'
     ($rootScope, network, Formatter, VERSION, NETWORK_SIZE_LIMIT) ->
+
+      llog = (msg) ->
+        log.debug "DATA_SERVICE: #{msg}"
+
       isValid = (network) ->
         if network.size() > NETWORK_SIZE_LIMIT
-          log.error "Network cannot have more than #{NETWORK_SIZE_LIMIT} nodes."
+          log.error "DATA_SERVICE: Network cannot have more than
+            #{NETWORK_SIZE_LIMIT} nodes."
           return false
         if network.size() is 0
-          log.info "PYPHI: Network is empty; not sending request."
+          log.info "DATA_SERVICE: Network is empty; not sending request."
           return false
         return true
 
@@ -49,7 +54,7 @@ module.exports = angular.module name, []
             # Check that stored results are compatible with this version.
             if semver.valid(stored.version) and
                   semver.major(stored.version) is semver.major(VERSION)
-              log.debug "DATA_SERVICE: Loading stored results."
+              llog "Loading stored results."
               # Need a setTimeout here to do the update after Angular is set up.
               setTimeout (=>
                 # Update the service.
@@ -61,11 +66,10 @@ module.exports = angular.module name, []
                 $rootScope.$apply()
               ), 0
             else
-              log.debug "DATA_SERVICE: Incompatible versions; not loading stored
-                results from v#{stored.version or 'UNDEFINED'} since this is
-                v#{VERSION}."
+              llog "Incompatible versions; not loading stored results from
+                v#{stored.version or 'UNDEFINED'} since this is v#{VERSION}."
           else
-            log.debug "DATA_SERVICE: No stored results found."
+            llog "No stored results found."
 
         data: null
         network: null
@@ -85,9 +89,9 @@ module.exports = angular.module name, []
         pyphiCall: (method, success, always) ->
           if not isValid(network)
             always()
-            log.debug 'DATA_SERVICE: Invalid network.'
+            llog 'Invalid network.'
             return
-          log.debug "DATA_SERVICE: Calling `#{method}`..."
+          llog "Calling `#{method}`..."
           @callInProgress = true
           pyphi[method](network, (data) =>
             @update(data)
@@ -102,7 +106,7 @@ module.exports = angular.module name, []
           ).always(-> $rootScope.$apply always)
 
         update: (data) ->
-          log.debug "DATA_SERVICE: Updating with data:"
+          llog "Updating with data:"
           log.debug data
 
           @network = network.toJSON()
@@ -111,7 +115,7 @@ module.exports = angular.module name, []
           # TODO just attach these to the service.
           @data.bigMip.state = network.state
 
-          log.debug "DATA_SERVICE: *** Broadcasting update event. ***"
+          llog "*** Broadcasting update event. ***"
           $rootScope.$broadcast (name + '.updated')
           return
   ]
