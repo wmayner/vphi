@@ -311,19 +311,34 @@ module.exports = angular.module name, []
             llog "Incompatible versions; not loading stored network from
               v#{json.version or 'UNDEFINED'} since this is v#{VERSION}."
             return
-          # Load nodes if there are any.
+          if not 'tpm' of json
+            log.error 'Imported network must have a "tpm" attribute.'
+            return
+          if not 'state' of json
+            log.error 'Imported network must have a "state" attribute.'
+            return
+          numNodes = json.state.length
+          nodeIndices = [0...numNodes]
+          # Make a new, empty graph.
           @graph = new Graph()
+          # Load nodes if there are any, otherwise make blank ones.
           if 'nodes' of json
-            # Add nodes.
             for node in json.nodes
               @graph.addNode(node)
-            # Add edges.
-            for row, i in json.cm
-              for elt, j in row
-                if elt then @graph.addEdge(i, j)
-          # Load TPM, connectivity matrix, and state.
+          else
+            for i in json.cm
+              node = @graph.addNode({mechanism: '—'})
+          # Add edges if there's a connectivity matrix, otherwise assume full
+          # connectivity.
+          if 'cm' of json
+            @cm = json.cm
+          else
+            @cm = ((1 for i in nodeIndices) for j in nodeIndices)
+          for row, i in json.cm
+            for elt, j in row
+              if elt then @graph.addEdge(i, j)
+          # Load TPM and state.
           @tpm = json.tpm
-          @cm = json.cm
           @state = json.state
           llog 'Loaded network.'
           @update()
