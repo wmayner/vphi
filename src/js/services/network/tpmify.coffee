@@ -37,6 +37,6 @@ getNextNetworkState = (network, state) ->
 module.exports = (network) ->
   tpm = []
   for i in [0...Math.pow(2, network.size())]
-    state = utils.holiIndexToState(i, network.size())
+    state = utils.loliIndexToState(i, network.size())
     tpm.push getNextNetworkState(network, state)
   return tpm
