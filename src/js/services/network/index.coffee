@@ -306,6 +306,7 @@ module.exports = angular.module name, []
             tpm: @tpm
             cm: @cm
             state: @state
+            version: VERSION
           return data
 
         loadJSON: (json) ->
@@ -316,10 +317,10 @@ module.exports = angular.module name, []
               v#{json.version or 'UNDEFINED'} since this is v#{VERSION}."
             return
           if not 'tpm' of json
-            log.error 'Imported network must have a "tpm" attribute.'
+            log.error 'Imported network must have a `tpm` attribute.'
             return
           if not 'state' of json
-            log.error 'Imported network must have a "state" attribute.'
+            log.error 'Imported network must have a `state` attribute.'
             return
           numNodes = json.state.length
           nodeIndices = [0...numNodes]
@@ -365,10 +366,8 @@ module.exports = angular.module name, []
 
         update: ->
           broadcast()
-          jsonNetwork = @toJSON()
-          # Tag with current version.
-          jsonNetwork.version = VERSION
-          localStorage.setItem 'network', JSON.stringify jsonNetwork
+          # Save the network to localStorage.
+          localStorage.setItem 'network', JSON.stringify @toJSON()
           return
 
       # ========================================================================
