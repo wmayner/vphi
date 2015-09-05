@@ -5,13 +5,13 @@
 utils = require './utils'
 
 andGate = (input) ->
-    sum = 0
-    sum += i for i in input
-    return utils.bit(sum is input.length)
+  sum = 0
+  sum += i for i in input
+  return utils.bit(sum is input.length)
 orGate = (input) ->
-    sum = 0
-    sum += i for i in input
-    return utils.bit(sum >= 1)
+  sum = 0
+  sum += i for i in input
+  return utils.bit(sum >= 1)
 parityGate = (input) ->
   sum = 0
   sum += i for i in input
@@ -29,7 +29,7 @@ module.exports =
     # TODO document that XOR here means the parity interpretation
     return utils.bit(not parityGate(input))
   'RAND': (input) ->
-    return Math.random() < 0.5
+    return utils.bit(Math.random() < 0.5)
   'MAJ': (input) ->
     sum = 0
     sum += i for i in input
