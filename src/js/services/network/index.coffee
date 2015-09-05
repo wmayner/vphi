@@ -176,6 +176,10 @@ module.exports = angular.module name, []
           return false if not otherKey
           return (key is otherKey or key is reverseEdgeKey(otherKey))
 
+        setMechanism: (node, mechanism) ->
+          node.mechanism = mechanism
+          @updateTPM()
+
         cycleMechanism: (node) ->
           cycleMechanism node
           @updateFromGraph()

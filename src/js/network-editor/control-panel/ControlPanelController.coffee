@@ -51,11 +51,9 @@ module.exports =  [
     $scope.selectMechanism = (mechanismKey) ->
       if $scope.selectedNodes.length > 1
         for node in $scope.selectedNodes
-          node.mechanism = mechanismKey
-        network.update()
+          network.setMechanism(node, mechanismKey)
       else if $scope.activeNode?
-        $scope.activeNode?.mechanism = mechanismKey
-        network.update()
+        network.setMechanism($scope.activeNode, mechanismKey)
 
     update = ->
       $scope.nodes = (
