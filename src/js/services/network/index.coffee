@@ -182,7 +182,7 @@ module.exports = angular.module name, []
 
         cycleMechanism: (node) ->
           cycleMechanism node
-          @updateFromGraph()
+          @updateTPM()
           return
 
         cycleMechanisms: (nodes) ->
@@ -190,18 +190,18 @@ module.exports = angular.module name, []
           for node in nodes
             node.mechanism = initial
             cycleMechanism node
-          @updateFromGraph()
+          @updateTPM()
           return
 
         cycleThreshold: (node) ->
           cycleThreshold node, @size()
-          @updateFromGraph()
+          @updateTPM()
           return
 
         cycleThresholds: (nodes) ->
           for node in nodes
             cycleThreshold node, @size()
-          @updateFromGraph()
+          @updateTPM()
           return
 
         cycleDirection: (source, target) ->
@@ -222,14 +222,14 @@ module.exports = angular.module name, []
 
         toggleState: (node) ->
           node.on = utils.negate node.on
-          @updateFromGraph()
+          @updateState()
           return
 
         toggleStates: (nodes) ->
           initial = nodes[0].on
           for node in nodes
             node.on = utils.negate(initial)
-          @updateFromGraph()
+          @updateState()
           return
 
         toggleSelfLoop: (node) ->
@@ -255,7 +255,7 @@ module.exports = angular.module name, []
         setThreshold: (node, threshold) ->
           oldThreshold = node.threshold
           node.threshold = threshold
-          @updateFromGraph()
+          @updateTPM()
           return oldThreshold
 
         getState: -> (node.on for node in @getNodes())
