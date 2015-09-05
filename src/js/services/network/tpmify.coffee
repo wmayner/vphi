@@ -15,9 +15,7 @@ mechanism = require './mechanism'
 # TODO put this in network service?
 
 # Get the state of a node in the next timestep, given the current state of the graph.
-getNextNodeState = (network, index, state) ->
-  # Grab the node.
-  node = network.getNode(index)
+getNextNodeState = (network, state, node) ->
   # Get the IDs of nodes that are inputs to this one.
   inputNodes = (edge.source for edge in network.graph.getInEdgesOf(node._id))
   # Get an array of their states.
@@ -31,7 +29,7 @@ getNextNodeState = (network, index, state) ->
 
 # Get a map from nodes to their next states.
 getNextNetworkState = (network, state) ->
-  (getNextNodeState(network, node.index, state) for node in network.getNodes())
+  (getNextNodeState(network, state, node) for node in network.getNodes())
 
 # TPMify!
 module.exports = (network) ->
