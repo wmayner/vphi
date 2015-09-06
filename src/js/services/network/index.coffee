@@ -43,9 +43,9 @@ module.exports = angular.module name, []
          for i in [0...Math.pow(2, numNodes)])
 
       cycleMechanism = (node) ->
-        next_index = mechanism.keys.indexOf(node.mechanism) + 1
-        if next_index is mechanism.keys.length then next_index = 0
-        node.mechanism = mechanism.keys[next_index]
+        nextIndex = mechanism.keys.indexOf(node.mechanism) + 1
+        if nextIndex is mechanism.keys.length then nextIndex = 0
+        node.mechanism = mechanism.keys[nextIndex]
         return
 
       cycleThreshold = (node, max) ->
@@ -87,26 +87,26 @@ module.exports = angular.module name, []
 
         addNode: (node) ->
           newNode = @graph.addNode(node)
-          @updateFromGraph()
+          @updateAll()
           return newNode
 
         addNodes: (nodes) ->
           newNodes = []
           for node in nodes
             newNodes.push @graph.addNode(node)
-          @updateFromGraph()
+          @updateAll()
           return newNodes
 
         removeNode: (node) ->
           removedNode = @graph.removeNode(node)
-          @updateFromGraph()
+          @updateAll()
           return removedNode
 
         removeNodes: (nodes) ->
           removedNodes = []
           for node in nodes
             removedNodes.push @graph.removeNode(node)
-          @updateFromGraph()
+          @updateAll()
           return removedNodes
 
         getNode: (index) ->
@@ -129,14 +129,14 @@ module.exports = angular.module name, []
 
         addEdge: (source, target) ->
           edge = @graph.addEdge(source._id, target._id)
-          @updateFromGraph()
+          @updateAll()
           return edge
 
         addEdges: (nodePairs) ->
           edges = []
           for pair in nodePairs
             edges.push @addEdge(pair[0], pair[1])
-          @updateFromGraph()
+          @updateAll()
           return edges
 
         getEdge: (source, target) ->
@@ -144,7 +144,7 @@ module.exports = angular.module name, []
 
         removeEdge: (source, target) ->
           removed = @graph.removeEdge(source._id, target._id)
-          @updateFromGraph()
+          @updateAll()
           return removed
 
         getDrawableEdges: ->
@@ -218,7 +218,7 @@ module.exports = angular.module name, []
           # Bidirectional to original
           else
             @graph.removeEdge target._id, source._id
-          @updateFromGraph()
+          @updateAll()
 
         toggleState: (node) ->
           node.on = utils.negate node.on
@@ -238,7 +238,7 @@ module.exports = angular.module name, []
             @addEdge(node, node)
           else
             @removeEdge(node, node)
-          @updateFromGraph()
+          @updateAll()
           return
 
         toggleSelfLoops: (nodes) ->
@@ -249,7 +249,7 @@ module.exports = angular.module name, []
               @addEdge(node, node)
             else
               @removeEdge(node, node)
-          @updateFromGraph()
+          @updateAll()
           return
 
         setThreshold: (node, threshold) ->
@@ -257,14 +257,6 @@ module.exports = angular.module name, []
           node.threshold = threshold
           @updateTPM()
           return oldThreshold
-
-        getState: -> (node.on for node in @getNodes())
-
-        updateState: ->
-          old = @state
-          @state = @getState()
-          llog "Updated state from [#{old}] to [#{@state}]."
-          return
 
         getSelectedSubsystem: ->
           subsystemIndices = []
@@ -284,16 +276,36 @@ module.exports = angular.module name, []
               node.selected = false
           return
 
-        updateTPM: ->
-          @tpm = tpmify this
-          llog "Updated TPM."
+        getState: -> (node.on for node in @getNodes())
+
+        _updateState: ->
+          old = @state
+          @state = @getState()
+          llog "Updated state from [#{old}] to [#{@state}]."
+
+        updateState: ->
+          @_updateState()
+          @broadcastUpdate()
           return
 
-        updateCM: ->
+        _updateTPM: ->
+          @tpm = tpmify this
+          llog "Updated TPM."
+
+        updateTPM: ->
+          @_updateTPM()
+          @broadcastUpdate()
+
+        _updateCM: ->
           nodes = @getNodes()
           @cm = (
             ((if @graph.getEdge(i._id, j._id) then 1 else 0) \
               for j in nodes) for i in nodes)
+          llog "Updated connectivity matrix."
+
+        updateCM: ->
+          @_updateCM()
+          @broadcastUpdate()
 
         toJSON: ->
           jsonNodes = []
@@ -346,8 +358,7 @@ module.exports = angular.module name, []
           @tpm = json.tpm
           @state = json.state
           llog 'Loaded network.'
-          @update()
-          return
+          @broadcastUpdate()
 
         loadExample: (exampleName) ->
           ex = example[exampleName]()
@@ -355,16 +366,16 @@ module.exports = angular.module name, []
             $.getJSON ex, (data) => @loadJSON data
           else
             @graph = ex
-            @updateFromGraph()
+            @updateAll()
           return
 
-        updateFromGraph: ->
-          @updateState()
-          @updateTPM()
-          @updateCM()
-          @update()
+        updateAll: ->
+          @_updateState()
+          @_updateTPM()
+          @_updateCM()
+          @broadcastUpdate()
 
-        update: ->
+        broadcastUpdate: ->
           broadcast()
           # Save the network to localStorage.
           localStorage.setItem 'network', JSON.stringify @toJSON()
