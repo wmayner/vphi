@@ -39,10 +39,11 @@ module.exports = ->
         tick:
           rotate: 60
           format: (x) ->
-            # Low-Order bits correspond to Low-Index nodes.
+            # For the display, we use the "High-Order bits correspond to
+            # Low-Index nodes" convention.
             # NOTE: This should correspond to how NumPy's `flatten` function
             # works.
-            utils.loliIndexToState(x, scope.numNodes).join(', ')
+            utils.holiIndexToState(x, scope.numNodes).join(', ')
         label: (
           if attrs.direction is 'cause' then 'Past State' else 'Future State'
         )
