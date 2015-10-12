@@ -16,7 +16,7 @@ module.exports =
   holiIndexToState: (i, numNodes) ->
     # Convert a decimal index into an array of binary node states according to
     # the LOLI convention (low-order bits correspond to low-index nodes).
-    return @holiIndexToState(i, numNodes).reverse()
+    return @loliIndexToState(i, numNodes).reverse()
 
   logTpm: (tpm) ->
     log.debug "---------------"
