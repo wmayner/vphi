@@ -27,7 +27,7 @@ module.exports =
     return utils.negate(orGate(input))
   'XOR': (input) ->
     # TODO document that XOR here means the parity interpretation
-    return utils.bit(not parityGate(input))
+    return utils.negate(parityGate(input))
   'RAND': (input) ->
     return utils.bit(Math.random() < 0.5)
   'MAJ': (input) ->
