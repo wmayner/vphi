@@ -39,11 +39,12 @@ module.exports = ->
         tick:
           rotate: 60
           format: (x) ->
-            # For the display, we use the "High-Order bits correspond to
-            # Low-Index nodes" convention.
+            # For the display, we use the "Ligh-Order bits correspond to
+            # Low-Index nodes" (LOLI) convention.
             # NOTE: This should correspond to how NumPy's `flatten` function
-            # works.
-            utils.holiIndexToState(x, scope.numNodes).join(', ')
+            # works. When flattening multi-dimensional NumPy repertoires,
+            # `order='f'` must be used.
+            utils.loliIndexToState(x, scope.numNodes).join(', ')
         label: (
           if attrs.direction is 'cause' then 'Past State' else 'Future State'
         )
