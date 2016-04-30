@@ -22,21 +22,21 @@ getPyphiNetwork = (network) ->
   return net
 
 # Failure callback.
-failure = (err) ->
+defaultFailure = (err) ->
   log.error err
 
 
 module.exports =
 
-  complexes: (network, success) ->
+  complexes: (network, success, failure = defaultFailure) ->
     params = [getPyphiNetwork(network)]
     return pyphi.call 'complexes', params, success, failure
 
-  mainComplex: (network, success) ->
+  mainComplex: (network, success, failure = defaultFailure) ->
     params = [getPyphiNetwork(network)]
     return pyphi.call 'main_complex', params, success, failure
 
-  bigMip: (network, success) ->
+  bigMip: (network, success, failure = defaultFailure) ->
     # Get the selected subsystem.
     subsystemIndices = network.getSelectedSubsystem()
 
