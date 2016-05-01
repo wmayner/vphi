@@ -47,7 +47,10 @@ module.exports = [
       else
         $scope.sumSmallPhi = 0
 
-      $scope.cut =
-        intact: format.nodes bm.cut_subsystem.cut.intact
-        severed: format.nodes bm.cut_subsystem.cut.severed
+      cut = bm.cut_subsystem.cut
+      $scope.trivialCut = (cut[0].length < 1) or ($scope.nodes.length < 2)
+      $scope.cut = [
+        format.nodes cut[0]
+        format.nodes cut[1]
+      ]
 ]
