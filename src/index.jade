@@ -167,8 +167,9 @@ body
     .row.clearfix
       .col-md-12
         section#concept-list-module.module.hidden(ng-controller='conceptListCtrl')
-          h2.module-title Concepts:
-          .concept.well(ng-controller='conceptList.conceptCtrl' ng-repeat='concept in concepts', id='concept-{{$index}}')
+          h2.module-title(ng-if='concepts.length > 0') Concepts:
+          h2.module-title(ng-if='!(concepts.length > 0)') No Concepts
+          .concept.well(ng-controller='conceptList.conceptCtrl' ng-show='concepts.length > 0' ng-repeat='concept in concepts', id='concept-{{$index}}')
             .row.centered.clearfix
               .col-xs-4
                 ul.concept-data
