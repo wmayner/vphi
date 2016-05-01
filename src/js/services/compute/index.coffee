@@ -93,17 +93,22 @@ module.exports = angular.module name, []
             return
           llog "Calling `#{method}`..."
           @callInProgress = true
-          pyphi[method](network, (data) =>
+          pyphi[method](network, ((data) =>
             @update(data)
             localStorage.setItem 'compute', JSON.stringify(
               data: @data
               network: @network
               version: VERSION
             )
-            @callInProgress = false
             $rootScope.$apply success
             typesetMath()
-          ).always(-> $rootScope.$apply always)
+          ), ((error) =>
+            log.error "#{error.message}: #{error.data.type}: #{error.data.message}"
+            $rootScope.$broadcast (name + '.error' + '.' + error.data.type)
+          )).always(=>
+            @callInProgress = false
+            $rootScope.$apply always
+          )
 
         update: (data) ->
           llog "Updating with data:"

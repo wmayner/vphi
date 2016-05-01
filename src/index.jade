@@ -118,6 +118,10 @@ body
             span.glyphicon.glyphicon-warning-sign
             | &nbsp;
             | Too many nodes
+          button#subsystem-state-unreachable(ng-show='subsystemStateUnreachable', type='button', data-toggle='tooltip', data-placement='top', title="According to this subsystem's transition probability matrix, the probability of the subystem reaching this state is 0. Try changing the state or selecting another subsystem.").btn.btn-md.btn-warning
+            span.glyphicon.glyphicon-warning-sign
+            | &nbsp;
+            | The selected subsystem is in an impossible state.
       .row.centered.clearfix
         .col-centered
             button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("mainComplex")', ng-disabled='isDisabled')
