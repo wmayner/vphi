@@ -24,3 +24,7 @@ module.exports =
     for i in [0...tpm.length]
       log.debug "#{@loliIndexToState(i, n)} -> #{tpm[i]}"
     log.debug "---------------"
+
+  stateReachable: (state, tpm) ->
+    test = ((row[j] - state[j] for j in [0...state.length]) for row in tpm)
+    return test.some (row) -> row.every (entry) -> (-1 < entry < 1)
