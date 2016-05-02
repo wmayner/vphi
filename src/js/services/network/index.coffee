@@ -384,15 +384,12 @@ module.exports = angular.module name, []
       # ========================================================================
 
       network = new Network()
-      # Load previous network if available.
-      loaded = no
+      # Load previous network if available; default to the first example.
       storedNetwork = localStorage.getItem 'network'
       if storedNetwork
         network.loadJSON JSON.parse(storedNetwork)
       else
         llog "No stored network found."
-      # Default to the first example.
-      if not loaded
         network.loadExample example.names[0]
 
       return network
