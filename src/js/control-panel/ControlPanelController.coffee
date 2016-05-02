@@ -29,7 +29,7 @@ module.exports = [
       # network is empty, or the network is too big.
       $scope.isDisabled = compute.callInProgress or
                           network.tpm.length < 2 or
-                          network.size() >= NETWORK_SIZE_LIMIT
+                          network.size() > NETWORK_SIZE_LIMIT
     update()
     $scope.$on (networkService.name + '.updated'), update
 
