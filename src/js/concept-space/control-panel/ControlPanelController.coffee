@@ -4,13 +4,18 @@
 ###
 
 computeService = require '../../services/compute'
+networkService = require '../../services/network'
 
 module.exports = [
   '$scope'
   computeService.name
-  ($scope, compute) ->
+  networkService.name
+  ($scope, compute, network) ->
+    $scope.resetCamera = -> $scope.canvas.resetCamera()
+
     $scope.format = compute.format
 
+    $scope.restoreNetwork = -> network.loadJSON(compute.network)
     $scope.resetCamera = -> $scope.canvas.resetCamera()
     $scope.toggleGrids = -> $scope.canvas.toggleGrids()
     $scope.toggleIgnoredAxes = -> $scope.canvas.toggleIgnoredAxes()

@@ -90,6 +90,9 @@ body
             .col-md-12
               .control-group.btn-toolbar(ng-controller='conceptSpace.controlPanelCtrl', role='toolbar')
                 .btn-group
+                  button.btn.btn-md.btn-default(ng-click='restoreNetwork()', type='button', data-toggle='tooltip', data-placement='bottom', title='Erases all changes made to the network since 𝚽 was computed')
+                    | Restore Network
+                .btn-group
                   button.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
                     | Highlight Concept 
                     | &nbsp;
@@ -103,7 +106,6 @@ body
                 .btn-group
                   button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
                     | Reset Camera
-                .btn-group
                   button.btn.btn-md.btn-default(ng-click='toggleGrids()', type='button')
                     | Toggle Grids
                   button.btn.btn-md.btn-default(ng-click='toggleIgnoredAxes()', type='button')
