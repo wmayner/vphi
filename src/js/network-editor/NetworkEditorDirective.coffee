@@ -715,6 +715,7 @@ module.exports = [
                 break
               # space
               when 32
+                d3.event.preventDefault()
                 if scope.selectedNodes.length > 0
                   network.toggleStates scope.selectedNodes
                   for node in scope.selectedNodes
