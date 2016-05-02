@@ -774,16 +774,6 @@ module.exports = [
                   focusedNode.fixed = not focusedNode.fixed
                   update()
                 break
-              # s
-              when 83
-                if focusedNode
-                  # Toggle node inclusion in subsystem.
-                  if focusedNode.selected
-                    deselectNode(focusedNode)
-                  else
-                    selectNode(focusedNode)
-                  update()
-                break
 
             return
           .on 'keyup', ->
