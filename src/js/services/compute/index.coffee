@@ -44,10 +44,6 @@ module.exports = angular.module name, []
 
       return new class ComputeService
         constructor: ->
-          # Set up a formatting object that gets labels from the network that was
-          # computed.
-          @format = new Formatter((index) => @network.nodes[index].label)
-
           stored = localStorage.getItem 'compute'
           if stored
             stored = JSON.parse(stored)
@@ -55,10 +51,10 @@ module.exports = angular.module name, []
             if semver.valid(stored.version) and
                   semver.major(stored.version) is semver.major(VERSION)
               llog "Loading stored results."
+              @network = stored.network
               # Need a setTimeout here to do the update after Angular is set up.
               setTimeout (=>
                 # Update the service.
-                @network = stored.network
                 @update(stored.data)
                 typesetMath()
                 # Force a digest cycle.
@@ -70,6 +66,10 @@ module.exports = angular.module name, []
                 v#{stored.version or 'UNDEFINED'} since this is v#{VERSION}."
           else
             llog "No stored results found."
+
+          # Set up a formatting object that gets labels from the network that was
+          # computed.
+          @format = new Formatter((index) => @network.nodes[index].label)
 
         data: null
         network: null
@@ -94,6 +94,7 @@ module.exports = angular.module name, []
           llog "Calling `#{method}`..."
           @callInProgress = true
           pyphi[method](network, ((data) =>
+            @network = network.toJSON()
             @update(data)
             localStorage.setItem 'compute', JSON.stringify(
               data: @data
@@ -114,7 +115,6 @@ module.exports = angular.module name, []
           llog "Updating with data:"
           log.debug data
 
-          @network = network.toJSON()
           @data = data
           # Record state.
           # TODO just attach these to the service.
