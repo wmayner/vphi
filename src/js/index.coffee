@@ -14,5 +14,6 @@ angular.module 'vphi', [
   require('./concept-list').name
 ]
   .constant 'VERSION', require('../../package.json').version
+  .constant 'PYPHI_VERSION', '0.8.1'
   .constant 'NETWORK_SIZE_LIMIT', 8
   .constant 'CANVAS_HEIGHT', 500
