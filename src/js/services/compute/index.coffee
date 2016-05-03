@@ -64,12 +64,13 @@ module.exports = angular.module name, []
                   $rootScope.$apply()
                 else
                   llog "Incompatible PyPhi versions; not loading stored results
-                    from version #{stored.data.version} since this expects
-                    version #{PYPHI_VERSION}."
+                    from version `#{stored.data.version}` since this expects
+                    version `#{PYPHI_VERSION}`."
               ), 0
             else
               llog "Incompatible vPhi versions; not loading stored network from
-                version #{stored.version} since this is version #{VERSION}."
+                version 1#{stored.version}1 since this is version
+                `#{VERSION}`."
           else
             llog "No stored results found."
 
