@@ -113,7 +113,7 @@ body
                 // .btn-group
                 //   button.btn.btn-md.btn-default(ng-click='switchView()', type='button')
                 //     | Switch View
-    #main-control-module.module(ng-controller='controlPanelCtrl')
+    #main-control-module.module(ng-controller='controlPanelCtrl', ng-cloak)
       .row.centered.clearfix
         .col-centered
           button#too-many-nodes(ng-show='size > NETWORK_SIZE_LIMIT', type='button', data-toggle='tooltip', data-placement='top', title='In order to conserve computational resources for others, networks larger than {{NETWORK_SIZE_LIMIT}} nodes cannot be analyzed.').btn.btn-md.btn-warning
@@ -132,7 +132,7 @@ body
               | Selected Subsystem
     .row.clearfix
       .col-md-12
-        section#output-summary-module.module(ng-controller='outputSummaryCtrl')
+        section#output-summary-module.module(ng-controller='outputSummaryCtrl', ng-cloak)
           .row.clearfix
             .col-md-12
               h2.module-title
