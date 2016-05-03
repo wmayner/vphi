@@ -3,7 +3,6 @@
 # services/compute/index.coffee
 ###
 
-semver = require '../../../../bower_components/semver/semver.min.js'
 pyphi = require './pyphi'
 
 networkService = require '../network'
@@ -16,8 +15,10 @@ module.exports = angular.module name, []
     networkService.name
     formatterService.name
     'VERSION'
+    'PYPHI_VERSION'
     'NETWORK_SIZE_LIMIT'
-    ($rootScope, network, Formatter, VERSION, NETWORK_SIZE_LIMIT) ->
+    ($rootScope, network, Formatter, VERSION, PYPHI_VERSION
+        NETWORK_SIZE_LIMIT) ->
 
       llog = (msg) ->
         log.debug "DATA_SERVICE: #{msg}"
@@ -48,22 +49,27 @@ module.exports = angular.module name, []
           if stored
             stored = JSON.parse(stored)
             # Check that stored results are compatible with this version.
-            if semver.valid(stored.version) and
-                  semver.major(stored.version) is semver.major(VERSION)
-              llog "Loading stored results."
+            if stored.version is VERSION
+              llog "Loading stored network."
               @network = stored.network
               # Need a setTimeout here to do the update after Angular is set up.
               setTimeout (=>
-                # Update the service.
-                @update(stored.data)
-                typesetMath()
-                # Force a digest cycle.
-                # TODO figure out why we need this... we shouldn't and it's ugly.
-                $rootScope.$apply()
+                if stored.data.version? and stored.data.version is PYPHI_VERSION
+                  # Update the service.
+                  llog "Loading stored results."
+                  @update(stored.data)
+                  typesetMath()
+                  # Force a digest cycle.
+                  # TODO figure out why we need this... we shouldn't and it's ugly.
+                  $rootScope.$apply()
+                else
+                  llog "Incompatible PyPhi versions; not loading stored results
+                    from version #{stored.data.version} since this expects
+                    version #{PYPHI_VERSION}."
               ), 0
             else
-              llog "Incompatible versions; not loading stored results from
-                v#{stored.version or 'UNDEFINED'} since this is v#{VERSION}."
+              llog "Incompatible vPhi versions; not loading stored network from
+                version #{stored.version} since this is version #{VERSION}."
           else
             llog "No stored results found."
 
