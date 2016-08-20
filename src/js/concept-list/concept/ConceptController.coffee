@@ -13,40 +13,45 @@ module.exports = [
     $scope.format = compute.format
 
     concept = $scope.concept
+    cause = concept.cause.mip
+    effect = concept.effect.mip
 
     $scope.mechanism = concept.mechanism
     $scope.smallPhi = format.phi concept.phi
     $scope.smallPhiPast = format.phi concept.phi
-    $scope.smallPhiPast = format.phi concept.cause.phi
-    $scope.smallPhiFuture = format.phi concept.effect.phi
+    $scope.smallPhiPast = format.phi cause.phi
+    $scope.smallPhiFuture = format.phi effect.phi
 
     # TODO replace with directives and templates
     $scope.causeMip = "\\frac{" +
       format.latexNodes(concept.mechanism) + "^{c}" +
       "}{" +
-      format.latexNodes(concept.cause.purview) + "^{p}" +
+      format.latexNodes(cause.purview) + "^{p}" +
       "}"
+
     $scope.partitionedCauseMip = "\\frac{" +
-      format.latexNodes(concept.cause.partition[0].mechanism) + "^{c}" +
+      format.latexNodes(cause.partition.part0.mechanism) + "^{c}" +
       "}{" +
-      format.latexNodes(concept.cause.partition[0].purview) + "^{p}" +
+      format.latexNodes(cause.partition.part0.purview) + "^{p}" +
       "} \\times \\frac{" +
-      format.latexNodes(concept.cause.partition[1].mechanism) + "^{c}" +
+      format.latexNodes(cause.partition.part1.mechanism) + "^{c}" +
       "}{" +
-      format.latexNodes(concept.cause.partition[1].purview) + "^{p}" +
+      format.latexNodes(cause.partition.part1.purview) + "^{p}" +
       "}"
+
     $scope.effectMip = "\\frac{" +
       format.latexNodes(concept.mechanism) + "^{c}" +
       "}{" +
-      format.latexNodes(concept.effect.purview) + "^{f}" +
+      format.latexNodes(effect.purview) + "^{f}" +
       "}"
+
     $scope.partitionedEffectMip = "\\frac{" +
-      format.latexNodes(concept.effect.partition[0].mechanism) + "^{c}" +
+      format.latexNodes(effect.partition.part0.mechanism) + "^{c}" +
       "}{" +
-      format.latexNodes(concept.effect.partition[0].purview) + "^{f}" +
+      format.latexNodes(effect.partition.part0.purview) + "^{f}" +
       "} \\times \\frac{" +
-      format.latexNodes(concept.effect.partition[1].mechanism) + "^{c}" +
+      format.latexNodes(effect.partition.part1.mechanism) + "^{c}" +
       "}{" +
-      format.latexNodes(concept.effect.partition[1].purview) + "^{f}" +
+      format.latexNodes(effect.partition.part1.purview) + "^{f}" +
       "}"
 ]
