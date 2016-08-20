@@ -222,7 +222,7 @@ class ConceptSpaceCanvas
     if bigMip.unpartitioned_constellation.length is 0
       return
 
-    numNodes = bigMip.subsystem.node_indices.length
+    numNodes = bigMip.subsystem.nodes.length
     numStates = Math.pow(2, numNodes)
 
     # Find the three dimensions with the highest variance in probabilities.

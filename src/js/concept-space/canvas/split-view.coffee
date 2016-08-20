@@ -168,7 +168,7 @@ class SplitView
 
   display: (bigMip) =>
     clear()
-    numNodes = bigMip.subsystem.node_indices.length
+    numNodes = bigMip.subsystem.node.length
     numStates = Math.pow(2, numNodes)
     # Find the three dimensions with the highest variance in probabilities.
     renderedDimensions = getRenderedDimensions(

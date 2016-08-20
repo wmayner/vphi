@@ -37,7 +37,7 @@ module.exports = [
       $scope.bigPhiTime = format.time bm.time
       $scope.smallPhiTime = format.time bm.small_phi_time
       $scope.state = bm.state
-      $scope.nodes = bm.subsystem.node_indices
+      $scope.nodes = bm.subsystem.nodes
       $scope.bigPhi = format.phi bm.phi
       $scope.numConcepts = bm.unpartitioned_constellation.length
 
