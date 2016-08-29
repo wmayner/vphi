@@ -314,6 +314,7 @@ module.exports = angular.module name, []
           # Sort the nodes by index.
           jsonNodes = _.sortBy jsonNodes, 'index'
           data =
+            labels: (n.label for n in jsonNodes)
             nodes: jsonNodes
             tpm: @tpm
             cm: @cm
