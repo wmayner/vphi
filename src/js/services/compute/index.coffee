@@ -69,7 +69,7 @@ module.exports = angular.module name, []
               ), 0
             else
               llog "Incompatible vPhi versions; not loading stored network from
-                version 1#{stored.version}1 since this is version
+                version `#{stored.version}` since this is version
                 `#{VERSION}`."
           else
             llog "No stored results found."
