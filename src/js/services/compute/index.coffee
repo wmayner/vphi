@@ -3,8 +3,7 @@
 # services/compute/index.coffee
 ###
 
-pyphi = require './pyphi'
-
+pyphiService = require './pyphi'
 networkService = require '../network'
 formatterService = require '../formatter'
 
@@ -14,10 +13,11 @@ module.exports = angular.module name, []
     '$rootScope'
     networkService.name
     formatterService.name
+    pyphiService.name
     'VERSION'
     'PYPHI_VERSION'
     'NETWORK_SIZE_LIMIT'
-    ($rootScope, network, Formatter, VERSION, PYPHI_VERSION
+    ($rootScope, network, Formatter, pyphi, VERSION, PYPHI_VERSION
         NETWORK_SIZE_LIMIT) ->
 
       llog = (msg) ->
@@ -111,6 +111,7 @@ module.exports = angular.module name, []
             $rootScope.$apply success
             typesetMath()
           ), ((error) =>
+            log.error error
             log.error "#{error.message}: #{error.data.type}: #{error.data.message}"
             $rootScope.$broadcast (name + '.error' + '.' + error.data.type)
           )).always(=>

@@ -4,14 +4,6 @@
 # API for PyPhi's RPC server.
 ###
 
-# TODO*** change endpoint
-pyphi = new $.JsonRpcClient({
-  ajaxUrl: 'http://144.92.177.185'
-  # ajaxUrl: 'http://127.0.0.1:8000'
-  # 12 hr timeout
-  timeout: 43200000
-})
-
 
 getPyphiNetwork = (network) ->
   net =
@@ -22,28 +14,39 @@ getPyphiNetwork = (network) ->
   log.debug net
   return net
 
+
 # Failure callback.
 defaultFailure = (err) ->
   log.error err
 
 
-module.exports =
+# RPC interface to phiserver.
+class PyphiService
+
+  constructor: (url) ->
+    @pyphi = new $.JsonRpcClient({
+      ajaxUrl: url
+      # 12 hr timeout
+      timeout: 43200000
+    })
 
   complexes: (network, success, failure = defaultFailure) ->
     params = [getPyphiNetwork(network)]
-    return pyphi.call 'complexes', params, success, failure
+    return @pyphi.call 'complexes', params, success, failure
 
   mainComplex: (network, success, failure = defaultFailure) ->
     params = [getPyphiNetwork(network)]
-    return pyphi.call 'main_complex', params, success, failure
+    return @pyphi.call 'main_complex', params, success, failure
 
   bigMip: (network, success, failure = defaultFailure) ->
     # Get the selected subsystem.
-    subsystemIndices = network.getSelectedSubsystem()
-
     params = [
-      subsystemIndices
+      network.getSelectedSubsystem()
       getPyphiNetwork(network)
     ]
+    return @pyphi.call 'big_mip', params, success, failure
 
-    return pyphi.call 'big_mip', params, success, failure
+
+name = 'vphi.services.compute.pyphi'
+module.exports = angular.module name, []
+  .service name, ['PHISERVER_URL', PyphiService]

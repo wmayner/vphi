@@ -5,6 +5,7 @@
 
 angular.module 'vphi', [
   require('./services/compute').name
+  require('./services/compute/pyphi').name
   require('./services/formatter').name
   require('./services/network').name
   require('./network-editor').name
