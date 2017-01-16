@@ -98,8 +98,10 @@ module.exports = angular.module name, []
             always()
             llog 'Invalid network.'
             return
+
           llog "Calling `#{method}`..."
           @callInProgress = true
+
           pyphi[method](network, ((data) =>
             @network = network.toJSON()
             @update(data)
