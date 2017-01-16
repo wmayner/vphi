@@ -111,9 +111,12 @@ module.exports = angular.module name, []
             $rootScope.$apply success
             typesetMath()
           ), ((error) =>
-            log.error error
-            log.error "#{error.message}: #{error.data.type}: #{error.data.message}"
-            $rootScope.$broadcast (name + '.error' + '.' + error.data.type)
+            if 'error' of error and error.error is ''
+              log.error 'Phiserver is unreachable'
+              $rootScope.$broadcast (name + '.error.NoResponse')
+            else
+              log.error "#{error.message}: #{error.data.type}: #{error.data.message}"
+              $rootScope.$broadcast (name + '.error' + '.' + error.data.type)
           )).always(=>
             @callInProgress = false
             $rootScope.$apply always
