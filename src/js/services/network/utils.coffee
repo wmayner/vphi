@@ -9,7 +9,7 @@ module.exports =
 
   negate: (bool) -> (if bool then 0 else 1)
 
-  sum: (array) ->
+  sum: (input) ->
     sum = 0
     sum += i for i in input
     return sum
