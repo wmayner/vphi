@@ -4,18 +4,15 @@
 
 utils = require './utils'
 
+sum = utils.sum
+bit = utils.bit
+
 andGate = (input) ->
-  sum = 0
-  sum += i for i in input
-  return utils.bit(sum is input.length)
+  return utils.bit(sum(input) is input.length)
 orGate = (input) ->
-  sum = 0
-  sum += i for i in input
-  return utils.bit(sum >= 1)
+  return utils.bit(sum(input) >= 1)
 parityGate = (input) ->
-  sum = 0
-  sum += i for i in input
-  return utils.negate(sum % 2)
+  return utils.negate(sum(input) % 2)
 
 
 module.exports =
@@ -31,23 +28,15 @@ module.exports =
   'RAND': (input) ->
     return utils.bit(Math.random() < 0.5)
   'MAJ': (input) ->
-    sum = 0
-    sum += i for i in input
-    return utils.bit(sum > (input.length / 2))
+    return utils.bit(sum(input) > (input.length / 2))
   'MIN': (input) ->
     # TODO should this be strictly less than half, or just not a majority?
-    sum = 0
-    sum += i for i in input
-    return utils.bit(sum <= (input.length / 2))
+    return utils.bit(sum(input) <= (input.length / 2))
   'PAR': parityGate
   '>': (input, threshold) ->
-    sum = 0
-    sum += i for i in input
-    return utils.bit(sum > threshold)
+    return utils.bit(sum(input) > threshold)
   '<': (input, threshold) ->
-    sum = 0
-    sum += i for i in input
-    return utils.bit(sum < threshold)
+    return utils.bit(sum(input) < threshold)
 
 keys = (key for own key, val of module.exports)
 module.exports.keys = keys
