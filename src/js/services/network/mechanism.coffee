@@ -32,6 +32,11 @@ module.exports =
     # TODO document that XOR here means the parity interpretation
     return utils.negate(parityGate(input))
 
+  'COPY': (input) ->
+    if input.length > 1
+      throw "COPY gate may not have more than one input"
+    return orGate(input)
+
   'RAND': (input) ->
     return utils.bit(Math.random() < 0.5)
 
@@ -58,6 +63,7 @@ module.exports.names =
   'OR': 'OR Gate'
   'NOR': 'NOR Gate'
   'XOR': 'XOR Gate'
+  'COPY': 'Copy'
   'RAND': 'Random'
   'MAJ': 'Majority'
   'MIN': 'Minority'
