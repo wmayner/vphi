@@ -22,7 +22,8 @@ module.exports = angular.module name, []
     '$timeout'
     formatterService.name
     'VERSION'
-    ($rootScope, $timeout, Formatter, VERSION) ->
+    'NETWORK_SIZE_LIMIT'
+    ($rootScope, $timeout, Formatter, VERSION, NETWORK_SIZE_LIMIT) ->
 
       # Helpers
       # ========================================================================
@@ -84,6 +85,16 @@ module.exports = angular.module name, []
           @state = []
 
         size: -> @graph.numNodes
+
+        isValid: ->
+          if network.size() > NETWORK_SIZE_LIMIT
+            log.error "Network cannot have more than #{NETWORK_SIZE_LIMIT}
+              nodes."
+            return false
+          if network.tpm.length < 2
+            log.error "Network is empty"
+            return false
+          return true
 
         addNode: (node) ->
           newNode = @graph.addNode(node)

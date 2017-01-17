@@ -27,9 +27,8 @@ module.exports = [
       $scope.size = network.size()
       # Disable buttons if there's already a calculation in progress, the
       # network is empty, or the network is too big.
-      $scope.isDisabled = compute.callInProgress or
-                          network.tpm.length < 2 or
-                          network.size() > NETWORK_SIZE_LIMIT
+      $scope.isDisabled = compute.callInProgress or not network.isValid()
+
     update()
     $scope.$on (networkService.name + '.updated'), update
 

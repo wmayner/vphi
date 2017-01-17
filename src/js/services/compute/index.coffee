@@ -16,22 +16,10 @@ module.exports = angular.module name, []
     pyphiService.name
     'VERSION'
     'PYPHI_VERSION'
-    'NETWORK_SIZE_LIMIT'
-    ($rootScope, network, Formatter, pyphi, VERSION, PYPHI_VERSION
-        NETWORK_SIZE_LIMIT) ->
+    ($rootScope, network, Formatter, pyphi, VERSION, PYPHI_VERSION) ->
 
       llog = (msg) ->
         log.debug "DATA_SERVICE: #{msg}"
-
-      isValid = (network) ->
-        if network.size() > NETWORK_SIZE_LIMIT
-          log.error "DATA_SERVICE: Network cannot have more than
-            #{NETWORK_SIZE_LIMIT} nodes."
-          return false
-        if network.tpm.length < 2
-          log.info "DATA_SERVICE: Network is empty; not sending request."
-          return false
-        return true
 
       typesetMath = ->
         # Typeset the concept list after it's loaded.
@@ -94,7 +82,7 @@ module.exports = angular.module name, []
           @pyphiCall method, success, always
 
         pyphiCall: (method, success, always) ->
-          if not isValid(network)
+          if not network.isValid()
             always()
             llog 'Invalid network.'
             return
