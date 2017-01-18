@@ -96,20 +96,20 @@ module.exports = angular.module name, []
             log.error "Network is empty"
             return false
 
-          if not @nodesValid()
+          if not @validateNodeInputs()
             log.error "Invalid nodes"
             return false
 
           return true
 
-        nodesValid: ->
+        validateNodeInputs: ->
           # Check that all copy gates have at most one input
           valid = true
 
           @graph.forEachNode (node, id) =>
             if node.mechanism is 'COPY' and @graph.getInEdgesOf( id ).length > 1
               valid = false
-              console.warn node.label + " INVALID"
+              console.warn node.label + " has too many inputs"
 
           return valid
 

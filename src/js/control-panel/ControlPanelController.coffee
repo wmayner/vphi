@@ -24,13 +24,12 @@ module.exports = [
 
     update = ->
       # Display a warning if there are too many nodes
-      $scope.size = network.size()
       # Disable buttons if there's already a calculation in progress, the
       # network is empty, or the network is too big.
       $scope.isDisabled = compute.callInProgress or not network.isValid()
 
       $scope.tooManyNodes = not network.validateSize()
-      $scope.tooManyInputs = not network.nodesValid()
+      $scope.tooManyInputs = not network.validateNodeInputs()
 
     update()
     $scope.$on (networkService.name + '.updated'), update
