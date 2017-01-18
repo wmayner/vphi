@@ -87,7 +87,7 @@ module.exports = angular.module name, []
         size: -> @graph.numNodes
 
         isValid: ->
-          if network.size() > NETWORK_SIZE_LIMIT
+          if not @validateSize()
             log.error "Network cannot have more than #{NETWORK_SIZE_LIMIT}
               nodes."
             return false
@@ -112,6 +112,9 @@ module.exports = angular.module name, []
               console.warn node.label + " INVALID"
 
           return valid
+
+        validateSize: ->
+          return network.size() <= NETWORK_SIZE_LIMIT
 
         addNode: (node) ->
           newNode = @graph.addNode(node)

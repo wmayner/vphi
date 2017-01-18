@@ -123,7 +123,7 @@ body
     #main-control-module.module(ng-controller='controlPanelCtrl', ng-cloak)
       .row.centered.clearfix
         .col-centered
-          button#too-many-nodes(ng-show='size > NETWORK_SIZE_LIMIT', type='button', data-toggle='tooltip', data-placement='top', title='In order to conserve computational resources for others, networks larger than {{NETWORK_SIZE_LIMIT}} nodes cannot be analyzed.').btn.btn-md.btn-warning
+          button#too-many-nodes(ng-show='tooManyNodes', type='button', data-toggle='tooltip', data-placement='top', title='In order to conserve computational resources for others, networks larger than {{NETWORK_SIZE_LIMIT}} nodes cannot be analyzed.').btn.btn-md.btn-warning
             span.glyphicon.glyphicon-warning-sign
             | &nbsp;
             | Too many nodes

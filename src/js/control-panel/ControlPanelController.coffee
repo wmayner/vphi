@@ -29,6 +29,7 @@ module.exports = [
       # network is empty, or the network is too big.
       $scope.isDisabled = compute.callInProgress or not network.isValid()
 
+      $scope.tooManyNodes = not network.validateSize()
       $scope.tooManyInputs = not network.nodesValid()
 
     update()
