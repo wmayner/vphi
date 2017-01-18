@@ -68,7 +68,7 @@ module.exports.names =
   'OR': 'OR Gate'
   'NOR': 'NOR Gate'
   'XOR': 'XOR Gate'
-  'COPY': 'Copy'
+  'COPY': 'COPY Gate'
   'NOT': 'NOT Gate'
   'RAND': 'Random'
   'MAJ': 'Majority'
