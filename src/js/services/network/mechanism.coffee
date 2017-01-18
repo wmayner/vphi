@@ -37,6 +37,11 @@ module.exports =
     #   throw "COPY gate may not have more than one input"
     return orGate(input)
 
+  'NOT': (input) ->
+    # if input.length > 1
+    #   throw "NOT gate may not have more than one input"
+    return utils.negate(orGate(input))
+
   'RAND': (input) ->
     return utils.bit(Math.random() < 0.5)
 
@@ -64,9 +69,13 @@ module.exports.names =
   'NOR': 'NOR Gate'
   'XOR': 'XOR Gate'
   'COPY': 'Copy'
+  'NOT': 'NOT Gate'
   'RAND': 'Random'
   'MAJ': 'Majority'
   'MIN': 'Minority'
   'PAR': 'Parity'
   '>': 'Greater than threshold'
   '<': 'Less than threshold'
+
+# Mechanisms which expect a single input
+module.exports.singleInput = ['COPY', 'NOT']

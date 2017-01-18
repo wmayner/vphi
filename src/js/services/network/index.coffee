@@ -107,7 +107,8 @@ module.exports = angular.module name, []
           valid = true
 
           @graph.forEachNode (node, id) =>
-            if node.mechanism is 'COPY' and @graph.getInEdgesOf( id ).length > 1
+            if node.mechanism in mechanism.singleInput and
+                @graph.getInEdgesOf( id ).length > 1
               valid = false
               console.warn node.label + " has too many inputs"
 
