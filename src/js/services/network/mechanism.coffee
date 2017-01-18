@@ -33,8 +33,8 @@ module.exports =
     return utils.negate(parityGate(input))
 
   'COPY': (input) ->
-    if input.length > 1
-      throw "COPY gate may not have more than one input"
+    # if input.length > 1
+    #   throw "COPY gate may not have more than one input"
     return orGate(input)
 
   'RAND': (input) ->

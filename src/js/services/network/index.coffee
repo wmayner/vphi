@@ -91,10 +91,27 @@ module.exports = angular.module name, []
             log.error "Network cannot have more than #{NETWORK_SIZE_LIMIT}
               nodes."
             return false
+
           if network.tpm.length < 2
             log.error "Network is empty"
             return false
+
+          if not @nodesValid()
+            log.error "Invalid nodes"
+            return false
+
           return true
+
+        nodesValid: ->
+          # Check that all copy gates have at most one input
+          valid = true
+
+          @graph.forEachNode (node, id) =>
+            if node.mechanism is 'COPY' and @graph.getInEdgesOf( id ).length > 1
+              valid = false
+              console.warn node.label + " INVALID"
+
+          return valid
 
         addNode: (node) ->
           newNode = @graph.addNode(node)
