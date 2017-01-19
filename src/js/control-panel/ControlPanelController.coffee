@@ -6,6 +6,18 @@
 networkService = require '../services/network'
 computeService = require '../services/compute'
 
+
+joinWithAnd = (labels) ->
+  # Join an array of labels: ['A', 'B', 'C'] -> 'A, B and C'
+  if labels.length == 0
+    return ''
+
+  if labels.length == 1
+    return labels[0]
+
+  return labels[...-1].join(', ') + ' and ' + labels[labels.length - 1]
+
+
 module.exports = [
   '$scope'
   networkService.name
@@ -30,6 +42,7 @@ module.exports = [
 
       $scope.tooManyNodes = not network.validateSize()
       $scope.tooManyInputs = not network.validateNodeInputs()
+      $scope.overloadedNodes = joinWithAnd(n.label for n in network.overloadedNodes())
 
     update()
     $scope.$on (networkService.name + '.updated'), update

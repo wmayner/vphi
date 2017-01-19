@@ -131,10 +131,10 @@ body
             span.glyphicon.glyphicon-warning-sign
             | &nbsp;
             | The selected subsystem is in an impossible state.
-          button#too-many-inputs(ng-show='tooManyInputs', ng-disabled='false' type='button', data-toggle='tooltip', data-placement='top', title='COPY and NOT gates may only have one input. Try removing extra inputs from the element.').btn.btn-md.btn-warning
+          button#too-many-inputs(ng-show='tooManyInputs', ng-disabled='false' type='button', data-toggle='tooltip', data-placement='top', title='COPY and NOT gates may only have one input. Try removing extra inputs.').btn.btn-md.btn-warning
             span.glyphicon.glyphicon-warning-sign
             | &nbsp;
-            | Too many inputs
+            | Too many inputs [{{overloadedNodes}}]
       .row.centered.clearfix
         .col-centered
             button#btn-main-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("mainComplex")', ng-disabled='isDisabled')

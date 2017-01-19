@@ -97,22 +97,25 @@ module.exports = angular.module name, []
             return false
 
           if not @validateNodeInputs()
-            log.error "Invalid nodes"
+            log.error("Too many inputs: ", n.label for n in @overloadedNodes())
             return false
 
           return true
 
         validateNodeInputs: ->
           # Check that all copy gates have at most one input
-          valid = true
+          return @overloadedNodes().length == 0
+
+        overloadedNodes: ->
+          # Return an array of all COPY and NOT gates with too many inputs
+          overloaded = []
 
           @graph.forEachNode (node, id) =>
             if node.mechanism in mechanism.singleInput and
-                @graph.getInEdgesOf( id ).length > 1
-              valid = false
-              console.warn node.label + " has too many inputs"
+                @graph.getInEdgesOf(id).length > 1
+              overloaded.push(node)
 
-          return valid
+          return overloaded
 
         validateSize: ->
           return network.size() <= NETWORK_SIZE_LIMIT
