@@ -9,7 +9,7 @@
   },
   "scripts": {
     "postinstall": "bower install",
-    "prestart": "npm install && mkdir -p app/js app/css && gulp build",
+    "prestart": "mkdir -p app/js app/css && gulp build",
     "start": "cd app && http-server -a 0.0.0.0 -p 3000"
   },
   "dependencies": {},
