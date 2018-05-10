@@ -72,14 +72,10 @@ module.exports = angular.module name, []
         callInProgress: false
 
         mainComplex: (success, always) ->
-          method = 'mainComplex'
-          @calledMethod = method
-          @pyphiCall method, success, always
+          @pyphiCall 'mainComplex', success, always
 
         bigMip: (success, always) ->
-          method = 'bigMip'
-          @calledMethod = method
-          @pyphiCall method, success, always
+          @pyphiCall 'bigMip', success, always
 
         pyphiCall: (method, success, always) ->
           if not network.isValid()
@@ -88,6 +84,7 @@ module.exports = angular.module name, []
             return
 
           llog "Calling `#{method}`..."
+          @calledMethod = method
           @callInProgress = true
 
           pyphi[method](network, ((data) =>
