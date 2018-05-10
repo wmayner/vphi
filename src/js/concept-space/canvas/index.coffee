@@ -219,15 +219,14 @@ class ConceptSpaceCanvas
     @bigMip = bigMip
 
     # Don't do anything if there are no concepts.
-    if bigMip.unpartitioned_constellation.length is 0
+    if bigMip.ces.concepts.length is 0
       return
 
     numNodes = bigMip.subsystem.nodes.length
     numStates = Math.pow(2, numNodes)
 
     # Find the three dimensions with the highest variance in probabilities.
-    renderedDimensions = getRenderedDimensions(
-      bigMip.unpartitioned_constellation, numNodes)
+    renderedDimensions = getRenderedDimensions(bigMip.ces.concepts, numNodes)
     # Draw the past and future axes.
     axes.drawJoined(@scene, renderedDimensions)
     # Label them.
@@ -262,7 +261,7 @@ class ConceptSpaceCanvas
       .range [MIN_CONCEPT_LABEL_SIZE, MAX_CONCEPT_LABEL_SIZE]
 
     # Draw the unpartitioned constellation.
-    for concept in bigMip.unpartitioned_constellation
+    for concept in bigMip.ces.concepts
       @drawConcept(concept, renderedDimensions, radiusScale, labelScale)
 
     # Rerender everything.

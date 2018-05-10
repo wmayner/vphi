@@ -39,10 +39,10 @@ module.exports = [
       $scope.state = bm.state
       $scope.nodes = bm.subsystem.nodes
       $scope.bigPhi = format.phi bm.phi
-      $scope.numConcepts = bm.unpartitioned_constellation.length
+      $scope.numConcepts = bm.ces.concepts.length
 
-      if bm.unpartitioned_constellation.length > 0
-        sumSmallPhi = (c.phi for c in bm.unpartitioned_constellation).reduce((x, y) -> x + y)
+      if $scope.numConcepts > 0
+        sumSmallPhi = (c.phi for c in bm.ces.concepts).reduce((x, y) -> x + y)
         $scope.sumSmallPhi = format.phi sumSmallPhi
       else
         $scope.sumSmallPhi = 0

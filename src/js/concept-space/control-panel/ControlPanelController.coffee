@@ -26,8 +26,7 @@ module.exports = [
 
     $scope.$on (computeService.name + '.updated'), ->
       log.debug "CONCEPT_SPACE: Received data update event."
-      bm = compute.data.bigMip
-      $scope.concepts = bm.unpartitioned_constellation
+      $scope.concepts = compute.data.bigMip.ces.concepts
 
     $scope.highlightConcept = (i) -> $scope.canvas.highlightConcept(i)
 ]

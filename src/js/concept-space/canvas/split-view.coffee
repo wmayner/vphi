@@ -171,10 +171,9 @@ class SplitView
     numNodes = bigMip.subsystem.node.length
     numStates = Math.pow(2, numNodes)
     # Find the three dimensions with the highest variance in probabilities.
-    renderedDimensions = getRenderedDimensions(
-      bigMip.unpartitioned_constellation, numNodes)
+    renderedDimensions = getRenderedDimensions(bigMip.ces.concepts, numNodes)
     # Draw the unpartitioned constellation.
-    for concept in bigMip.unpartitioned_constellation
+    for concept in bigMip.ces.concepts
       currentConstellation = currentConstellation.concat(
         drawConcept(concept, renderedDimensions, numNodes)
       )

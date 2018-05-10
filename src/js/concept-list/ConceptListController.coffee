@@ -18,9 +18,9 @@ module.exports = [
 
       bm = compute.data.bigMip
 
-      $scope.concepts = bm.unpartitioned_constellation
+      $scope.concepts = bm.ces.concepts
       $scope.numNodes = bm.subsystem.nodes.length
-      $scope.state= bm.state
+      $scope.state = bm.state
 
       # Merge all unpartitioned and partitioned repertoires and find the max.
       allRepertoires = (
