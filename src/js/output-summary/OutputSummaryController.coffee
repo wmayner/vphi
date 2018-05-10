@@ -8,10 +8,12 @@ computeService = require '../services/compute'
 module.exports = [
   '$scope'
   computeService.name
-  ($scope, compute) ->
+  'PYPHI_VERSION'
+  ($scope, compute, PYPHI_VERSION) ->
     format = compute.format
     $scope.format = compute.format
 
+    $scope.PYPHI_VERSION = PYPHI_VERSION
     $scope.elapsedTime = null
     $scope.bigPhiTime = null
     $scope.smallPhiTime = null
