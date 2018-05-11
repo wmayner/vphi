@@ -3,6 +3,7 @@
 # services/network/index.coffee
 ###
 
+log = require 'loglevel'
 semver = require '../../../../bower_components/semver/semver.min.js'
 
 formatterService = require '../formatter.coffee'

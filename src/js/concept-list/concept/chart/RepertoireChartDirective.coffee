@@ -3,6 +3,7 @@
 # concept-list/chart/ChartDirective.coffee
 ###
 
+log = require 'loglevel'
 colors = require '../../../colors'
 utils = require '../../../utils'
 RepertoireChart = require './RepertoireChart'

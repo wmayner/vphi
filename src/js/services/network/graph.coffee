@@ -2,6 +2,7 @@
 # services/graph/graph.coffee
 ###
 
+log = require 'loglevel'
 utils = require '../../utils'
 
 

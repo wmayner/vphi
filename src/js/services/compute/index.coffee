@@ -3,6 +3,7 @@
 # services/compute/index.coffee
 ###
 
+log = require 'loglevel'
 pyphiService = require './pyphi'
 networkService = require '../network'
 formatterService = require '../formatter'

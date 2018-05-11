@@ -2,6 +2,9 @@
 # utils.coffee
 ###
 
+log = require 'loglevel'
+
+
 module.exports =
 
   # Alphabet for letter labels of nodes.

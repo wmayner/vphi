@@ -3,6 +3,7 @@
 # concept-space/control-panel/ControlPanelController.coffee
 ###
 
+log = require 'loglevel'
 computeService = require '../../services/compute'
 networkService = require '../../services/network'
 

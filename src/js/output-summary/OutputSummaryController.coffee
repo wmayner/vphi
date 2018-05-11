@@ -3,6 +3,7 @@
 # output-summary/index.coffee
 ###
 
+log = require 'loglevel'
 computeService = require '../services/compute'
 
 module.exports = [

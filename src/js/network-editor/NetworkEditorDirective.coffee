@@ -3,6 +3,7 @@
 # concept-space/NetworkEditorDirective.coffee
 ###
 
+log = require 'loglevel'
 colors = require '../colors'
 networkService = require '../services/network'
 

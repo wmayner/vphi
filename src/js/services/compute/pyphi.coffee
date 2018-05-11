@@ -4,6 +4,7 @@
 # API for PyPhi's RPC server.
 ###
 
+log = require 'loglevel'
 
 getPyphiNetwork = (network) ->
   net =

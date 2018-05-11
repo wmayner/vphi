@@ -3,6 +3,7 @@
 # network-editor/control-panel/ControlPanelController.coffee
 ###
 
+log = require 'loglevel'
 networkService = require '../../services/network'
 example = require '../../services/network/example'
 mechanism = require '../../services/network/mechanism'
