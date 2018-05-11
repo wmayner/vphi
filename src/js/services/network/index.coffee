@@ -4,7 +4,7 @@
 ###
 
 log = require 'loglevel'
-semver = require '../../../../bower_components/semver/semver.min.js'
+semver = require 'semver'
 
 formatterService = require '../formatter.coffee'
 
