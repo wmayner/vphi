@@ -55,3 +55,7 @@ gulp.task 'watch:coffee', ['browserify'], ->
 gulp.task 'dev', ['build', 'watch:jade', 'watch:stylus', 'watch:coffee']
 
 gulp.task 'default', ['dev']
+
+gulp.task 'test', shell.task(
+   "./node_modules/mocha/bin/mocha --require coffeescript/register test/src/tests.coffee"
+)

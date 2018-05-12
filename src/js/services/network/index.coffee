@@ -57,12 +57,6 @@ module.exports = angular.module name, []
           node.threshold++
         return
 
-      reverseEdgeKey = (key) ->
-        if not key
-          return null
-        ids = key.split(',')
-        return ids[1] + ',' + ids[0]
-
       nodeToJSON = (node) ->
         # Copy node object, then delete circular references.
         jsonNode = {}
@@ -72,7 +66,6 @@ module.exports = angular.module name, []
         delete jsonNode._inEdges
         delete jsonNode._outEdges
         return jsonNode
-
 
       # Public API
       # ========================================================================
@@ -184,33 +177,11 @@ module.exports = angular.module name, []
           return removed
 
         getDrawableEdges: ->
-          ###
-          _Returns:_ An array of edges suitable for drawing on a plane.
-          Bidirectional edges are merged into a single object with the
-          `bidirectional` attribute set to true, and reflexive edges
-          (self-loops) are not included.
-          ###
-          drawableEdges = {}
-          @graph.forEachEdge (edge) ->
-            # Don't add self-loops (these are recorded as attributes on the
-            # node).
-            if edge.source._id is edge.target._id
-              return
-            # If this edge is the reverse of a previously seen edge, don't add
-            # a second edge object; update the first to indicate that it's
-            # bidirectional.
-            reversed = reverseEdgeKey(edge.key)
-            if drawableEdges[reversed]
-              drawableEdges[reversed].bidirectional = true
-              return
-            # Store the edge object.
-            drawableEdges[edge.key] = edge
-          # Return an array of edges.
-          return (edge for key, edge of drawableEdges)
+          return @graph.getDrawableEdges()
 
         isSameLink: (key, otherKey) ->
           return false if not otherKey
-          return (key is otherKey or key is reverseEdgeKey(otherKey))
+          return (key is otherKey or key is @graph.reverseEdgeKey(otherKey))
 
         setMechanism: (node, mechanism) ->
           node.mechanism = mechanism

@@ -75,9 +75,14 @@ class Graph
     _Returns:_ the node object removed, or undefined if it didn't exist in the
     first place.
     ###
-    if not @getNode(nodeToRemove._id)
-      llog "  Node #{nodeToRemove.label} is not in the graph."
+    if nodeToRemove == null
+      llog "Node #{nodeToRemove} is not in the graph."
       return
+
+    if not @getNode(nodeToRemove._id)
+      llog "Node #{nodeToRemove.label} is not in the graph."
+      return
+
     else
       llog "Removing node #{nodeToRemove.label}..."
       for own outEdgeId of nodeToRemove._outEdges
@@ -146,7 +151,7 @@ class Graph
     fromNode = @_nodes[sourceId]
     toNode = @_nodes[targetId]
     if not edgeToDelete
-      llog "Edge (#{fromNode.label}, #{toNode.label}) doesn't exist."
+      llog "Edge (#{sourceId}, #{targetId}) doesn't exist."
       return
     delete fromNode._outEdges[targetId]
     delete toNode._inEdges[sourceId]
@@ -231,6 +236,37 @@ class Graph
         operation edgeObject
     # Manual return, check forEachNode for reason.
     return
+
+  reverseEdgeKey: (key) ->
+    if not key
+      return null
+    ids = key.split(',')
+    return ids[1] + ',' + ids[0]
+
+  getDrawableEdges: ->
+    ###
+    _Returns:_ An array of edges suitable for drawing on a plane.
+    Bidirectional edges are merged into a single object with the
+    `bidirectional` attribute set to true, and reflexive edges
+    (self-loops) are not included.
+    ###
+    drawableEdges = {}
+    @forEachEdge (edge) =>
+      # Don't add self-loops (these are recorded as attributes on the
+      # node).
+      if edge.source._id is edge.target._id
+        return
+      # If this edge is the reverse of a previously seen edge, don't add
+      # a second edge object; update the first to indicate that it's
+      # bidirectional.
+      reversed = @reverseEdgeKey edge.key
+      if drawableEdges[reversed]
+        drawableEdges[reversed].bidirectional = true
+        return
+      # Store the edge object.
+      drawableEdges[edge.key] = edge
+      # Return an array of edges.
+    return (edge for key, edge of drawableEdges)
 
 
 module.exports = Graph

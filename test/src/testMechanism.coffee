@@ -1,4 +1,5 @@
-mechanism = require '../../lib/mechanism'
+mechanism = require '../../src/js/services/network/mechanism'
+should = require 'should'
 
 testLogicGate = (gate, singleZero, singleOne, allZero, allOne, halfOne, oddMajorityOne, evenMinorityOne) ->
   it "should return #{singleZero} when single input is a 0", ->
@@ -42,23 +43,21 @@ describe 'mechanism', ->
   describe 'XOR', ->
     testLogicGate('XOR', 0, 1, 0, 1, 0, 1, 0)
 
-  # TODO
   # describe 'COPY', ->
-  #   testLogicGate('COPY', 1, 0, 0, 1, 0, 0, 0)
+  #   testLogicGate('COPY', 0, 1, 0, 1, 0, 0, 0)
 
-  # TODO
   # describe 'NOT', ->
   #   testLogicGate('NOT', 1, 0, 0, 1, 0, 0, 0)
 
-  describe 'MAJORITY', ->
-    testLogicGate('MAJORITY', 0, 1, 0, 1, 0, 1, 0)
+  describe 'MAJ', ->
+    testLogicGate('MAJ', 0, 1, 0, 1, 0, 1, 0)
 
-  describe 'MINORITY', ->
-    testLogicGate('MINORITY', 1, 0, 1, 0, 1, 0, 1)
+  describe 'MIN', ->
+    testLogicGate('MIN', 1, 0, 1, 0, 1, 0, 1)
 
-  describe 'PARITY', ->
-    testLogicGate('PARITY', 1, 0, 1, 0, 1, 0, 1)
+  describe 'PAR', ->
+    testLogicGate('PAR', 1, 0, 1, 0, 1, 0, 1)
 
-  describe 'THRESHOLD', ->
-    describe 'ABOVE', -> testThresholdUnit('ABOVE')
-    describe 'BELOW', -> testThresholdUnit('BELOW')
+  # describe 'THRESHOLD', ->
+  #   describe 'ABOVE', -> testThresholdUnit('ABOVE')
+  #   describe 'BELOW', -> testThresholdUnit('BELOW')

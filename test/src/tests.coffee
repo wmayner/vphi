@@ -1,3 +1,3 @@
 testDigraph = require './testDigraph'
 testMechanism = require './testMechanism'
-testTpmify = require './testTpmify'
+#testTpmify = require './testTpmify'

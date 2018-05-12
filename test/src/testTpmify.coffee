@@ -1,6 +1,6 @@
-Graph = require '../../lib/digraph'
-mechanism = require '../../lib/mechanism'
-tpmify = require '../../lib/tpmify'
+Graph = require '../../src/js/services/network/graph'
+mechanism = require '../../src/js/services/network/mechanism'
+tpmify = require '../../src/js/services/network/tpmify'
 
 describe 'tpmify', ->
   # Standard Matlab 3-node example
