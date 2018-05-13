@@ -10,7 +10,7 @@
   "scripts": {
     "prestart": "mkdir -p app/js app/css && gulp build",
     "start": "cd app && http-server -a 0.0.0.0 -p 3000",
-    "test": "gulp test"
+    "test": "karma start"
   },
   "dependencies": {
     "angular": "~1.3.6",
@@ -28,7 +28,8 @@
     "underscore": "~1.7.0"
   },
   "devDependencies": {
-    "browserify": "^7.0.0",
+    "angular-mocks": "~1.3.6",
+    "browserify": "^7.1.0",
     "coffeeify": "^3.0.1",
     "coffeescript": "^1.12.0",
     "debowerify": "^1.2.0",
@@ -39,9 +40,16 @@
     "gulp-watch": "^1.0.5",
     "http-server": "^0.6.1",
     "jade": "^1.8.1",
+    "karma": "^2.0.2",
+    "karma-browserify": "^5.2.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coffee-preprocessor": "^1.0.1",
+    "karma-mocha": "^1.3.0",
+    "karma-mocha-reporter": "^2.2.5",
     "mocha": "^5.1.1",
     "should": "^13.2.1",
     "sinon": "^5.0.7",
-    "stylus": "^0.51.1"
+    "stylus": "^0.51.1",
+    "watchify": "^3.11.0"
   }
 }
