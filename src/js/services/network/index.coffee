@@ -12,7 +12,6 @@ commonUtils = require '../../utils'
 # TODO provide utils in service
 utils = require './utils'
 Graph = require './graph'
-tpmify = require './tpmify'
 mechanism = require './mechanism'
 example = require './example'
 
@@ -70,12 +69,11 @@ module.exports = angular.module name, []
       # Public API
       # ========================================================================
 
-      network = new class Network
+      class Network
         constructor: (@graph = new Graph()) ->
           # Set up a formatting object that gets labels from this network.
           @format = new Formatter((index) => @getNode(index).label)
-          # TODO refactor tpmify
-          @tpm = tpmify this
+          @tpm = @graph.tpmify()
           @state = []
 
         size: -> @graph.numNodes
@@ -86,7 +84,7 @@ module.exports = angular.module name, []
               nodes."
             return false
 
-          if network.tpm.length < 2
+          if @size() == 0
             log.error "Network is empty"
             return false
 
@@ -112,7 +110,7 @@ module.exports = angular.module name, []
           return overloaded
 
         validateSize: ->
-          return network.size() <= NETWORK_SIZE_LIMIT
+          return @size() <= NETWORK_SIZE_LIMIT
 
         addNode: (node) ->
           newNode = @graph.addNode(node)
@@ -146,13 +144,7 @@ module.exports = angular.module name, []
           return result
 
         getNodes: (indices) ->
-          if indices
-            result = []
-            @graph.forEachNode (node, id) ->
-              result.push node if node.index in indices
-          else
-            result = @graph.getNodes()
-          return _.sortBy result, 'index'
+          return @graph.getNodesByIndices indices
 
         getNodeById: (id) -> @graph._nodes[id]
 
@@ -296,7 +288,7 @@ module.exports = angular.module name, []
           return
 
         _updateTPM: ->
-          @tpm = tpmify this
+          @tpm = @graph.tpmify()
           llog "Updated TPM."
 
         updateTPM: ->

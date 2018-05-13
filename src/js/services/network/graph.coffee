@@ -4,6 +4,7 @@
 
 log = require 'loglevel'
 utils = require '../../utils'
+mechanism = require './mechanism'
 
 
 llog = (msg) ->
@@ -69,6 +70,18 @@ class Graph
     _Returns:_ an array of all node objects.
     ###
     (@_nodes[id] for id in Object.keys(@_nodes))
+
+  getNodesByIndices: (indices) ->
+    ###
+    _Returns:_
+    ###
+    if indices
+      result = []
+      @forEachNode (node, id) ->
+         result.push node if node.index in indices
+    else
+      result = @getNodes()
+    return _.sortBy result, 'index'
 
   removeNode: (nodeToRemove) ->
     ###
@@ -267,6 +280,37 @@ class Graph
       drawableEdges[edge.key] = edge
       # Return an array of edges.
     return (edge for key, edge of drawableEdges)
+
+  getNextNodeState: (state, node) ->
+    ###
+    _Returns:_ state of a node in the next timestep, given the current state.
+    ###
+    # Get the IDs of nodes that are inputs to this one.
+    inputNodes = (edge.source for edge in @getInEdgesOf(node._id))
+    # Get an array of their states.
+    inputs = (state[inputNode.index] for inputNode in inputNodes)
+    # Compute the new state of the node by plugging-in the inputs to its
+    # mechanism.
+    if node.mechanism is '>' or node.mechanism is '<'
+      return mechanism[node.mechanism](inputs, node.threshold)
+    else
+      return mechanism[node.mechanism](inputs)
+
+  getNextNetworkState: (state) ->
+    ###
+    _Returns:_ a map from nodes to their next states
+    ###
+    (@getNextNodeState(state, node) for node in @getNodes())
+
+  tpmify: ->
+    ###
+    _Returns:_ the TPM of this graph
+    ###
+    tpm = []
+    for i in [0...Math.pow(2, @numNodes)]
+      state = utils.loliIndexToState(i, @numNodes)
+      tpm.push @getNextNetworkState(state)
+    return tpm
 
 
 module.exports = Graph
