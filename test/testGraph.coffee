@@ -1,6 +1,6 @@
 should = require 'should'
 sinon = require 'sinon'
-Graph = require '../../src/js/services/network/graph'
+Graph = require '../src/js/services/network/graph'
 
 # Shorthand for logging.
 l = (x) -> console.log require('util').inspect x, true, 10

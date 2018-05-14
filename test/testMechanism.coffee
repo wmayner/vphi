@@ -1,4 +1,4 @@
-mechanism = require '../../src/js/services/network/mechanism'
+mechanism = require '../src/js/services/network/mechanism'
 should = require 'should'
 
 testLogicGate = (gate, singleZero, singleOne, allZero, allOne, halfOne, oddMajorityOne, evenMinorityOne) ->

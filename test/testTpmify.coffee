@@ -1,6 +1,6 @@
-Graph = require '../../src/js/services/network/graph'
-mechanism = require '../../src/js/services/network/mechanism'
-network = require '../../src/js/services/network'
+Graph = require '../src/js/services/network/graph'
+mechanism = require '../src/js/services/network/mechanism'
+network = require '../src/js/services/network'
 
 describe 'tpmify', ->
 
