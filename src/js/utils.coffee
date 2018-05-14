@@ -32,25 +32,11 @@ module.exports =
       log.debug "#{@loliIndexToState(i, n)} -> #{tpm[i]}"
     log.debug "---------------"
 
-  stateReachable: (state, tpm) ->
-    test = ((row[j] - state[j] for j in [0...state.length]) for row in tpm)
-    return test.some (row) -> row.every (entry) -> (-1 < entry < 1)
+  bit: (bool) -> (if bool then 1 else 0)
 
-  semverCompare: (a, b) ->
-    # From https://github.com/substack/semver-compare
-    pa = a.split('.')
-    pb = b.split('.')
-    i = 0
-    while i < 3
-      na = Number(pa[i])
-      nb = Number(pb[i])
-      if na > nb
-        return 1
-      if nb > na
-        return -1
-      if !isNaN(na) and isNaN(nb)
-        return 1
-      if isNaN(na) and !isNaN(nb)
-        return -1
-      i++
-    return 0
+  negate: (bool) -> (if bool then 0 else 1)
+
+  sum: (input) ->
+    sum = 0
+    sum += i for i in input
+    return sum

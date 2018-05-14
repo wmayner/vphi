@@ -7,10 +7,7 @@ log = require 'loglevel'
 semver = require 'semver'
 
 formatterService = require '../formatter.coffee'
-
-commonUtils = require '../../utils'
-# TODO provide utils in service
-utils = require './utils'
+utils = require '../../utils'
 Graph = require './graph'
 mechanism = require './mechanism'
 example = require './example'
