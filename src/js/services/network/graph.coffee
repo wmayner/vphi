@@ -306,11 +306,7 @@ class Graph
     ###
     _Returns:_ the TPM of this graph
     ###
-    tpm = []
-    for i in [0...Math.pow(2, @numNodes)]
-      state = utils.loliIndexToState(i, @numNodes)
-      tpm.push @getNextNetworkState(state)
-    return tpm
+    (@getNextNetworkState(state) for state in utils.allStates(@numNodes))
 
 
 module.exports = Graph

@@ -21,6 +21,10 @@ module.exports =
     # the LOLI convention (low-order bits correspond to low-index nodes).
     return @loliIndexToState(i, numNodes).reverse()
 
+  allStates: (numNodes) ->
+    # Return all states in LOLI order
+    return (@loliIndexToState(i, numNodes) for i in [0...Math.pow(2, numNodes)])
+
   logTpm: (tpm) ->
     log.debug "---------------"
     n = tpm[0].length

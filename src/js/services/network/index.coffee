@@ -39,10 +39,6 @@ module.exports = angular.module name, []
         # doesn't allow.
         $timeout -> $rootScope.$broadcast (name + '.updated'), 0
 
-      getAllStates = (numNodes) ->
-        (commonUtils.holiIndexToState(i, numNodes) \
-         for i in [0...Math.pow(2, numNodes)])
-
       cycleMechanism = (node) ->
         nextIndex = mechanism.keys.indexOf(node.mechanism) + 1
         if nextIndex is mechanism.keys.length then nextIndex = 0
