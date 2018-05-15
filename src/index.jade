@@ -6,8 +6,6 @@ head
   meta(name='viewport', content='width=device-width')
   title Calculate Φ
 
-  //- TODO load minified versions
-
   //- Online/Offline
   link(href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css', rel='stylesheet', type='text/css')
   //- link(href='/node_modules/bootstrap/dist/css/bootstrap.css', rel='stylesheet', type='text/css')
@@ -279,12 +277,7 @@ body
   //- script(src='/node_modules/angular/angular.js')
   script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js')
 
-  //- TODO minify?
-  script(src='/js/lib/jquery.jsonrpcclient.js')
-  //- script(src='/node_modules/jquery-jsonrpcclient/jquery.jsonrpcclient.js')
-
   //- Online/Offline
-  //- TODO get minified versions
   script(src='//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js')
   //- script(src='/node_modules/d3/d3.js')
 
@@ -292,7 +285,6 @@ body
   script(src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js')
   //- script(src='/node_modules/underscore/underscore.js')
 
-  //- TODO get minified versions
   //- Online/Offline
   script(src='//cdnjs.cloudflare.com/ajax/libs/c3/0.4.8/c3.min.js')
   //- script(src='/node_modules/c3/c3.js')
@@ -301,6 +293,7 @@ body
   script(src='//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.min.js')
   //- script(src='/node_modules/threejs/build/three.js')
 
+  script(src='/js/lib/jquery.jsonrpcclient.js')
   script(src='/js/lib/OrbitControls.js')
   script(src='/js/lib/Detector.js')
   script(src='/js/lib/FileSaver.js')
