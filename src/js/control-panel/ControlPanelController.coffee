@@ -26,10 +26,10 @@ module.exports = [
   ($scope, network, compute, NETWORK_SIZE_LIMIT) ->
     btns = $('.btn-calculate')
     btnSelectedSubsystem = $('#btn-selected-subsystem')
-    btnMainComplex = $('#btn-main-complex')
+    btnMajorComplex = $('#btn-major-complex')
 
     method2btn =
-      'mainComplex': btnMainComplex
+      'majorComplex': btnMajorComplex
       'bigMip': btnSelectedSubsystem
 
     $scope.NETWORK_SIZE_LIMIT = NETWORK_SIZE_LIMIT

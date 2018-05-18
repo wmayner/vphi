@@ -35,9 +35,9 @@ class PyphiService
     params = [getPyphiNetwork(network)]
     return @pyphi.call 'complexes', params, success, failure
 
-  mainComplex: (network, success, failure = defaultFailure) ->
+  majorComplex: (network, success, failure = defaultFailure) ->
     params = [getPyphiNetwork(network)]
-    return @pyphi.call 'main_complex', params, success, failure
+    return @pyphi.call 'major_complex', params, success, failure
 
   bigMip: (network, success, failure = defaultFailure) ->
     # Get the selected subsystem.

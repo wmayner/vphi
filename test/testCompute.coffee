@@ -16,7 +16,7 @@ describe compute.name, ->
 
   #     # class PyphiMock extends Pyphi
 
-  #     #   mainComplex: (network, sucess, failure) ->
+  #     #   majorComplex: (network, sucess, failure) ->
   #     #     return {always: sinon.spy()}
 
   #     $provide.service pyphi.name, PyPhiMock
@@ -40,24 +40,24 @@ describe compute.name, ->
 
   describe 'pyphiCall', ->
     it 'sets @calledMethod', ->
-      computeService.mainComplex()
-      computeService.calledMethod.should.eql 'mainComplex'
+      computeService.majorComplex()
+      computeService.calledMethod.should.eql 'majorComplex'
 
     it 'sets @callInProgress=true during the call', ->
       computeService.callInProgress.should.be.false()
-      computeService.mainComplex((data) ->
+      computeService.majorComplex((data) ->
        computeService.callInProgress.should.be.true())
       computeService.callInProgress.should.be.false()
 
     it 'updates @data', ->
-      computeService.mainComplex()
+      computeService.majorComplex()
       computeService.data.should.eql {bigMip: {state: [1, 0, 0]}}
 
     it 'sets result in local storage', ->
       localStorage.clear()
-      computeService.mainComplex()
+      computeService.majorComplex()
       # TODO test storage format
       stored = JSON.parse(localStorage.getItem('compute'))
       stored.should.containEql {VERSION: '1.0.7'}
       stored.should.containEql {PYPHI_VERSION: '1.0.0'}
-      stored.should.containEql {calledMethod: 'mainComplex'}
+      stored.should.containEql {calledMethod: 'majorComplex'}

@@ -31,8 +31,8 @@ module.exports = [
 
       bm = compute.data.bigMip
 
-      if compute.calledMethod is 'mainComplex'
-        $scope.title = 'Main Complex:'
+      if compute.calledMethod is 'majorComplex'
+        $scope.title = 'Major Complex:'
       else
         $scope.title = 'Subsystem:'
 

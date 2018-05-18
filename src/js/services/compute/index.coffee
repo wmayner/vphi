@@ -49,8 +49,8 @@ module.exports = angular.module name, []
           # computed.
           @format = new Formatter((index) => @networkJSON.nodes[index].label)
 
-        mainComplex: (success, always) ->
-          @pyphiCall 'mainComplex', success, always
+        majorComplex: (success, always) ->
+          @pyphiCall 'majorComplex', success, always
 
         bigMip: (success, always) ->
           @pyphiCall 'bigMip', success, always
