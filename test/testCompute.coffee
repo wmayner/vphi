@@ -34,9 +34,9 @@ describe compute.name, ->
 
   describe 'update', ->
     it 'updates data attribute', ->
-      computeService.update {bigMip: {phi: 1}}
+      computeService.update {bigMip: {phi: 1}}, {state: [0, 0, 0]}
       computeService.data.bigMip.phi.should.eql 1
-      computeService.data.bigMip.state.should.eql [1, 0, 0]  # default example
+      computeService.data.bigMip.state.should.eql [0, 0, 0]
 
   describe 'pyphiCall', ->
     it 'sets @calledMethod', ->
@@ -54,6 +54,10 @@ describe compute.name, ->
       computeService.data.should.eql {bigMip: {state: [1, 0, 0]}}
 
     it 'sets result in local storage', ->
+      localStorage.clear()
       computeService.mainComplex()
       # TODO test storage format
-      localStorage.getItem('result').should.not.be.undefined()
+      stored = JSON.parse(localStorage.getItem('compute'))
+      stored.should.containEql {VERSION: '1.0.7'}
+      stored.should.containEql {PYPHI_VERSION: '1.0.0'}
+      stored.should.containEql {calledMethod: 'mainComplex'}

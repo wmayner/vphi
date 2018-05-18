@@ -38,42 +38,16 @@ module.exports = angular.module name, []
       return new class ComputeService
         constructor: ->
           @data = null
-          @network = null  # JSON representation of network that computed data
+          @networkJSON = null  # representation of network that computed data
           @calledMethod = null
           @callInProgress = false
 
-          stored = localStorage.getItem 'compute'
-          if stored
-            stored = JSON.parse(stored)
-            # Check that stored results are compatible with this version.
-            if stored.version is VERSION
-              llog "Loading stored network."
-              @network = stored.network
-              # Need a setTimeout here to do the update after Angular is set up.
-              setTimeout (=>
-                if stored.data.version? and stored.data.version is PYPHI_VERSION
-                  # Update the service.
-                  llog "Loading stored results."
-                  @update(stored.data)
-                  typesetMath()
-                  # Force a digest cycle.
-                  # TODO figure out why we need this... we shouldn't and it's ugly.
-                  $rootScope.$apply()
-                else
-                  llog "Incompatible PyPhi versions; not loading stored results
-                    from version `#{stored.data.version}` since this expects
-                    version `#{PYPHI_VERSION}`."
-              ), 0
-            else
-              llog "Incompatible vPhi versions; not loading stored network from
-                version `#{stored.version}` since this is version
-                `#{VERSION}`."
-          else
-            llog "No stored results found."
+          # Try to load result from local storage
+          @loadResult()
 
           # Set up a formatting object that gets labels from the network that was
           # computed.
-          @format = new Formatter((index) => @network.nodes[index].label)
+          @format = new Formatter((index) => @networkJSON.nodes[index].label)
 
         mainComplex: (success, always) ->
           @pyphiCall 'mainComplex', success, always
@@ -90,14 +64,10 @@ module.exports = angular.module name, []
           llog "Calling `#{method}`..."
           @calledMethod = method
           @callInProgress = true
+          networkSnapshot = network.toJSON()
           pyphi[method](network, ((data) =>
-            @network = network.toJSON()
-            @update(data)
-            localStorage.setItem 'compute', JSON.stringify(
-              data: @data
-              network: @network
-              version: VERSION
-            )
+            @update(data, networkSnapshot)
+            @storeResult()
             $rootScope.$apply success
             typesetMath()
           ), ((error) =>
@@ -112,17 +82,59 @@ module.exports = angular.module name, []
             $rootScope.$apply always
           )
 
-        update: (data) ->
+        update: (data, networkJSON) ->
           llog "Updating with data:"
           log.debug data
 
+          @networkJSON = networkJSON
           @data = data
           # Record state.
           # TODO just attach these to the service.
-          @data.bigMip.state = network.state
+          @data.bigMip.state = @networkJSON.state
 
           llog "*** Broadcasting update event. ***"
           $rootScope.$broadcast (name + '.updated')
           return
+
+        storeResult: ->
+          llog 'Storing result'
+          localStorage.setItem 'compute', JSON.stringify {
+            data: @data
+            network: @networkJSON
+            calledMethod: @calledMethod
+            VERSION: VERSION
+            PYPHI_VERSION: PYPHI_VERSION
+          }
+
+        loadResult: ->
+          stored = localStorage.getItem 'compute'
+          if stored
+            stored = JSON.parse(stored)
+            # Check that stored results are compatible with this version.
+            if stored.VERSION is VERSION
+              llog "Loading stored network."
+              @networkJSON = stored.network
+              # Need a setTimeout here to do the update after Angular is set up.
+              setTimeout (=>
+                if stored.data.version? and stored.data.version is PYPHI_VERSION
+                  # Update the service.
+                  llog "Loading stored results."
+                  @update(stored.data, stored.network)
+                  @calledMethod = stored.calledMethod
+                  typesetMath()
+                  # Force a digest cycle.
+                  # TODO figure out why we need this... we shouldn't and it's ugly.
+                  $rootScope.$apply()
+                else
+                  llog "Incompatible PyPhi versions; not loading stored results
+                    from version `#{stored.data.version}` since this expects
+                    version `#{PYPHI_VERSION}`."
+              ), 0
+            else
+              llog "Incompatible vPhi versions; not loading stored network from
+                version `#{stored.VERSION}` since this is version
+                `#{VERSION}`."
+          else
+            llog "No stored results found."
 
   ]
