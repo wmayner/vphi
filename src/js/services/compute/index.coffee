@@ -8,6 +8,23 @@ pyphiService = require './pyphi'
 networkService = require '../network'
 formatterService = require '../formatter'
 
+
+llog = (msg) ->
+  log.debug "DATA_SERVICE: #{msg}"
+
+
+# TODO: move to component/controller
+typesetMath = ->
+  # Typeset the concept list after it's loaded.
+  MathJax.Hub.Queue ['Typeset', MathJax.Hub, 'concept-list-module']
+  MathJax.Hub.Queue ->
+    # Show it after typesetting.
+    $('#concept-list-module').removeClass('hidden')
+    # Need this to force the charts to recalculate their width after
+    # the MathJax is rendered.
+    $(window).trigger('resize')
+
+
 name = 'vphi.services.compute'
 module.exports = angular.module name, []
   .factory name, [
@@ -18,22 +35,13 @@ module.exports = angular.module name, []
     'VERSION'
     'PYPHI_VERSION'
     ($rootScope, network, Formatter, pyphi, VERSION, PYPHI_VERSION) ->
-
-      llog = (msg) ->
-        log.debug "DATA_SERVICE: #{msg}"
-
-      typesetMath = ->
-        # Typeset the concept list after it's loaded.
-        MathJax.Hub.Queue ['Typeset', MathJax.Hub, 'concept-list-module']
-        MathJax.Hub.Queue ->
-          # Show it after typesetting.
-          $('#concept-list-module').removeClass('hidden')
-          # Need this to force the charts to recalculate their width after
-          # the MathJax is rendered.
-          $(window).trigger('resize')
-
       return new class ComputeService
         constructor: ->
+          @data = null
+          @network = null  # JSON representation of network that computed data
+          @calledMethod = null
+          @callInProgress = false
+
           stored = localStorage.getItem 'compute'
           if stored
             stored = JSON.parse(stored)
@@ -67,11 +75,6 @@ module.exports = angular.module name, []
           # computed.
           @format = new Formatter((index) => @network.nodes[index].label)
 
-        data: null
-        network: null
-        calledMethod: null
-        callInProgress: false
-
         mainComplex: (success, always) ->
           @pyphiCall 'mainComplex', success, always
 
@@ -87,7 +90,6 @@ module.exports = angular.module name, []
           llog "Calling `#{method}`..."
           @calledMethod = method
           @callInProgress = true
-
           pyphi[method](network, ((data) =>
             @network = network.toJSON()
             @update(data)
@@ -122,4 +124,5 @@ module.exports = angular.module name, []
           llog "*** Broadcasting update event. ***"
           $rootScope.$broadcast (name + '.updated')
           return
+
   ]

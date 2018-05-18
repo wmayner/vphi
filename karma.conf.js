@@ -15,9 +15,16 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/angular/angular.min.js',
+      'node_modules/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
-      'test/*.coffee'
+      'node_modules/d3/d3.js',
+      'node_modules/three/build/three.js',
+      'node_modules/jquery/dist/jquery.js',
+      'node_modules/underscore/underscore.js',
+      'node_modules/mathjax/MathJax.js',
+      'test/*.coffee',
+      'app/js/lib/*.js',
+      'src/**/*.coffee'
     ],
 
 
@@ -62,7 +69,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'Firefox'],
+    browsers: ['Chrome'],
 
 
     // Continuous Integration mode
