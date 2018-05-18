@@ -13,18 +13,6 @@ llog = (msg) ->
   log.debug "DATA_SERVICE: #{msg}"
 
 
-# TODO: move to component/controller
-typesetMath = ->
-  # Typeset the concept list after it's loaded.
-  MathJax.Hub.Queue ['Typeset', MathJax.Hub, 'concept-list-module']
-  MathJax.Hub.Queue ->
-    # Show it after typesetting.
-    $('#concept-list-module').removeClass('hidden')
-    # Need this to force the charts to recalculate their width after
-    # the MathJax is rendered.
-    $(window).trigger('resize')
-
-
 name = 'vphi.services.compute'
 module.exports = angular.module name, []
   .factory name, [
@@ -69,7 +57,6 @@ module.exports = angular.module name, []
             @update(data, networkSnapshot)
             @storeResult()
             $rootScope.$apply success
-            typesetMath()
           ), ((error) =>
             if 'error' of error and error.error is ''
               log.error 'Phiserver is unreachable'
@@ -121,7 +108,6 @@ module.exports = angular.module name, []
                   llog "Loading stored results."
                   @update(stored.data, stored.network)
                   @calledMethod = stored.calledMethod
-                  typesetMath()
                   # Force a digest cycle.
                   # TODO figure out why we need this... we shouldn't and it's ugly.
                   $rootScope.$apply()

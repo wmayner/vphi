@@ -6,6 +6,18 @@
 log = require 'loglevel'
 computeService = require '../services/compute'
 
+
+typesetMath = ->
+  # Typeset the concept list after it's loaded.
+  MathJax.Hub.Queue ['Typeset', MathJax.Hub, 'concept-list-module']
+  MathJax.Hub.Queue ->
+    # Show it after typesetting.
+    $('#concept-list-module').removeClass('hidden')
+    # Need this to force the charts to recalculate their width after
+    # the MathJax is rendered.
+    $(window).trigger('resize')
+
+
 module.exports = [
   '$scope'
   computeService.name
@@ -32,4 +44,6 @@ module.exports = [
       )
       allProbabilities = [].concat.apply([], allRepertoires)
       $scope.maxProbability = _.max(allProbabilities)
+
+      typesetMath()
 ]
