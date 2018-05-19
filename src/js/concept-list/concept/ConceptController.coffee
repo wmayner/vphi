@@ -13,8 +13,11 @@ module.exports = [
     $scope.format = compute.format
 
     concept = $scope.concept
-    cause = concept.cause.mip
-    effect = concept.effect.mip
+    $scope.cause = cause = concept.cause.mip
+    $scope.effect = effect = concept.effect.mip
+
+    $scope.causePartition = cause.partition
+    $scope.effectPartition = effect.partition
 
     $scope.mechanism = concept.mechanism
     $scope.smallPhi = format.phi concept.phi
@@ -29,29 +32,9 @@ module.exports = [
       format.latexNodes(cause.purview) + "^{p}" +
       "}"
 
-    $scope.partitionedCauseMip = "\\frac{" +
-      format.latexNodes(cause.partition.part0.mechanism) + "^{c}" +
-      "}{" +
-      format.latexNodes(cause.partition.part0.purview) + "^{p}" +
-      "} \\times \\frac{" +
-      format.latexNodes(cause.partition.part1.mechanism) + "^{c}" +
-      "}{" +
-      format.latexNodes(cause.partition.part1.purview) + "^{p}" +
-      "}"
-
     $scope.effectMip = "\\frac{" +
       format.latexNodes(concept.mechanism) + "^{c}" +
       "}{" +
       format.latexNodes(effect.purview) + "^{f}" +
-      "}"
-
-    $scope.partitionedEffectMip = "\\frac{" +
-      format.latexNodes(effect.partition.part0.mechanism) + "^{c}" +
-      "}{" +
-      format.latexNodes(effect.partition.part0.purview) + "^{f}" +
-      "} \\times \\frac{" +
-      format.latexNodes(effect.partition.part1.mechanism) + "^{c}" +
-      "}{" +
-      format.latexNodes(effect.partition.part1.purview) + "^{f}" +
       "}"
 ]

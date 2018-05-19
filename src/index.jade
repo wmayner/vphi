@@ -199,8 +199,7 @@ body
                           .vphi-label Cause MIP:
                           .math-output \( {{causeMip}} \)
                         .col-sm-6
-                          .vphi-label Partitioned:
-                          .math-output \( {{partitionedCauseMip}} \)
+                          partition(partition='causePartition', format='format', direction='p')
               .col-xs-4
                 ul.node-list.mechanism
                   li(ng-class='{"on": state[n]}', ng-repeat='n in mechanism') {{format.node(n)}}
@@ -221,8 +220,7 @@ body
                           .vphi-label Effect MIP:
                           .math-output \( {{effectMip}} \)
                         .col-sm-6
-                          .vphi-label Partitioned:
-                          .math-output \( {{partitionedEffectMip}} \)
+                          partition(partition='effectPartition', format='format', direction='f')
             .row.clearfix
               //- Stack repertoire charts for more width depending on how many
               //- states are being displayed.
