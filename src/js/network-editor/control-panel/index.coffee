@@ -8,4 +8,5 @@ module.exports = angular.module 'vphi.networkEditor.controlPanel', [
   'hc.downloader'
   'angularFileUpload'
 ]
-  .controller 'networkEditor.controlPanelCtrl', require './ControlPanelController'
+  .controller 'networkEditor.ControlPanelCtrl', require './ControlPanelController'
+  .directive 'networkEditorControlPanel', require './ControlPanelDirective'
