@@ -1,0 +1,36 @@
+.row.clearfix
+  .col-xs-12
+    .control-group#network-editor-buttons.btn-toolbar(role='toolbar')
+      .btn-group
+        button#show-controls(type='button', data-toggle='modal', data-target='#network-editor-help').btn.btn-md.btn-default Show Controls
+      .btn-group
+        button#save-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
+      .btn-group
+        button#import-network(ng-file-select, ng-model='networkFiles', allow-dir='false', type='button').btn.btn-md.btn-default Import
+        button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export
+      .btn-group
+        button#example-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false') Load Example
+          | &nbsp;
+          span.caret
+          span.sr-only Toggle example selection dropdown menu
+        ul#examples.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='example-dropdown')
+          li(ng-repeat='exampleName in exampleNames', ng-click='load(exampleName)')
+            a {{exampleName}}
+.row.clearfix
+  .col-xs-12
+    .form-inline
+      .form-group
+        label.vphi-label Label
+        input#node-label.form-control(ng-if='!activeNode', disabled, aria-describedby='Change focused node label')
+        input#node-label.form-control(ng-if='activeNode', type='text', ng-model='getSetLabel', ng-model-options='{getterSetter: true}', aria-describedby='Change focused node label')
+      .form-group
+        label.vphi-label(for='node-mechanism-select') Mechanism
+        .btn-group
+          button#node-mechanism-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-class='{"disabled": !activeNode}', type='button', data-toggle='dropdown', aria-expanded='false')
+            #current-node-mechanism {{mechanismNames[activeNode.mechanism]}}
+            span.caret
+            span.sr-only Toggle node mechanism selection dropdown menu
+          ul#node-mechanisms.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
+            li.mechanism-option(ng-repeat='mechanism in mechanisms', ng-click='selectMechanism(mechanism)')
+              a {{mechanismNames[mechanism]}}
+

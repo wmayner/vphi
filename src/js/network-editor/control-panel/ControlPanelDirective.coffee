@@ -6,6 +6,7 @@
 module.exports = ->
   return {
     scope: true
-    controller: 'networkEditor.controlPanelCtrl'
+    controller: 'networkEditor.ControlPanelCtrl'
     controllerAs: '$ctrl'
+    templateUrl: 'NetworkEditorControlPanel.html'
   }
