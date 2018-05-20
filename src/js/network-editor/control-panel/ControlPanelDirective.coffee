@@ -8,5 +8,10 @@ module.exports = ->
     scope: true
     controller: 'networkEditor.ControlPanelCtrl'
     controllerAs: '$ctrl'
+    bindToController: {
+      onUpdate: '&'
+      activeNode: '='
+      selectedNodes: '<'
+    }
     templateUrl: 'NetworkEditorControlPanel.html'
   }

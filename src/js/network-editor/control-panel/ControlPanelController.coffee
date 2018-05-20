@@ -14,6 +14,8 @@ module.exports =  [
   networkService.name
   ($scope, $upload, network) ->
 
+    $ctrl = this
+
     $scope.importNetwork = (files) ->
       if files
         file = files[0]
@@ -35,26 +37,19 @@ module.exports =  [
     $scope.exampleNames = example.names
     $scope.load = (exampleName) -> network.loadExample(exampleName)
 
-    # Getter/Setter function for the active node's label. We need to use this
-    # with ng-model so that we can call the d3 update and network update
-    # function, respectively, whenever the model changes.
-    $scope.getSetLabel = (newValue) ->
-      if newValue?
-        $scope.activeNode?.label = newValue
-        $scope.canvasUpdate()
-        update()
-        return newValue
-      else
-        return $scope.activeNode?.label
+    # Update d3 and network when label changes
+    $ctrl.updateLabel = ->
+      $ctrl.onUpdate()
+      update()
 
     $scope.mechanismNames = mechanism.names
     $scope.mechanisms = mechanism.keys
     $scope.selectMechanism = (mechanismKey) ->
-      if $scope.selectedNodes.length > 1
-        for node in $scope.selectedNodes
+      if $ctrl.selectedNodes.length > 1
+        for node in $ctrl.selectedNodes
           network.setMechanism(node, mechanismKey)
-      else if $scope.activeNode?
-        network.setMechanism($scope.activeNode, mechanismKey)
+      else if $ctrl.activeNode?
+        network.setMechanism($ctrl.activeNode, mechanismKey)
 
     update = ->
       $scope.nodes = (

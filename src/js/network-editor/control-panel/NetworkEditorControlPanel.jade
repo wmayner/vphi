@@ -21,16 +21,18 @@
     .form-inline
       .form-group
         label.vphi-label Label
-        input#node-label.form-control(ng-if='!activeNode', disabled, aria-describedby='Change focused node label')
-        input#node-label.form-control(ng-if='activeNode', type='text', ng-model='getSetLabel', ng-model-options='{getterSetter: true}', aria-describedby='Change focused node label')
+        input#node-label.form-control(
+          ng-disabled='!$ctrl.activeNode',
+          ng-model='$ctrl.activeNode.label',
+          ng-change='$ctrl.updateLabel()',
+          type='text', aria-describedby='Change focused node label')
       .form-group
         label.vphi-label(for='node-mechanism-select') Mechanism
         .btn-group
-          button#node-mechanism-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-class='{"disabled": !activeNode}', type='button', data-toggle='dropdown', aria-expanded='false')
+          button#node-mechanism-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-disabled='!$ctrl.activeNode', type='button', data-toggle='dropdown', aria-expanded='false')
             #current-node-mechanism {{mechanismNames[activeNode.mechanism]}}
             span.caret
             span.sr-only Toggle node mechanism selection dropdown menu
           ul#node-mechanisms.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
             li.mechanism-option(ng-repeat='mechanism in mechanisms', ng-click='selectMechanism(mechanism)')
               a {{mechanismNames[mechanism]}}
-

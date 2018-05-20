@@ -35,13 +35,13 @@ body
           a.alert-link(href='https://arxiv.org/abs/1712.09644', target='_blank') Mayner&nbsp;WGP,&nbsp;Marshall&nbsp;W,&nbsp;Albantakis&nbsp;L,&nbsp;Findlay&nbsp;G,&nbsp;Marchman&nbsp;R,&nbsp;Tononi&nbsp;G&nbsp;(2017). PyPhi:&nbsp;A&nbsp;toolbox&nbsp;for&nbsp;integrated&nbsp;information. <em>arXiv:1712.09644&nbsp;[q&#8209;bio.NC]</em>.
     .row.clearfix
       .col-md-6
-        #network-editor-module.module(ng-controller='networkEditorCtrl')
+        #network-editor-module.module(ng-controller='networkEditorCtrl as ctrl')
           h2.module-title Network
           .row.clearfix
             .col-xs-12
               #network-editor-container
                 network-editor
-          network-editor-control-panel.control-panel
+          network-editor-control-panel.control-panel(active-node='activeNode', selected-nodes='selectedNodes', on-update='canvasUpdate()')
       .col-md-6
         #concept-space-module.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure
