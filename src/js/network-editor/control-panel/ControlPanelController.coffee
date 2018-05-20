@@ -9,9 +9,8 @@ example = require '../../services/network/example'
 mechanism = require '../../services/network/mechanism'
 
 module.exports =  [
-  '$scope'
   networkService.name
-  ($scope, network) ->
+  (network) ->
     $ctrl = this
 
     $ctrl.importNetwork =  ->
@@ -31,17 +30,16 @@ module.exports =  [
       }
       window.saveAs blob, 'network.json'
 
-    $scope.exampleNames = example.names
-    $scope.load = (exampleName) -> network.loadExample(exampleName)
+    $ctrl.exampleNames = example.names
+    $ctrl.loadExample = (exampleName) -> network.loadExample(exampleName)
 
     # Update d3 and network when label changes
     $ctrl.notifyUpdateLabel = ->
       log.debug "NETWORK_CONTROLS: Updated labels"
       $ctrl.onUpdateLabel()
 
-    $scope.mechanismNames = mechanism.names
-    $scope.mechanisms = mechanism.keys
-    $scope.selectMechanism = (mechanismKey) ->
+    $ctrl.mechanismNames = mechanism.names
+    $ctrl.selectMechanism = (mechanismKey) ->
       if $ctrl.selectedNodes.length > 1
         for node in $ctrl.selectedNodes
           network.setMechanism(node, mechanismKey)

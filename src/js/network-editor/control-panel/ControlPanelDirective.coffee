@@ -5,7 +5,7 @@
 
 module.exports = ->
   return {
-    scope: true
+    scope: {}
     controller: 'networkEditor.ControlPanelCtrl'
     controllerAs: '$ctrl'
     bindToController: {

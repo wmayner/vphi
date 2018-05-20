@@ -14,7 +14,7 @@
           span.caret
           span.sr-only Toggle example selection dropdown menu
         ul#examples.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='example-dropdown')
-          li(ng-repeat='exampleName in exampleNames', ng-click='load(exampleName)')
+          li(ng-repeat='exampleName in $ctrl.exampleNames', ng-click='$ctrl.loadExample(exampleName)')
             a {{exampleName}}
 .row.clearfix
   .col-xs-12
@@ -30,9 +30,9 @@
         label.vphi-label(for='node-mechanism-select') Mechanism
         .btn-group
           button#node-mechanism-dropdown.btn.btn-md.btn-default.dropdown-toggle(ng-disabled='!$ctrl.activeNode', type='button', data-toggle='dropdown', aria-expanded='false')
-            #current-node-mechanism {{mechanismNames[activeNode.mechanism]}}
+            #current-node-mechanism {{$ctrl.mechanismNames[$ctrl.activeNode.mechanism]}}
             span.caret
             span.sr-only Toggle node mechanism selection dropdown menu
           ul#node-mechanisms.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
-            li.mechanism-option(ng-repeat='mechanism in mechanisms', ng-click='selectMechanism(mechanism)')
-              a {{mechanismNames[mechanism]}}
+            li.mechanism-option(ng-repeat='(mechanismKey, mechanismName) in $ctrl.mechanismNames', ng-click='$ctrl.selectMechanism(mechanismKey)')
+              a {{mechanismName}}
