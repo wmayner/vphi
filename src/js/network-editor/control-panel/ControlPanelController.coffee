@@ -10,15 +10,13 @@ mechanism = require '../../services/network/mechanism'
 
 module.exports =  [
   '$scope'
-  '$upload'
   networkService.name
-  ($scope, $upload, network) ->
-
+  ($scope, network) ->
     $ctrl = this
 
-    $scope.importNetwork = (files) ->
-      if files
-        file = files[0]
+    $ctrl.importNetwork =  ->
+      if $ctrl.networkFiles
+        file = $ctrl.networkFiles[0]
         try
           r = new FileReader()
           r.onloadend = ->
@@ -26,9 +24,8 @@ module.exports =  [
           r.readAsText(file)
         catch e
           log.error e
-    $scope.$watch 'networkFiles', -> $scope.importNetwork $scope.networkFiles
 
-    $scope.export = ->
+    $ctrl.exportNetwork = ->
       blob = new Blob [JSON.stringify network.toJSON()], {
         type: 'application/json'
       }

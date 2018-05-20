@@ -6,8 +6,8 @@
       .btn-group
         button#save-image(svg-download, filename='network', type='button').btn.btn-md.btn-default Save Image
       .btn-group
-        button#import-network(ng-file-select, ng-model='networkFiles', allow-dir='false', type='button').btn.btn-md.btn-default Import
-        button#export-network(ng-click='export()', type='button').btn.btn-md.btn-default Export
+        button#import-network(ng-file-select, ng-model='$ctrl.networkFiles', ng-change='$ctrl.importNetwork()' allow-dir='false', type='button').btn.btn-md.btn-default Import
+        button#export-network(ng-click='$ctrl.exportNetwork()', type='button').btn.btn-md.btn-default Export
       .btn-group
         button#example-dropdown.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false') Load Example
           | &nbsp;
