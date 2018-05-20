@@ -24,7 +24,7 @@
         input#node-label.form-control(
           ng-disabled='!$ctrl.activeNode',
           ng-model='$ctrl.activeNode.label',
-          ng-change='$ctrl.updateLabel()',
+          ng-change='$ctrl.notifyUpdateLabel()',
           type='text', aria-describedby='Change focused node label')
       .form-group
         label.vphi-label(for='node-mechanism-select') Mechanism

@@ -9,7 +9,7 @@ module.exports = ->
     controller: 'networkEditor.ControlPanelCtrl'
     controllerAs: '$ctrl'
     bindToController: {
-      onUpdate: '&'
+      onUpdateLabel: '&'
       activeNode: '='
       selectedNodes: '<'
     }

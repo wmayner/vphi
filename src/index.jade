@@ -41,7 +41,7 @@ body
             .col-xs-12
               #network-editor-container
                 network-editor
-          network-editor-control-panel.control-panel(active-node='activeNode', selected-nodes='selectedNodes', on-update='canvasUpdate()')
+          network-editor-control-panel.control-panel(active-node='activeNode', selected-nodes='selectedNodes', on-update-label='canvasUpdate()')
       .col-md-6
         #concept-space-module.module(ng-controller='conceptSpaceCtrl')
           h2.module-title Conceptual structure

@@ -38,9 +38,9 @@ module.exports =  [
     $scope.load = (exampleName) -> network.loadExample(exampleName)
 
     # Update d3 and network when label changes
-    $ctrl.updateLabel = ->
-      $ctrl.onUpdate()
-      update()
+    $ctrl.notifyUpdateLabel = ->
+      log.debug "NETWORK_CONTROLS: Updated labels"
+      $ctrl.onUpdateLabel()
 
     $scope.mechanismNames = mechanism.names
     $scope.mechanisms = mechanism.keys
@@ -51,17 +51,5 @@ module.exports =  [
       else if $ctrl.activeNode?
         network.setMechanism($ctrl.activeNode, mechanismKey)
 
-    update = ->
-      $scope.nodes = (
-        if network.size() > 0 then network.format.nodes(network.getNodes()).join(', ')
-        else ''
-      )
-      log.debug "NETWORK_CONTROLS: Updated."
-    $scope.$on (networkService.name + '.updated'), ->
-      log.debug 'NETWORK_CONTROLS: Received network update event.'
-      update()
-
-    # Intialize.
-    update()
-
+    return
 ]
