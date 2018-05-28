@@ -5,18 +5,16 @@
 
 log = require 'loglevel'
 computeService = require '../../services/compute'
-networkService = require '../../services/network'
 
 module.exports = [
   '$scope'
   computeService.name
-  networkService.name
-  ($scope, compute, network) ->
+  ($scope, compute) ->
     $scope.resetCamera = -> $scope.canvas.resetCamera()
 
     $scope.format = compute.format
 
-    $scope.restoreNetwork = -> network.loadJSON(compute.network)
+    $scope.restoreNetwork = -> compute.restoreNetwork()
     $scope.resetCamera = -> $scope.canvas.resetCamera()
     $scope.toggleGrids = -> $scope.canvas.toggleGrids()
     $scope.toggleIgnoredAxes = -> $scope.canvas.toggleIgnoredAxes()

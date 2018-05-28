@@ -1,6 +1,7 @@
 should = require 'should'
 sinon = require 'sinon'
 compute = require '../src/js/services/compute'
+network = require '../src/js/services/network'
 pyphi = require '../src/js/services/compute/pyphi'
 
 exData = {bigMip: {}}
@@ -8,6 +9,7 @@ exData = {bigMip: {}}
 describe compute.name, ->
   computeService = null
   pyphiService = null
+  networkService = null
 
   beforeEach angular.mock.module 'vphi'
 
@@ -24,6 +26,9 @@ describe compute.name, ->
 
   beforeEach inject ($injector) ->
     pyphiService = $injector.get pyphi.name
+    networkService = $injector.get network.name
+    networkService.loadExample 'IIT 3.0 Paper, Figure 1'
+
     # Stub succesful remote phiserver call
     sinon.stub(pyphiService.pyphi, 'call').callsFake(
       (method, params, success, failure) ->
@@ -61,3 +66,12 @@ describe compute.name, ->
       stored.should.containEql {VERSION: '1.0.7'}
       stored.should.containEql {PYPHI_VERSION: '1.0.0'}
       stored.should.containEql {calledMethod: 'majorComplex'}
+
+  describe 'restoreNetwork', ->
+    it 'restores network from last computation', ->
+      computeService.majorComplex()
+      networkService.size().should.eql 3
+      networkService.removeNode networkService.getNode 0
+      networkService.size().should.eql 2
+      computeService.restoreNetwork()
+      networkService.size().should.eql 3

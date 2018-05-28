@@ -123,4 +123,7 @@ module.exports = angular.module name, []
           else
             llog "No stored results found."
 
+        restoreNetwork: ->
+          network.loadJSON @networkJSON
+
   ]
