@@ -5,9 +5,11 @@
 
 module.exports = ->
   return {
-    scope: true
-    controller: 'conceptSpace.ControlPanelCtrl'
+    scope: {}
+    controller: 'conceptSpace.controlPanelCtrl'
+    controllerAs: '$ctrl'
     bindToController: {
+      canvas: '='
     }
     templateUrl: 'ConceptSpaceControlPanel.html'
   }

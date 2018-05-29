@@ -10,22 +10,21 @@ module.exports = [
   '$scope'
   computeService.name
   ($scope, compute) ->
-    $scope.resetCamera = -> $scope.canvas.resetCamera()
+    $ctrl = this
 
-    $scope.format = compute.format
+    $ctrl.format = compute.format
+    $ctrl.restoreNetwork = -> compute.restoreNetwork()
+    $ctrl.resetCamera = -> $ctrl.canvas.resetCamera()
+    $ctrl.toggleGrids = -> $ctrl.canvas.toggleGrids()
+    $ctrl.toggleIgnoredAxes = -> $ctrl.canvas.toggleIgnoredAxes()
 
-    $scope.restoreNetwork = -> compute.restoreNetwork()
-    $scope.resetCamera = -> $scope.canvas.resetCamera()
-    $scope.toggleGrids = -> $scope.canvas.toggleGrids()
-    $scope.toggleIgnoredAxes = -> $scope.canvas.toggleIgnoredAxes()
-    $scope.switchView = ->
-      # TODO implement switchView
-
-    $scope.concepts = []
+    $ctrl.concepts = []
 
     $scope.$on (computeService.name + '.updated'), ->
       log.debug "CONCEPT_SPACE: Received data update event."
-      $scope.concepts = compute.data.bigMip.ces.concepts
+      $ctrl.concepts = compute.data.bigMip.ces.concepts
 
-    $scope.highlightConcept = (i) -> $scope.canvas.highlightConcept(i)
+    $ctrl.highlightConcept = (i) -> $ctrl.canvas.highlightConcept(i)
+
+    return
 ]
