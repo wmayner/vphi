@@ -43,19 +43,19 @@ body
                 network-editor
           network-editor-control-panel.control-panel(active-node='activeNode', selected-nodes='selectedNodes', on-update-label='canvasUpdate()')
       .col-md-6
-        #concept-space-module.module(ng-controller='conceptSpaceCtrl')
+        #concept-space-module.module(ng-controller='conceptSpaceCtrl', ng-cloak)
           h2.module-title Conceptual structure
           .row.clearfix
             .col-md-12
               #concept-space-container
                 #concept-space(concept-space)
-                #concept-space-overlay.hidden &nbsp;
-              #concept-space-loading-spinner.hidden
-                .tetrominos
-                  .tetromino.box1
-                  .tetromino.box2
-                  .tetromino.box3
-                  .tetromino.box4
+                #concept-space-overlay(ng-show='compute.callInProgress') &nbsp;
+                #concept-space-loading-spinner(ng-show='compute.callInProgress')
+                  .tetrominos
+                    .tetromino.box1
+                    .tetromino.box2
+                    .tetromino.box3
+                    .tetromino.box4
           concept-space-control-panel.control-panel(canvas='canvas')
     #main-control-module.module(ng-controller='controlPanelCtrl', ng-cloak)
       .row.centered.clearfix
@@ -74,10 +74,12 @@ body
             | Too many inputs [{{overloadedNodes}}]
       .row.centered.clearfix
         .col-centered
-            button#btn-major-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("majorComplex")', ng-disabled='isDisabled')
-              | Major Complex
-            button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', data-loading-text='Calculating…', ng-click='calculate("bigMip")', ng-disabled='isDisabled')
-              | Selected Subsystem
+            button#btn-major-complex.btn.btn-calculate.btn-lg.btn-primary(type='button', ng-click='calculate("majorComplex")', ng-disabled='btnsDisabled')
+              span(ng-hide='btnClicked == "majorComplex"') Major Complex
+              span(ng-show='btnClicked == "majorComplex"') Calculating...
+            button#btn-selected-subsystem.btn.btn-calculate.btn-lg.btn-primary(type='button', ng-click='calculate("bigMip")', ng-disabled='btnsDisabled')
+              span(ng-hide='btnClicked == "bigMip"') Selected Subsystem
+              span(ng-show='btnClicked == "bigMip"') Calculating...
     .row.clearfix
       .col-md-12
         section#output-summary-module.module(ng-controller='outputSummaryCtrl', ng-cloak)

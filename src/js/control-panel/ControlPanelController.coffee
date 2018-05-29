@@ -24,13 +24,6 @@ module.exports = [
   computeService.name
   'NETWORK_SIZE_LIMIT'
   ($scope, network, compute, NETWORK_SIZE_LIMIT) ->
-    btns = $('.btn-calculate')
-    btnSelectedSubsystem = $('#btn-selected-subsystem')
-    btnMajorComplex = $('#btn-major-complex')
-
-    method2btn =
-      'majorComplex': btnMajorComplex
-      'bigMip': btnSelectedSubsystem
 
     $scope.NETWORK_SIZE_LIMIT = NETWORK_SIZE_LIMIT
 
@@ -38,8 +31,7 @@ module.exports = [
       # Display a warning if there are too many nodes
       # Disable buttons if there's already a calculation in progress, the
       # network is empty, or the network is too big.
-      $scope.isDisabled = compute.callInProgress or not network.isValid()
-
+      $scope.btnsDisabled = $scope.btnClicked or not network.isValid()
       $scope.tooManyNodes = not network.validateSize()
       $scope.tooManyInputs = not network.validateNodeInputs()
       $scope.overloadedNodes = joinWithAnd(n.label for n in network.overloadedNodes())
@@ -47,45 +39,23 @@ module.exports = [
     update()
     $scope.$on (networkService.name + '.updated'), update
 
-    btnCooldown = false
+    $scope.btnClicked = null
 
-    # TODO use directives to manupulate the DOM
-    startLoading = ->
-      $('#concept-space-loading-spinner').removeClass 'hidden'
-      $('#concept-space-loading-spinner').show()
-      $('#concept-space-overlay').removeClass 'hidden'
-      $('#concept-space-overlay').show()
-      btns.addClass('disabled')
+    registerClick = (method) ->
+      $scope.btnClicked = method
+      update()  # Disable buttons
 
-    finishLoading = ->
-      $('#concept-space-loading-spinner').fadeOut 400, ->
-        btnCooldown = false
-      $('#concept-space-overlay').fadeOut 400
-      btns.removeClass('disabled')
+    success = ->
+      $scope.subsystemStateUnreachable = false
 
-    registerClick = (btn) ->
-      btnCooldown = true
-      btn.button 'loading'
-      startLoading()
-
-    success = (btn) ->
-      return ->
-        btn.button 'reset'
-        $scope.subsystemStateUnreachable = false
-        finishLoading()
-
-    always = (btn) ->
-      return ->
-        btn.button 'reset'
-        finishLoading()
+    always = ->
+      $scope.btnClicked = null
+      update()
 
     $scope.calculate = (method) ->
-      return if btnCooldown
-      btn = method2btn[method]
-      registerClick(btn)
-      compute[method](
-        success(btn), always(btn)
-      )
+      return if $scope.btnClicked
+      registerClick(method)
+      compute[method](success, always)
 
     # Handle `StateUnreachableError`
     $scope.$on (computeService.name + '.error.StateUnreachableError'), ->
