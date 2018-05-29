@@ -5,3 +5,4 @@
 
 module.exports = angular.module 'vphi.conceptSpace.controlPanel', []
   .controller 'conceptSpace.controlPanelCtrl', require './ControlPanelController'
+  .directive 'conceptSpaceControlPanel', require './ControlPanelDirective'

@@ -1,0 +1,27 @@
+.row.clearfix
+  .col-md-12
+    .control-group.btn-toolbar(role='toolbar')
+      .btn-group
+        button.btn.btn-md.btn-default(ng-click='restoreNetwork()', type='button', data-toggle='tooltip', data-placement='bottom', title='Erases all changes made to the network since 𝚽 was computed')
+          | Restore Network
+      .btn-group
+        button.btn.btn-md.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='false')
+          | Highlight Concept
+          | &nbsp;
+          span.caret
+          span.sr-only Toggle concept highlighting dropdown menu
+        ul.dropdown-menu.dropdown-menu-right(role='menu', aria-labelledby='node-mechanism-dropdown')
+          li(ng-click='highlightConcept(-1)')
+            a None
+          li(ng-repeat='concept in concepts', ng-click='highlightConcept($index)')
+            a {{format.nodes(concept.mechanism).join('')}}
+      .btn-group
+        button.btn.btn-md.btn-default(ng-click='resetCamera()', type='button')
+          | Reset Camera
+        button.btn.btn-md.btn-default(ng-click='toggleGrids()', type='button')
+          | Toggle Grids
+        button.btn.btn-md.btn-default(ng-click='toggleIgnoredAxes()', type='button')
+          | Toggle Ignored Axes
+      // .btn-group
+      //   button.btn.btn-md.btn-default(ng-click='switchView()', type='button')
+      //     | Switch View
