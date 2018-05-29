@@ -44,5 +44,3 @@ module.exports = ->
 
     # 3... 2... 1... BLAST OFF!
     init()
-  controller: ($scope, $element) ->
-    $scope.addLabel
