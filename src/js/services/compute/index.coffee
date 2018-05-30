@@ -29,6 +29,7 @@ module.exports = angular.module name, []
           @networkJSON = null  # representation of network that computed data
           @calledMethod = null
           @callInProgress = false
+          @updateEvent = name + '.updated'
 
           # Try to load result from local storage
           @loadResult()
@@ -80,7 +81,7 @@ module.exports = angular.module name, []
           @data.bigMip.state = @networkJSON.state
 
           llog "*** Broadcasting update event. ***"
-          $rootScope.$broadcast (name + '.updated')
+          $rootScope.$broadcast @updateEvent
           return
 
         storeResult: ->

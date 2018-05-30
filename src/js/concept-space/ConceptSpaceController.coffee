@@ -18,6 +18,6 @@ module.exports = [
 
     # Update display when new data is computed.
     # TODO handle complexes
-    $scope.$on (computeService.name + '.updated'), ->
+    $scope.$on compute.updateEvent, ->
       $scope.canvas.display(compute.data.bigMip)
 ]

@@ -20,7 +20,7 @@ module.exports = [
 
     $ctrl.concepts = []
 
-    $scope.$on (computeService.name + '.updated'), ->
+    $scope.$on compute.updateEvent, ->
       log.debug "CONCEPT_SPACE: Received data update event."
       $ctrl.concepts = compute.data.bigMip.ces.concepts
 

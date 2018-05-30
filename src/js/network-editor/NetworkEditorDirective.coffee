@@ -847,7 +847,7 @@ module.exports = [
 
       # TODO! now that this is here, reduce calls to update if possible
       # Update when network is updated.
-      scope.$on (networkService.name + '.updated'), update
+      scope.$on network.updateEvent, update
 
       # Put the d3 update function on the Angular scope.
       scope.canvasUpdate = update

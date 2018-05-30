@@ -37,7 +37,7 @@ module.exports = [
       $scope.overloadedNodes = joinWithAnd(n.label for n in network.overloadedNodes())
 
     update()
-    $scope.$on (networkService.name + '.updated'), update
+    $scope.$on network.updateEvent, update
 
     $scope.btnClicked = null
 

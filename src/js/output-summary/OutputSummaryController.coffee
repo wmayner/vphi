@@ -26,7 +26,7 @@ module.exports = [
     $scope.numConcepts = '–'
     $scope.sumSmallPhi = '–'
 
-    $scope.$on (computeService.name + '.updated'), ->
+    $scope.$on compute.updateEvent, ->
       log.debug 'OUTPUT_SUMMARY: Received compute update.'
 
       bm = compute.data.bigMip

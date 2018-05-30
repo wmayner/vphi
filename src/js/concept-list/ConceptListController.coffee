@@ -26,7 +26,7 @@ module.exports = [
     $scope.numNodes = null
     $scope.state = null
 
-    $scope.$on (computeService.name + '.updated'), ->
+    $scope.$on compute.updateEvent, ->
       log.debug "CONCEPT_LIST: Received data update event."
 
       bm = compute.data.bigMip

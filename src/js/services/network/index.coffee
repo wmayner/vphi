@@ -24,17 +24,8 @@ module.exports = angular.module name, []
 
       # Helpers
       # ========================================================================
-
       llog = (msg) ->
         log.debug "NETWORK_SERVICE: #{msg}"
-
-      broadcast = ->
-        llog "*** Broadcasting update event. ***"
-        # Since a graph update can trigger more graph updates, we need to use
-        # $timeout to allow any $apply calls to finish before broadcasting
-        # another change. Otherwise there may be nested $apply's, which Angular
-        # doesn't allow.
-        $timeout -> $rootScope.$broadcast (name + '.updated'), 0
 
       cycleMechanism = (node) ->
         nextIndex = mechanism.keys.indexOf(node.mechanism) + 1
@@ -68,6 +59,7 @@ module.exports = angular.module name, []
           @format = new Formatter((index) => @getNode(index).label)
           @tpm = @graph.tpmify()
           @state = []
+          @updateEvent = name + '.updated'
 
         size: -> @graph.numNodes
 
@@ -369,7 +361,12 @@ module.exports = angular.module name, []
           @broadcastUpdate()
 
         broadcastUpdate: ->
-          broadcast()
+          llog "*** Broadcasting update event. ***"
+          # Since a graph update can trigger more graph updates, we need to use
+          # $timeout to allow any $apply calls to finish before broadcasting
+          # another change. Otherwise there may be nested $apply's, which Angular
+          # doesn't allow.
+          $timeout => $rootScope.$broadcast @updateEvent, 0
           # Save the network to localStorage.
           localStorage.setItem 'network', JSON.stringify @toJSON()
           return
