@@ -49,8 +49,8 @@ body
             .col-md-12
               #concept-space-container
                 #concept-space(concept-space)
-                #concept-space-overlay(ng-show='compute.callInProgress') &nbsp;
-                #concept-space-loading-spinner(ng-show='compute.callInProgress')
+                #concept-space-overlay.fade-out(ng-show='compute.callInProgress') &nbsp;
+                #concept-space-loading-spinner.fade-out(ng-show='compute.callInProgress')
                   .tetrominos
                     .tetromino.box1
                     .tetromino.box2
@@ -215,6 +215,9 @@ body
   //- Online/Offline
   //- script(src='/node_modules/angular/angular.js')
   script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.js')
+
+  script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js')
+  //- script(src='/node_modules/angular-animate/angular-animate.js')
 
   //- Online/Offline
   script(src='//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js')

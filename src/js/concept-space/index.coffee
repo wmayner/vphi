@@ -4,6 +4,7 @@
 ###
 
 module.exports = angular.module 'vphi.conceptSpace', [
+  'ngAnimate'
   require('./control-panel').name
 ]
   .controller 'conceptSpaceCtrl', require './ConceptSpaceController'
