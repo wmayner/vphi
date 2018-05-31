@@ -107,8 +107,8 @@ module.exports = angular.module name, []
                 if stored.data.version? and stored.data.version is PYPHI_VERSION
                   # Update the service.
                   llog "Loading stored results."
-                  @update(stored.data, stored.network)
                   @calledMethod = stored.calledMethod
+                  @update(stored.data, stored.network)
                   # Force a digest cycle.
                   # TODO figure out why we need this... we shouldn't and it's ugly.
                   $rootScope.$apply()

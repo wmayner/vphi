@@ -5,3 +5,4 @@
 
 module.exports = angular.module 'vphi.outputSummary', []
   .controller 'outputSummaryCtrl', require './OutputSummaryController'
+  .directive 'outputSummary', require './OutputSummaryDirective'

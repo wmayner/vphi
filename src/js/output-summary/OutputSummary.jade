@@ -1,0 +1,37 @@
+.row.clearfix
+  .col-md-12
+    h2.module-title
+      span(ng-bind='title')
+      span.vphi-value.number-2(ng-hide='nodes.length > 0') –
+      ul.node-list
+        li(ng-class='{"on": state[n]}', ng-repeat='n in nodes')
+          | {{format.node(n)}}
+.row.centered.clearfix
+  .col-md-12
+    .summary-items.well
+      #phi-value.item
+        .vphi-label \( \large \Phi \)
+        .vphi-value.number-7(ng-bind='bigPhi')
+      #minimal-cut.item
+        .vphi-label Minimal cut
+        .vphi-value.number-2(ng-hide='cut') –
+        .vphi-value(ng-if='trivialCut') None
+        span(ng-show='cut' ng-if='!trivialCut')
+          ul.node-list.secondary
+            li(ng-repeat='n in cut[0]') {{n}}
+          span.cut-symbol ⇏
+          ul.node-list.secondary
+            li(ng-repeat='n in cut[1]') {{n}}
+      #num-concepts.item
+        .vphi-label Number of concepts
+        .vphi-value.number-2(ng-bind='numConcepts')
+      #sum-small-phi.item
+        .vphi-label \( \sum\varphi \)
+        .vphi-value.number-7(ng-bind='sumSmallPhi')
+.row.clearfix
+  .col-md-12
+    #misc-info
+      .block-item PyPhi version: <code>{{PYPHI_VERSION}}</code>
+      #elapsed-time(ng-show='elapsedTime')
+        .block-item Total elapsed time: <code>{{elapsedTime}}s</code>
+        .block-item Subsystem calculation time: \(\Phi\): <code>{{bigPhiTime}}s</code>; all \(\varphi\): <code>{{smallPhiTime}}s</code>
