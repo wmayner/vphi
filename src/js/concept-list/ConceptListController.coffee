@@ -20,8 +20,9 @@ typesetMath = ->
 
 module.exports = [
   '$scope'
+  '$timeout'
   computeService.name
-  ($scope, compute) ->
+  ($scope, $timeout, compute) ->
     $scope.concepts = null
     $scope.numNodes = null
     $scope.state = null
@@ -45,5 +46,6 @@ module.exports = [
       allProbabilities = [].concat.apply([], allRepertoires)
       $scope.maxProbability = _.max(allProbabilities)
 
-      typesetMath()
+      # Wait until the concept list is loaded before typesetting math
+      $timeout typesetMath, 0
 ]
