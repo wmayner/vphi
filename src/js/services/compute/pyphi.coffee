@@ -7,10 +7,8 @@
 log = require 'loglevel'
 
 getPyphiNetwork = (network) ->
-  net =
-    'tpm': network.tpm
-    'cm': network.cm
-    'state': network.state
+  net = network.toJSON()
+  delete net.nodes
   log.debug "PYPHI: Sending network:"
   log.debug net
   return net
