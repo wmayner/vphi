@@ -45,7 +45,7 @@ chain = (n, options) ->
 module.exports =
 
   # IIT 3.0 paper example
-  'IIT 3.0 Paper, Figure 1': ->
+  'IIT 3.0 Paper, Fig. 1': ->
     graph = new Graph()
 
     graph.addNode
@@ -70,13 +70,13 @@ module.exports =
 
     return graph
 
-  'IIT 3.0 Paper, Figure 17: Specialized majority': ->
+  'IIT 3.0 Paper, Fig. 17: Specialized majority': ->
     return '/examples/specialized-majority.json'
 
-  'IIT 3.0 Paper, Figure 17: Homogeneous': ->
+  'IIT 3.0 Paper, Fig. 17: Homogeneous': ->
     return '/examples/homogeneous.json'
 
-  'IIT 3.0 Paper, Figure 17: Modular': ->
+  'IIT 3.0 Paper, Fig. 17: Modular': ->
     return '/examples/modular.json'
 
   # Matlab default example
@@ -107,22 +107,22 @@ module.exports =
   '5 OR-node bidirectional loop': ->
     return '/examples/5-OR-bidirectional-loop.json'
 
-  'Cellular automata paper, Figure 3b: Rule 128, 5 nodes': ->
+  'CA Paper, Fig. 3b: Rule 128, 5 nodes': ->
     return '/examples/cellular-automata-paper_fig-3b_rule-128_5-nodes.json'
 
-  'Cellular automata paper, Figure 3c: Rule 232, 5 nodes': ->
+  'CA Paper, Fig. 3c: Rule 232, 5 nodes': ->
     return '/examples/cellular-automata-paper_fig-3c_rule-232_5-nodes.json'
 
-  'Cellular automata paper, Figure 3d: Rule 74, 5 nodes': ->
+  'CA Paper, Fig. 3d: Rule 74, 5 nodes': ->
     return '/examples/cellular-automata-paper_fig-3d_rule-74_5-nodes.json'
 
-  'Cellular automata paper, Figure 3d: Rule 90, 5 nodes': ->
+  'CA Paper, Fig. 3d: Rule 90, 5 nodes': ->
     return '/examples/cellular-automata-paper_fig-3d_rule-90_5-nodes.json'
 
-  'Cellular automata paper, Figure 3e: Rule 106, 5 nodes': ->
+  'CA Paper, Fig. 3e: Rule 106, 5 nodes': ->
     return '/examples/cellular-automata-paper_fig-3e_rule-106_5-nodes.json'
 
-  'Cellular automata paper, Figure 8e: Rule 232, 6 nodes': ->
+  'CA Paper, Fig. 8e: Rule 232, 6 nodes': ->
     return '/examples/cellular-automata-paper_fig-8_rule-232_6-nodes.json'
 
   # # http://upload.wikimedia.org/wikipedia/commons/c/c6/R-S_mk2.gif
