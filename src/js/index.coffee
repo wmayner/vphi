@@ -16,7 +16,7 @@ angular.module 'vphi', [
 ]
   .constant 'VERSION', require('../../package.json').version
   .constant 'PYPHI_VERSION', '0.8.1'
-  .constant 'PHISERVER_URL', 'http://127.0.0.1:5000'  # Development
-  # .constant 'PHISERVER_URL', 'http://144.92.177.185'  # Production
+  # .constant 'PHISERVER_URL', 'http://127.0.0.1:5000'  # Development
+  .constant 'PHISERVER_URL', 'http://144.92.177.185'  # Production
   .constant 'NETWORK_SIZE_LIMIT', 8
   .constant 'CANVAS_HEIGHT', 500
